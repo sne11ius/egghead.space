@@ -1,8 +1,13 @@
 <template>
   <div class="page-container">
+    <GlobalSnackbar></GlobalSnackbar>
+    <sign-in-dialog></sign-in-dialog>
     <md-app>
       <md-app-toolbar class="md-primary">
         <span class="md-title">My Title</span>
+        <div class="md-toolbar-section-end">
+          <UserStatus/>
+        </div>
       </md-app-toolbar>
       <md-app-drawer md-permanent="full">
         <md-toolbar class="md-transparent" md-elevation="0">
@@ -26,6 +31,25 @@
     </md-app>
   </div>
 </template>
+
+<script>
+import GlobalSnackbar from "@/components/GlobalSnackbar.vue";
+// import EventBus from "@service/EventBus.js";
+import UserStatus from "@/views/UserStatus.vue";
+import SignInDialog from "@/views/SignInDialog.vue";
+
+export default {
+  components: {
+    GlobalSnackbar,
+    UserStatus,
+    SignInDialog
+  },
+  mounted() {
+    console.log("mounted");
+  }
+};
+</script>
+
 
 <style scoped lang="scss">
 /*
