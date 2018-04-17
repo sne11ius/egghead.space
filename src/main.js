@@ -5,6 +5,8 @@ import VueFire from "vuefire";
 import VueMaterial from "vue-material";
 import "vue-material/dist/vue-material.min.css";
 
+import "roboto-fontface/css/roboto/roboto-fontface.css";
+
 Vue.use(VueMaterial);
 Vue.use(VueFire);
 
