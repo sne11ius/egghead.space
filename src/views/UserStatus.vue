@@ -5,7 +5,7 @@
       <md-icon class="fa fa-sign-in"></md-icon>
       <span class="button-text">Sign in</span>
     </md-button>
-    <md-button v-else>
+    <md-button v-else @click="logoutClicked">
       <md-icon class="fa fa-sign-out"></md-icon>
       <span class="button-text">Sign out</span>
     </md-button>
@@ -13,19 +13,18 @@
 </template>
 
 <script>
-import EventBus from "@service/EventBus.js";
+// import EventBus from "@/service/EventBus.js";
 
 export default {
   name: "UserStatus",
-  data() {
-    return {
-      authenticated: false
-    };
-  },
+  props: ["authenticated"],
   methods: {
     showLoginDialog() {
       console.log("Show login...");
-      EventBus.$emit("show-login-dialog");
+      this.$emit("loginClicked");
+    },
+    logoutClicked() {
+      this.$emit("logoutClicked");
     }
   }
 };

@@ -7,6 +7,8 @@ import "vue-material/dist/vue-material.min.css";
 
 import "roboto-fontface/css/roboto/roboto-fontface.css";
 
+import "@/assets/main.scss";
+
 Vue.use(VueMaterial);
 Vue.use(VueFire);
 
