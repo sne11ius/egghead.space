@@ -3,12 +3,12 @@ import "firebase/firestore";
 
 // Initialize Firebase
 const config = {
-  apiKey: "AIzaSyA83Jt5piFOMegSqUn7eM4Ed0zMpTgQ120",
-  authDomain: "hotshots-9001.firebaseapp.com",
-  databaseURL: "https://hotshots-9001.firebaseio.com",
-  projectId: "hotshots-9001",
-  storageBucket: "hotshots-9001.appspot.com",
-  messagingSenderId: "502037355037"
+  apiKey: "AIzaSyAtbFdQlWu-oWtN3Y7vpslY0oht5SbCSf8",
+  authDomain: "eggheadspace-e99d7.firebaseapp.com",
+  databaseURL: "https://eggheadspace-e99d7.firebaseio.com",
+  projectId: "eggheadspace-e99d7",
+  storageBucket: "eggheadspace-e99d7.appspot.com",
+  messagingSenderId: "774445755419"
 };
 
 const firebaseApp = Firebase.initializeApp(config);
