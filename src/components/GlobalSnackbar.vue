@@ -18,11 +18,10 @@ export default {
     };
   },
   mounted() {
-    const _this = this;
-    EventBus.$on("global-snack", function(text, type) {
-      _this.icon = type;
-      _this.text = text;
-      _this.showSnackbar = true;
+    EventBus.$on("global-snack", (text, type) => {
+      this.icon = type;
+      this.text = text;
+      this.showSnackbar = true;
     });
   }
 };
