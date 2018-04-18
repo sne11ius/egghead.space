@@ -1,5 +1,5 @@
 <template>
-  <md-snackbar md-position="center" ref="snackbar" :md-duration="3000" class="global-snackbar">
+  <md-snackbar :md-active.sync="showSnackbar" md-position="center" :md-duration="3000" class="global-snackbar">
     <md-icon>{{ icon }}</md-icon>
     <span>{{ text }}</span>
   </md-snackbar>
@@ -13,7 +13,8 @@ export default {
   data() {
     return {
       text: "",
-      icon: "info"
+      icon: "info",
+      showSnackbar: false
     };
   },
   mounted() {
@@ -21,7 +22,7 @@ export default {
     EventBus.$on("global-snack", function(text, type) {
       _this.icon = type;
       _this.text = text;
-      _this.$refs.snackbar.open();
+      _this.showSnackbar = true;
     });
   }
 };
