@@ -1,3 +1,4 @@
+[![Dependency Status](https://beta.gemnasium.com/badges/github.com/sne11ius/egghead.space.svg)](https://beta.gemnasium.com/projects/github.com/sne11ius/egghead.space)
 # egghead.space
 
 ## Build
