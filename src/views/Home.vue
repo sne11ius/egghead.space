@@ -3,11 +3,11 @@
     <h1>This is a home page</h1>
     <img src="../assets/logo.png">
     <HelloWorld msg="Welcome to Your Vue.js App"/>
-    <input v-model.trim="newIdeaTitle" @keyup.enter="addIdea" placeholder="Add new idea"><br>
-    Here are the ideas:
-    <p v-for="idea of ideas" :key="idea.id">
-      {{idea.title}}:
-      {{idea.content}}<br>
+    <input v-model.trim="newSketchTitle" @keyup.enter="addSketch" placeholder="Add new sketch"><br>
+    Here are the sketches:
+    <p v-for="sketch of sketches" :key="sketch.id">
+      {{sketch.title}}:
+      {{sketch.content}}<br>
     </p>
   </div>
 </template>
@@ -18,7 +18,7 @@ import HelloWorld from "@/components/HelloWorld.vue";
 import Firebase from "firebase";
 import { db } from "@/firebase";
 
-const ideas = db.collection("ideas");
+const sketches = db.collection("sketches");
 
 export default {
   name: "home",
@@ -27,21 +27,21 @@ export default {
   },
   data() {
     return {
-      ideas: [],
-      newIdeaTitle: ""
+      sketches: [],
+      newSketchTitle: ""
     };
   },
   firestore: {
-    ideas: ideas
+    sketches: sketches
   },
   methods: {
-    addIdea() {
-      ideas.add({
-        title: this.newIdeaTitle,
+    addSketch() {
+      sketches.add({
+        title: this.newSketchTitle,
         content: "some content",
         created: Firebase.firestore.FieldValue.serverTimestamp()
       });
-      this.newIdeaTitle = "";
+      this.newSketchTitle = "";
     }
   }
 };

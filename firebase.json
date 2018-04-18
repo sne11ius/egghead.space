@@ -17,6 +17,12 @@
       "firebase.json",
       "**/.*",
       "**/node_modules/**"
+    ],
+    "rewrites": [
+      {
+        "source": "/helloEgghead",
+        "function": "helloEgghead"
+      }
     ]
   },
   "storage": {
