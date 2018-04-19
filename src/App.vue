@@ -39,10 +39,14 @@
 </template>
 
 <script>
+import firebase from "firebase";
+
 import GlobalSnackbar from "@/components/GlobalSnackbar.vue";
 import EventBus from "@/service/EventBus.js";
 import UserStatus from "@/views/UserStatus.vue";
-import firebase from "firebase";
+import FirebaseUtil from "@/service/FirebaseUtil.js";
+
+import { db } from "@/firebase";
 
 export default {
   name: "App",
@@ -60,6 +64,12 @@ export default {
     firebase.auth().onAuthStateChanged(user => {
       if (user) {
         this.currentUser = user;
+        db
+          .collection("users")
+          .doc(user.uid)
+          .collection("private")
+          .doc("loginData")
+          .set(FirebaseUtil.toSimpleObject(user));
         EventBus.info(`Successfully logged in as ${user.displayName}`);
         // EventBus.debug("user:", user);
       } else {
