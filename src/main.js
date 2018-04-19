@@ -33,6 +33,15 @@ globals.install = function(vue) {
 
 Vue.use(globals);
 
+import markdown from "@/service/MarkdownRenderer.js";
+Vue.mixin({
+  methods: {
+    marked: function(input) {
+      return markdown.render(input);
+    }
+  }
+});
+
 Vue.config.productionTip = false;
 
 new Vue({

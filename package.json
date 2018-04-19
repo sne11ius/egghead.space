@@ -11,7 +11,9 @@
   "dependencies": {
     "firebase": "^4.12.1",
     "firebaseui": "^2.7.0",
+    "markdown-it": "^8.4.1",
     "roboto-fontface": "^0.9.0",
+    "simplemde": "https://github.com/Ionaru/simplemde-markdown-editor/archive/c30569edb36b1a6eb60e2007be9900107cc9d3c9.tar.gz",
     "vue": "^2.5.13",
     "vue-material": "^1.0.0-beta-8",
     "vue-router": "^3.0.1",
