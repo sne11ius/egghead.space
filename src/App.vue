@@ -6,14 +6,13 @@
     </div>
     <div id="app" v-else>
       <GlobalSnackbar></GlobalSnackbar>
-      <sign-in-dialog :show="showSignInDialog" v-on:cancelClicked="showSignInDialog = false"></sign-in-dialog>
       <md-app>
         <md-app-toolbar class="md-primary">
           <h3 class="md-title" style="flex: 1">egghead.space</h3>
           <!--md-button v-if="currentUser !== null" class="md-icon-button">
             <img :src="currentUser.photoURL">
           </md-button-->
-          <UserStatus :authenticated="currentUser !== null" v-on:loginClicked="showSignInDialog = true" v-on:logoutClicked="logoutClicked"/>
+          <UserStatus :authenticated="currentUser !== null"/>
         </md-app-toolbar>
         <md-app-drawer md-permanent="full">
           <md-toolbar class="md-transparent" md-elevation="0">
@@ -43,50 +42,32 @@
 import GlobalSnackbar from "@/components/GlobalSnackbar.vue";
 import EventBus from "@/service/EventBus.js";
 import UserStatus from "@/views/UserStatus.vue";
-import SignInDialog from "@/views/SignInDialog.vue";
 import firebase from "firebase";
 
 export default {
+  name: "App",
   components: {
-    GlobalSnackbar,
     UserStatus,
-    SignInDialog
+    GlobalSnackbar
   },
   data() {
     return {
       unknownUserState: true,
-      currentUser: null,
-      showSignInDialog: false
+      currentUser: null
     };
   },
   mounted() {
-    console.log("mounted");
     firebase.auth().onAuthStateChanged(user => {
       if (user) {
         this.currentUser = user;
-        this.showSignInDialog = false;
         EventBus.info(`Successfully logged in as ${user.displayName}`);
+        // EventBus.debug("user:", user);
       } else {
         // console.log(`no user`);
+        this.currentUser = null;
       }
       this.unknownUserState = false;
     });
-  },
-  methods: {
-    logoutClicked() {
-      console.log("logout clicked");
-      firebase
-        .auth()
-        .signOut()
-        .then(() => {
-          this.currentUser = null;
-          EventBus.info("Successfully logged out");
-        })
-        .catch(error => {
-          console.error(error);
-          EventBus.error("Could not logout");
-        });
-    }
   }
 };
 </script>

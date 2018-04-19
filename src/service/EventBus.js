@@ -10,6 +10,13 @@ const bus = new Vue({
     },
     error(text) {
       this.$emit("global-snack", text, "error");
+    },
+    debug(text, data) {
+      this.$emit(
+        "global-snack",
+        `${text} ${JSON.stringify(data, null, 2)}`,
+        "info"
+      );
     }
   }
 });
