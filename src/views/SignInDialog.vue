@@ -1,6 +1,5 @@
 <template>
   <md-dialog :md-active.sync="show" v-on:md-opened="dialogOpened" :md-close-on-esc="false" :md-click-outside-to-close="false">
-    <md-dialog-title>Sign in</md-dialog-title>
     <div id="firebaseui-auth-container"></div>
     <md-button @click="cancel">Cancel</md-button>
   </md-dialog>
@@ -47,3 +46,9 @@ export default {
   }
 };
 </script>
+
+<style lang="scss" scoped>
+#firebaseui-auth-container {
+  margin-top: 14px;
+}
+</style>
