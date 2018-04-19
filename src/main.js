@@ -12,6 +12,27 @@ import "@/assets/main.scss";
 Vue.use(VueMaterial);
 Vue.use(VueFire);
 
+const globals = new Vue({
+  data: {
+    currentUser: null
+  },
+  computed: {
+    isAuthenticated() {
+      return this.currentUser != null;
+    }
+  }
+});
+
+globals.install = function(vue) {
+  Object.defineProperty(vue.prototype, "$globals", {
+    get() {
+      return globals;
+    }
+  });
+};
+
+Vue.use(globals);
+
 Vue.config.productionTip = false;
 
 new Vue({

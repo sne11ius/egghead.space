@@ -9,10 +9,7 @@
       <md-app>
         <md-app-toolbar class="md-primary">
           <h3 class="md-title" style="flex: 1">egghead.space</h3>
-          <!--md-button v-if="currentUser !== null" class="md-icon-button">
-            <img :src="currentUser.photoURL">
-          </md-button-->
-          <UserStatus :authenticated="currentUser !== null"/>
+          <UserStatus/>
         </md-app-toolbar>
         <md-app-drawer md-permanent="full">
           <md-toolbar class="md-transparent" md-elevation="0">
@@ -56,14 +53,13 @@ export default {
   },
   data() {
     return {
-      unknownUserState: true,
-      currentUser: null
+      unknownUserState: true
     };
   },
   mounted() {
     firebase.auth().onAuthStateChanged(user => {
       if (user) {
-        this.currentUser = user;
+        this.$globals.currentUser = user;
         db
           .collection("users")
           .doc(user.uid)
@@ -71,10 +67,8 @@ export default {
           .doc("loginData")
           .set(FirebaseUtil.toSimpleObject(user));
         EventBus.info(`Successfully logged in as ${user.displayName}`);
-        // EventBus.debug("user:", user);
       } else {
-        // console.log(`no user`);
-        this.currentUser = null;
+        this.$globals.currentUser = null;
       }
       this.unknownUserState = false;
     });

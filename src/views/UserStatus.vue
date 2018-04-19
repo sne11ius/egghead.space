@@ -4,7 +4,7 @@
       <div id="firebaseui-auth-container"></div>
     </md-dialog>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
-    <md-button v-if="!authenticated" @click="showSignInDialog = true">
+    <md-button v-if="$globals.currentUser == null" @click="showSignInDialog = true">
       <md-icon class="fa fa-sign-in"></md-icon>
       <span class="button-text">Sign in</span>
     </md-button>
@@ -24,7 +24,6 @@ import "firebaseui/dist/firebaseui.css";
 export default {
   name: "UserStatus",
   components: {},
-  props: ["authenticated"],
   data() {
     return {
       showSignInDialog: false
@@ -32,10 +31,12 @@ export default {
   },
   methods: {
     logoutClicked() {
+      const _this = this;
       firebase
         .auth()
         .signOut()
         .then(() => {
+          _this.$globals.currentUser = null;
           EventBus.info("Successfully logged out");
         })
         .catch(error => {

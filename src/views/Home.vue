@@ -1,6 +1,8 @@
 <template>
   <div>
-    <input v-model.trim="newSketchTitle" @keyup.enter="addSketch" placeholder="Add new sketch"><br>
+    <input v-if="$globals.isAuthenticated" v-model.trim="newSketchTitle" @keyup.enter="addSketch" placeholder="Add new sketch">
+    <span v-else><b>Sign in to create a sketch</b></span>
+    <br>
     Here are the sketches:
     <p v-for="sketch of sketches" :key="sketch.id">
       {{sketch.title}}:
@@ -10,7 +12,6 @@
 </template>
 
 <script>
-// @ is an alias to /src
 import Firebase from "firebase";
 import { db } from "@/firebase";
 
