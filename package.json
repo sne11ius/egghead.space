@@ -5,7 +5,7 @@
   "scripts": {
     "serve": "vue-cli-service serve",
     "build": "vue-cli-service build",
-    "deploy": "git pull && npm install && cd functions && npm install && cd.. && npm run build && firebase deploy",
+    "deploy": "git pull && npm install && cd functions && npm install && cd .. && npm run build && firebase deploy",
     "lint": "vue-cli-service lint"
   },
   "dependencies": {
