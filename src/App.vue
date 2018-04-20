@@ -45,6 +45,13 @@ import FirebaseUtil from "@/service/FirebaseUtil.js";
 
 import { db } from "@/firebase";
 
+const stripSensitiveData = user => {
+  const strippedUser = Object.assign({}, user);
+  delete strippedUser["apiKey"];
+  delete strippedUser["stsTokenManager"];
+  return strippedUser;
+};
+
 export default {
   name: "App",
   components: {
@@ -59,23 +66,37 @@ export default {
   mounted() {
     firebase.auth().onAuthStateChanged(user => {
       if (user) {
-        this.$globals.currentUser = user;
+        const userObject = FirebaseUtil.toSimpleObject(user);
         db
           .collection("users")
           .doc(user.uid)
           .collection("private")
           .doc("loginData")
-          .set(FirebaseUtil.toSimpleObject(user));
-        db
-          .collection("users")
-          .doc(user.uid)
-          .collection("public")
-          .doc("userInfo")
-          .set({
-            hehe: "hehe"
+          .set(userObject)
+          .then(() => {
+            db
+              .collection("users")
+              .doc(user.uid)
+              .collection("public")
+              .doc("userInfo")
+              .set(stripSensitiveData(userObject));
+          })
+          .then(() => {
+            this.$globals.currentUser = user;
+            EventBus.info(`Successfully logged in as ${user.displayName}`);
+          })
+          .catch(error => {
+            console.error("Login failed: ", error);
+            firebase
+              .auth()
+              .signOut()
+              .then(() => {
+                this.$globals.currentUser = null;
+              })
+              .catch(error => {
+                console.error("Could not logout after login error.", error);
+              });
           });
-        // .set(stripSensitiveData(FirebaseUtil.toSimpleObject(user)));
-        EventBus.info(`Successfully logged in as ${user.displayName}`);
       } else {
         this.$globals.currentUser = null;
       }
@@ -84,7 +105,6 @@ export default {
   }
 };
 </script>
-
 
 <style scoped lang="scss">
 #wait {
