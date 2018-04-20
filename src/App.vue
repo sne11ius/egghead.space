@@ -66,6 +66,15 @@ export default {
           .collection("private")
           .doc("loginData")
           .set(FirebaseUtil.toSimpleObject(user));
+        db
+          .collection("users")
+          .doc(user.uid)
+          .collection("public")
+          .doc("userInfo")
+          .set({
+            hehe: "hehe"
+          });
+        // .set(stripSensitiveData(FirebaseUtil.toSimpleObject(user)));
         EventBus.info(`Successfully logged in as ${user.displayName}`);
       } else {
         this.$globals.currentUser = null;

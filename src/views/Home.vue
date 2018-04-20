@@ -55,14 +55,19 @@ export default {
     simpleMde = new SimpleMDE({
       element: document.querySelectorAll("#sketch-body")[0],
       forceSync: true,
-      hideIcons: ["fullscreen"]
+      hideIcons: ["side-by-side", "fullscreen"]
     });
   },
   methods: {
     addSketch() {
       const body = (simpleMde && simpleMde.value()) || "";
+      const ref = db
+        .collection("users")
+        .doc(this.$globals.currentUser.uid)
+        .collection("public")
+        .doc("userInfo");
       sketches.add({
-        createdBy: this.$globals.currentUser.uid,
+        createdBy: ref, // this.$globals.currentUser.uid,
         title: this.title,
         body: body,
         created: Firebase.firestore.FieldValue.serverTimestamp()
