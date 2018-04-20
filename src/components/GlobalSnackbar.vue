@@ -1,5 +1,5 @@
 <template>
-  <md-snackbar :md-active.sync="showSnackbar" md-position="center" :md-duration="3000" class="global-snackbar">
+  <md-snackbar :md-active.sync="showSnackbar" md-position="center" :md-duration="7000" class="global-snackbar">
     <md-icon>{{ icon }}</md-icon>
     <span>{{ text }}</span>
   </md-snackbar>
@@ -26,9 +26,11 @@ export default {
   }
 };
 </script>
-
-<style>
-.global-snackbar .md-icon {
-  margin-left: 0;
+<style lang="scss">
+.global-snackbar {
+  background-color: white;
+  .md-icon {
+    margin-left: 0;
+  }
 }
 </style>
