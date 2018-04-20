@@ -31,12 +31,11 @@ export default {
   },
   methods: {
     logoutClicked() {
-      const _this = this;
       firebase
         .auth()
         .signOut()
         .then(() => {
-          _this.$globals.currentUser = null;
+          this.$globals.currentUser = null;
           EventBus.info("Successfully logged out");
         })
         .catch(error => {
