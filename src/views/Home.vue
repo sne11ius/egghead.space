@@ -1,6 +1,6 @@
 <template>
   <div>
-    <div v-if="$globals.isAuthenticated">
+    <div v-show="$globals.isAuthenticated">
       <md-content class="md-elevation-1 " id="input-container">
         <md-field>
           <label>Title here!</label>
@@ -14,7 +14,7 @@
         </div>
       </md-content>
     </div>
-    <span v-else><b>Sign in to create a sketch</b></span>
+    <span v-show="!$globals.isAuthenticated"><b>Sign in to create a sketch</b></span>
     <br>
     Here are the sketches:
     <p v-for="sketch of sketches" :key="sketch.id">
@@ -26,6 +26,7 @@
 <script>
 import Firebase from "firebase";
 import Sketch from "@/components/Sketch.vue";
+import EventBus from "@/service/EventBus.js";
 import SimpleMDE from "simplemde";
 import "simplemde/dist/simplemde.min.css";
 import { db } from "@/firebase";
@@ -52,7 +53,7 @@ export default {
   mounted() {
     // eslint-disable-next-line
     simpleMde = new SimpleMDE({
-      element: document.querySelectorAll("#sketch-body textarea")[0],
+      element: document.querySelectorAll("#sketch-body")[0],
       forceSync: true,
       hideIcons: ["fullscreen"]
     });
@@ -60,13 +61,15 @@ export default {
   methods: {
     addSketch() {
       const body = (simpleMde && simpleMde.value()) || "";
-      console.log(body);
       sketches.add({
+        createdBy: this.$globals.currentUser.uid,
         title: this.title,
         body: body,
         created: Firebase.firestore.FieldValue.serverTimestamp()
       });
-      this.newSketchTitle = "";
+      EventBus.info(`Sketch '${this.title}' created.`);
+      this.title = "";
+      simpleMde && simpleMde.value("");
     }
   }
 };
