@@ -1,8 +1,7 @@
 <template>
-  <md-snackbar :md-active.sync="showSnackbar" md-position="center" :md-duration="7000" class="global-snackbar">
-    <md-icon>{{ icon }}</md-icon>
-    <span>{{ text }}</span>
-  </md-snackbar>
+  <v-snackbar v-model="showSnackbar" color="success" :top="true" :timeout="7000" class="global-snackbar">
+    <v-icon color="white">{{ icon }}</v-icon>{{ text }}
+  </v-snackbar>
 </template>
 
 <script>
@@ -26,11 +25,11 @@ export default {
   }
 };
 </script>
-<style lang="scss">
+
+<style lang="scss" scoped>
 .global-snackbar {
-  background-color: white;
-  .md-icon {
-    margin-left: 0;
+  .icon {
+    margin-right: 20px;
   }
 }
 </style>
