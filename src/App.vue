@@ -48,7 +48,7 @@ import firebase from "firebase";
 
 import GlobalSnackbar from "@/components/GlobalSnackbar.vue";
 import EventBus from "@/service/EventBus.js";
-import UserStatus from "@/views/UserStatus.vue";
+import UserStatus from "@/components/UserStatus.vue";
 import FirebaseUtil from "@/service/FirebaseUtil.js";
 
 import { db } from "@/firebase";
