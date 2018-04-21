@@ -6,7 +6,7 @@
     <v-card-text v-html="body"></v-card-text>
     <v-card-actions>
       <v-spacer></v-spacer>
-      <v-btn v-if="$globals.currentUser.uid == sketch.createdBy.uid" flat icon color="error" title="Delete" @click="deleteSketch(sketch)">
+      <v-btn v-if="sketch.createdBy && sketch.createdBy.uid && $globals.currentUser.uid == sketch.createdBy.uid" flat icon color="error" title="Delete" @click="deleteSketch(sketch)">
         <v-icon>delete</v-icon>
       </v-btn>
     </v-card-actions>
@@ -34,7 +34,7 @@ export default {
         .doc(sketch.id)
         .delete()
         .then(() => {
-          EventBus.info(`Sketch '${this.title}' removed.`);
+          EventBus.info(`Sketch '${sketch.title}' removed.`);
         })
         .catch(error => {
           // eslint-disable-next-line
