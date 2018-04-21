@@ -1,17 +1,16 @@
 <template>
   <div class="user-status">
-    <md-dialog :md-active.sync="showSignInDialog" v-on:md-opened="dialogOpened">
+    <v-dialog v-model="showSignInDialog" transition="dialog-bottom-transition">
       <div id="firebaseui-auth-container"></div>
-    </md-dialog>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
-    <md-button v-if="$globals.currentUser == null" @click="showSignInDialog = true">
-      <md-icon class="fa fa-sign-in"></md-icon>
-      <span class="button-text">Sign in</span>
-    </md-button>
-    <md-button v-else @click="logoutClicked">
-      <md-icon class="fa fa-sign-out"></md-icon>
-      <span class="button-text">Sign out</span>
-    </md-button>
+    </v-dialog>
+    <v-btn v-if="$globals.currentUser == null" @click="openLoginDialog" color="primary">
+      <span>Sign in</span>
+      <v-icon>fa fa-sign-in-alt</v-icon>
+    </v-btn>
+    <v-btn v-else @click="logoutClicked" color="primary">
+      <span>Sign out</span>
+      <v-icon>fa fa-sign-out-alt</v-icon>
+    </v-btn>
   </div>
 </template>
 
@@ -39,12 +38,13 @@ export default {
           EventBus.info("Successfully logged out");
         })
         .catch(error => {
+          // eslint-disable-next-line
           console.error(error);
           EventBus.error("Could not logout");
         });
     },
-    dialogOpened() {
-      this.uiRendered = true;
+    openLoginDialog() {
+      this.showSignInDialog = true;
       const ui =
         firebaseui.auth.AuthUI.getInstance() ||
         new firebaseui.auth.AuthUI(firebase.auth());
@@ -70,13 +70,11 @@ export default {
 </script>
 
 <style lang="scss" scoped>
-#firebaseui-auth-container {
-  margin-top: 14px;
-  margin-bottom: 14px;
+.user-status i {
+  margin-left: 17px;
 }
-.user-status .button-text {
-  padding-left: 6px;
-  position: relative;
-  top: 1px;
+#firebaseui-auth-container {
+  padding-top: 20px;
+  padding-bottom: 20px;
 }
 </style>

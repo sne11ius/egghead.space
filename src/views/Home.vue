@@ -1,26 +1,26 @@
 <template>
-  <div>
-    <div v-show="$globals.isAuthenticated">
-      <md-content class="md-elevation-1 " id="input-container">
-        <md-field>
-          <label>Title here!</label>
-          <md-input v-model="title"></md-input>
-          <span class="md-helper-text">Please add a nice title</span>
-        </md-field>
-        <md-divider></md-divider>
-        <textarea id="sketch-body" placeholder="Please add a body"></textarea>
-        <div class="md-layout md-alignment-top-right">
-          <md-button class="md-primary md-alignment-top-right" @click="addSketch">Create sketch</md-button>
-        </div>
-      </md-content>
-    </div>
-    <span v-show="!$globals.isAuthenticated"><b>Sign in to create a sketch</b></span>
-    <br>
-    Here are the sketches:
-    <p v-for="sketch of sketches" :key="sketch.id">
-      <Sketch :sketch="sketch"></Sketch>
-    </p>
-  </div>
+    <v-container>
+      <v-layout row wrap>
+        <v-flex xs12>
+          <Sketch v-for="sketch of orderedSketches" :key="sketch.id" :sketch="sketch"></Sketch>
+        </v-flex>
+      </v-layout>
+      <v-dialog v-model="displayDialog">
+        <v-card id="input-container">
+          <v-card-title>Create new sketch</v-card-title>
+          <v-text-field v-model="title" label="Title"></v-text-field>
+          <textarea id="sketch-body" placeholder="Write something interesting"></textarea>
+          <v-card-actions>
+            <v-spacer></v-spacer>
+            <v-btn flat @click.stop="displayDialog = false">Cancel</v-btn>
+            <v-btn color="primary" flat @click.stop="createSketch">Create</v-btn>
+          </v-card-actions>
+        </v-card>
+      </v-dialog>
+      <v-btn @click="showCreateSketchDialog" id="create-sketch-button" v-if="$globals.isAuthenticated" title="Create new sketch" color="primary" fab top right fixed>
+        <v-icon>add</v-icon>
+      </v-btn>
+    </v-container>
 </template>
 
 <script>
@@ -31,7 +31,8 @@ import SimpleMDE from "simplemde";
 import "simplemde/dist/simplemde.min.css";
 import { db } from "@/firebase";
 
-const sketches = db.collection("sketches");
+const allSketches = db.collection("sketches");
+const orderedSketches = allSketches.orderBy("created", "desc");
 
 let simpleMde;
 
@@ -44,37 +45,50 @@ export default {
     return {
       sketches: [],
       title: "",
-      body: ""
+      body: "",
+      displayDialog: false
     };
   },
   firestore: {
-    sketches: sketches
+    allSketches: allSketches,
+    orderedSketches: orderedSketches
   },
-  mounted() {
-    // eslint-disable-next-line
-    simpleMde = new SimpleMDE({
-      element: document.querySelectorAll("#sketch-body")[0],
-      forceSync: true,
-      hideIcons: ["side-by-side", "fullscreen"]
-    });
+  watch: {
+    displayDialog: function(newVal) {
+      if (!newVal) {
+        this.title = "";
+        simpleMde && simpleMde.value("");
+      }
+    }
   },
   methods: {
-    addSketch() {
+    showCreateSketchDialog() {
+      this.displayDialog = true;
+      // eslint-disable-next-line
+      simpleMde = simpleMde || new SimpleMDE({
+          element: document.querySelectorAll("#sketch-body")[0],
+          autoDownloadFontAwesome: false,
+          hideIcons: ["side-by-side", "fullscreen"]
+        });
+    },
+    createSketch() {
       const body = (simpleMde && simpleMde.value()) || "";
-      const ref = db
+      const userRef = db
         .collection("users")
         .doc(this.$globals.currentUser.uid)
         .collection("public")
         .doc("userInfo");
-      sketches.add({
-        createdBy: ref, // this.$globals.currentUser.uid,
-        title: this.title,
-        body: body,
-        created: Firebase.firestore.FieldValue.serverTimestamp()
-      });
-      EventBus.info(`Sketch '${this.title}' created.`);
-      this.title = "";
-      simpleMde && simpleMde.value("");
+      allSketches
+        .add({
+          createdBy: userRef,
+          title: this.title,
+          body: body,
+          created: Firebase.firestore.FieldValue.serverTimestamp()
+        })
+        .then(() => {
+          EventBus.info(`Sketch '${this.title}' created.`);
+          this.displayDialog = false;
+        });
     }
   }
 };
@@ -82,10 +96,15 @@ export default {
 
 <style lang="scss">
 #input-container {
-  padding: 10px;
+  padding-left: 10px;
+  padding-right: 10px;
 }
 .CodeMirror,
 .CodeMirror-scroll {
   max-height: 500px;
+}
+#create-sketch-button {
+  margin-top: 65px;
+  right: 20px;
 }
 </style>

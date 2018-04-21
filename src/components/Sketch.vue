@@ -1,8 +1,10 @@
 <template>
-  <md-content class="md-elevation-1 sketch">
-    <h3>{{title}}</h3>
-    <span v-html="body"></span>
-  </md-content>
+  <v-card class="sketch">
+    <v-card-title primary-title>
+      <h3 class="headline mb-0">{{title}}</h3>
+    </v-card-title>
+    <v-card-text v-html="body"></v-card-text>
+  </v-card>
 </template>
 
 <script>
@@ -19,8 +21,11 @@ export default {
 };
 </script>
 
-<style lang="scss" scoped>
-.sketch {
-  padding: 7px;
+<style lang="scss">
+.sketch.card + .sketch.card {
+  margin-top: 15px;
+}
+.sketch .card__text img {
+  max-width: 100%;
 }
 </style>

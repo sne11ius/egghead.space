@@ -1,38 +1,46 @@
 <template>
-  <div class="page-container">
+  <v-app>
     <div id="wait" v-if="unknownUserState">
       <h3>Please wait&hellip;</h3>
       <img src="@/assets/flask.svg">
     </div>
     <div id="app" v-else>
       <GlobalSnackbar></GlobalSnackbar>
-      <md-app>
-        <md-app-toolbar class="md-primary">
-          <h3 class="md-title" style="flex: 1">egghead.space</h3>
-          <UserStatus/>
-        </md-app-toolbar>
-        <md-app-drawer md-permanent="full">
-          <md-toolbar class="md-transparent" md-elevation="0">
-            Navigation
-          </md-toolbar>
-
-          <md-list>
-            <md-list-item to="/">
-              <md-icon>move_to_inbox</md-icon>
-              <span class="md-list-item-text">Home</span>
-            </md-list-item>
-            <md-list-item to="about">
-              <md-icon>send</md-icon>
-              <span class="md-list-item-text">About</span>
-            </md-list-item>
-          </md-list>
-        </md-app-drawer>
-        <md-app-content>
-          <router-view/>
-        </md-app-content>
-      </md-app>
+      <v-navigation-drawer
+        fixed
+        v-model="drawer"
+        app
+      >
+        <v-list dense>
+        <v-list-tile @click="homeClicked">
+          <v-list-tile-action>
+            <v-icon>home</v-icon>
+          </v-list-tile-action>
+          <v-list-tile-content>
+            <v-list-tile-title>Home</v-list-tile-title>
+          </v-list-tile-content>
+        </v-list-tile>
+        <v-list-tile @click="contactClicked">
+          <v-list-tile-action>
+            <v-icon>contact_mail</v-icon>
+          </v-list-tile-action>
+          <v-list-tile-content>
+            <v-list-tile-title>Contact</v-list-tile-title>
+          </v-list-tile-content>
+        </v-list-tile>
+      </v-list>
+      </v-navigation-drawer>
+      <v-toolbar color="indigo" dark fixed app>
+        <v-toolbar-side-icon @click.stop="drawer = !drawer"></v-toolbar-side-icon>
+        <v-toolbar-title>egghead.space</v-toolbar-title>
+        <v-spacer></v-spacer>
+        <UserStatus/>
+      </v-toolbar>
+      <v-content>
+        <router-view/>
+      </v-content>
     </div>
-  </div>
+  </v-app>
 </template>
 
 <script>
@@ -60,6 +68,7 @@ export default {
   },
   data() {
     return {
+      drawer: null,
       unknownUserState: true
     };
   },
@@ -86,6 +95,7 @@ export default {
             EventBus.info(`Successfully logged in as ${user.displayName}`);
           })
           .catch(error => {
+            // eslint-disable-next-line
             console.error("Login failed: ", error);
             firebase
               .auth()
@@ -94,6 +104,7 @@ export default {
                 this.$globals.currentUser = null;
               })
               .catch(error => {
+                // eslint-disable-next-line
                 console.error("Could not logout after login error.", error);
               });
           });
@@ -102,6 +113,16 @@ export default {
       }
       this.unknownUserState = false;
     });
+  },
+  methods: {
+    homeClicked: () => {
+      // eslint-disable-next-line
+      console.log("home clicked");
+    },
+    contactClicked: () => {
+      // eslint-disable-next-line
+      console.log("contact clicked");
+    }
   }
 };
 </script>
