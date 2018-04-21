@@ -12,7 +12,7 @@
         app
       >
         <v-list dense>
-        <v-list-tile @click="homeClicked">
+        <v-list-tile to="/">
           <v-list-tile-action>
             <v-icon>home</v-icon>
           </v-list-tile-action>
@@ -115,10 +115,6 @@ export default {
     });
   },
   methods: {
-    homeClicked: () => {
-      // eslint-disable-next-line
-      console.log("home clicked");
-    },
     contactClicked: () => {
       // eslint-disable-next-line
       console.log("contact clicked");
