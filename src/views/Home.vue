@@ -43,7 +43,8 @@ export default {
   },
   data() {
     return {
-      sketches: [],
+      allSketches: [],
+      orderedSketches: [],
       title: "",
       body: "",
       displayDialog: false
