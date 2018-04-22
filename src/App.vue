@@ -12,7 +12,7 @@
         app
       >
         <v-list dense>
-        <v-list-tile @click="homeClicked">
+        <v-list-tile to="/">
           <v-list-tile-action>
             <v-icon>home</v-icon>
           </v-list-tile-action>
@@ -37,7 +37,9 @@
         <UserStatus/>
       </v-toolbar>
       <v-content>
-        <router-view/>
+        <transition name="component-fade" mode="out-in">
+          <router-view/>
+        </transition>
       </v-content>
     </div>
   </v-app>
@@ -115,10 +117,6 @@ export default {
     });
   },
   methods: {
-    homeClicked: () => {
-      // eslint-disable-next-line
-      console.log("home clicked");
-    },
     contactClicked: () => {
       // eslint-disable-next-line
       console.log("contact clicked");
@@ -140,5 +138,13 @@ export default {
   img {
     max-height: 150px;
   }
+}
+.component-fade-enter-active,
+.component-fade-leave-active {
+  transition: opacity 0.2s ease;
+}
+.component-fade-enter,
+.component-fade-leave-to {
+  opacity: 0;
 }
 </style>

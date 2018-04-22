@@ -17,7 +17,8 @@
     "vue": "^2.5.13",
     "vue-router": "^3.0.1",
     "vuefire": "^2.0.0-alpha.9",
-    "vuetify": "^1.0.16"
+    "vuetify": "^1.0.16",
+    "vuetify-confirm": "github:sne11ius/vuetify-confirm"
   },
   "devDependencies": {
     "@vue/cli-plugin-babel": "^3.0.0-beta.6",

@@ -4,11 +4,19 @@ import App from "./App.vue";
 import router from "./router";
 import VueFire from "vuefire";
 import "vuetify/dist/vuetify.min.css";
+import VuetifyConfirm from "vuetify-confirm";
 
 import "@/assets/main.scss";
 
 Vue.use(Vuetify);
 Vue.use(VueFire);
+Vue.use(VuetifyConfirm, {
+  buttonTrueText: "Yes",
+  buttonFalseText: "No",
+  color: "warning",
+  icon: "warning",
+  title: "Warning"
+});
 
 const globals = new Vue({
   data: {
