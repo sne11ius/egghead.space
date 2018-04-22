@@ -1,14 +1,14 @@
 <template>
-    <v-container>
-      <v-layout row wrap>
-        <v-flex xs12>
-          <Sketch v-for="sketch of orderedSketches" :key="sketch.id" :sketch="sketch"></Sketch>
-        </v-flex>
-      </v-layout>
-      <v-btn id="create-sketch-button" to="/create" title="Create new sketch" color="primary" fab top right fixed>
-        <v-icon>add</v-icon>
-      </v-btn>
-    </v-container>
+  <v-container>
+    <v-layout row wrap>
+      <v-flex xs12>
+        <Sketch v-for="sketch of orderedSketches" :key="sketch.id" :sketch="sketch"></Sketch>
+      </v-flex>
+    </v-layout>
+    <v-btn id="create-sketch-button" to="/create" title="Create new sketch" color="primary" fab top right fixed>
+      <v-icon>add</v-icon>
+    </v-btn>
+  </v-container>
 </template>
 
 <script>
@@ -19,7 +19,7 @@ import { db } from "@/firebase";
 const orderedSketches = db.collection("sketches").orderBy("created", "desc");
 
 export default {
-  name: "home",
+  name: "Home",
   components: {
     Sketch
   },

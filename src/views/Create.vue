@@ -99,6 +99,7 @@ export default {
       sketches
         .add({
           createdBy: userRef,
+          createdByUid: this.$globals.currentUser.uid,
           title: this.title,
           body: body,
           created: Firebase.firestore.FieldValue.serverTimestamp()

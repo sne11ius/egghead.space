@@ -5,8 +5,9 @@
     </v-card-title>
     <v-card-text v-html="body"></v-card-text>
     <v-card-actions>
+      by <router-link :to="authorLink">{{author}}</router-link>
       <v-spacer></v-spacer>
-      <v-btn v-if="sketch.createdBy && sketch.createdBy.uid && $globals.currentUser.uid == sketch.createdBy.uid" flat icon color="error" title="Delete this sketch" @click="deleteSketch(sketch)">
+      <v-btn v-if="$globals.isAuthenticated && $globals.currentUser.uid == sketch.createdByUid" flat icon color="error" title="Delete this sketch" @click="deleteSketch(sketch)">
         <v-icon>delete</v-icon>
       </v-btn>
     </v-card-actions>
@@ -56,7 +57,13 @@ export default {
       return this.sketch.title;
     },
     body() {
-      return this.marked(this.sketch.body || this.sketch.content || "");
+      return this.marked(this.sketch.body);
+    },
+    author() {
+      return this.sketch.createdBy.displayName;
+    },
+    authorLink() {
+      return `/user/${this.sketch.createdByUid}`;
     }
   },
   methods: {
