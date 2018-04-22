@@ -5,7 +5,7 @@
           <Sketch v-for="sketch of orderedSketches" :key="sketch.id" :sketch="sketch"></Sketch>
         </v-flex>
       </v-layout>
-      <v-btn id="create-sketch-button" v-if="$globals.isAuthenticated" to="/create" title="Create new sketch" color="primary" fab top right fixed>
+      <v-btn id="create-sketch-button" to="/create" title="Create new sketch" color="primary" fab top right fixed>
         <v-icon>add</v-icon>
       </v-btn>
     </v-container>

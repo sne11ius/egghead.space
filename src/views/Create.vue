@@ -1,23 +1,34 @@
 <template>
-  <v-container fluid fill-height>
-    <v-layout child-flex>
-      <v-card id="input-container" v-if="$globals.isAuthenticated">
-        <v-card-title>
-          <h3 class="headline mb-0">Create new sketch</h3>
-        </v-card-title>
-        <v-text-field v-model="title" required label="Add a good title"></v-text-field>
-        <div id="editor">
-          <textarea id="sketch-body" placeholder="Write something interesting"></textarea>
-        </div>
-        <v-card-actions>
-          <v-spacer></v-spacer>
-          <v-btn flat to="/">Cancel</v-btn>
-          <v-btn color="primary" flat @click.stop="createSketch">Let's do this</v-btn>
-        </v-card-actions>
-      </v-card>
-      <v-card>
-        Please <v-btn to="/login">login</v-btn> to create s sketch.
-      </v-card>
+  <v-container grid-list-md fluid fill-height>
+    <v-layout row wrap>
+      <v-flex id="input-container">
+        <v-card >
+          <v-card-title>
+            <h3 class="headline mb-0">Create new sketch</h3>
+          </v-card-title>
+          <v-card-text>
+            <v-text-field v-model="title" required label="Add a good title"></v-text-field>
+            <div id="editor">
+              <textarea id="sketch-body" placeholder="Write something interesting"></textarea>
+            </div>
+          </v-card-text>
+          <v-card-actions>
+            <v-spacer></v-spacer>
+            <v-btn flat to="/">Cancel</v-btn>
+            <v-btn color="primary" flat @click.stop="createSketch" :disabled="!$globals.isAuthenticated">Let's do this</v-btn>
+          </v-card-actions>
+        </v-card>
+      </v-flex>
+      <v-flex id="sign-in-warning" v-if="!$globals.isAuthenticated">
+        <v-card>
+          <v-card-title>
+            <h3 class="headline mb-0">You want to share an idea? Awesome!</h3>
+          </v-card-title>
+          <v-card-text>
+            &hellip; but please sign in first or you won't be able to save.
+          </v-card-text>
+        </v-card>
+      </v-flex>
     </v-layout>
   </v-container>
 </template>
@@ -102,9 +113,11 @@ export default {
 </script>
 
 <style lang="scss" scoped>
+#sign-in-warning {
+  flex: 40;
+}
 #input-container {
-  padding-left: 10px;
-  padding-right: 10px;
+  flex: 100;
 }
 .CodeMirror,
 .CodeMirror-scroll {
