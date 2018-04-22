@@ -82,7 +82,7 @@ export default {
   },
   methods: {
     createSketch() {
-      const body = (simpleMde && simpleMde.value()) || "";
+      const body = simpleMde.value();
       if (this.title.length === 0) {
         EventBus.error("Please add a title.");
         return;
@@ -105,6 +105,8 @@ export default {
         })
         .then(() => {
           EventBus.info(`Sketch '${this.title}' created.`);
+          this.title = "";
+          simpleMde.value("");
           this.$router.push("/");
         });
     }
