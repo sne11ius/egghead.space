@@ -14,9 +14,11 @@
 </template>
 
 <script>
+import Firebase from "firebase";
 import EventBus from "@/service/EventBus.js";
 import { db } from "@/firebase";
 const sketches = db.collection("sketches");
+const deletedSketches = db.collection("deletedSketches");
 
 export default {
   props: ["sketch"],
@@ -30,16 +32,19 @@ export default {
   },
   methods: {
     deleteSketch: sketch => {
-      sketches
-        .doc(sketch.id)
-        .delete()
+      sketch.deleted = Firebase.firestore.FieldValue.serverTimestamp();
+      deletedSketches
+        .add(sketch)
+        .then(() => {
+          sketches.doc(sketch.id).delete();
+        })
         .then(() => {
           EventBus.info(`Sketch '${sketch.title}' removed.`);
         })
         .catch(error => {
           // eslint-disable-next-line
-          console.error("Could not remove sketch '${this.title}':", error);
-          EventBus.info(`Could not remove sketch '${this.title}'.`);
+          console.error(`Could not remove sketch '${sketch.title}'.`, error);
+          EventBus.info(`Could not remove sketch '${sketch.title}'.`);
         });
     }
   }
