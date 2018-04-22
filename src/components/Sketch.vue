@@ -64,7 +64,7 @@ export default {
       const animal =
         animalNames[Math.floor(Math.random() * animalNames.length)];
       this.$confirm(
-        `Every time you delete a sketch a ${animal} dies <span style="white-space: nowrap">:(</span><br>Are you sure you want to do this?`,
+        `Every time you delete a sketch a ${animal} <span style="white-space: nowrap">dies :(</span><br>Are you sure you want to do this?`,
         {
           title: "Delete sketch?"
         }
