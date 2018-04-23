@@ -37,7 +37,7 @@ export default {
   components: {
     Sketch
   },
-  beforeMount: function() {
+  created: function() {
     this.$bind(
       "userSketches",
       sketches.where("createdByUid", "==", this.uid).orderBy("created", "desc")
