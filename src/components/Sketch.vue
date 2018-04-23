@@ -6,9 +6,15 @@
     <v-card-text v-html="body"></v-card-text>
     <v-card-actions>
       <v-spacer></v-spacer>
-      <v-btn v-if="sketch.createdBy && sketch.createdBy.uid && $globals.currentUser.uid == sketch.createdBy.uid" flat icon color="error" title="Delete this sketch" @click="deleteSketch(sketch)">
+      <v-btn v-if="showDetailsLink" :to="{name: 'sketch', params: {id: this.sketch.id, title: this.sketch.title.replace(/\s/g, '+')}}" flat icon title="Details">
+        <v-icon>more_horiz</v-icon>
+      </v-btn>
+      <v-btn v-if="$globals.isAuthenticated && $globals.currentUser.uid == sketch.createdByUid" flat icon color="error" title="Delete this sketch" @click="deleteSketch(sketch)">
         <v-icon>delete</v-icon>
       </v-btn>
+    </v-card-actions>
+    <v-card-actions>
+      by <router-link :to="{name: 'user', params: {uid: this.sketch.createdByUid}}">{{author}}</router-link>
     </v-card-actions>
   </v-card>
 </template>
@@ -50,13 +56,27 @@ const animalNames = [
 ];
 
 export default {
-  props: ["sketch"],
+  props: {
+    sketch: {
+      default: () => {
+        return {};
+      },
+      type: Object
+    },
+    showDetailsLink: {
+      default: true,
+      type: Boolean
+    }
+  },
   computed: {
     title() {
       return this.sketch.title;
     },
     body() {
-      return this.marked(this.sketch.body || this.sketch.content || "");
+      return this.marked(this.sketch.body);
+    },
+    author() {
+      return this.sketch.createdBy.displayName;
     }
   },
   methods: {
