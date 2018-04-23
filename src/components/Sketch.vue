@@ -6,7 +6,7 @@
     <v-card-text v-html="body"></v-card-text>
     <v-card-actions>
       <v-spacer></v-spacer>
-      <v-btn v-if="showDetailsLink" :to="{name: 'sketch', params: {id: this.sketch.id}}" flat icon title="Details">
+      <v-btn v-if="showDetailsLink" :to="{name: 'sketch', params: {id: this.sketch.id, title: this.sketch.title.replace(/\s/g, '+')}}" flat icon title="Details">
         <v-icon>more_horiz</v-icon>
       </v-btn>
       <v-btn v-if="$globals.isAuthenticated && $globals.currentUser.uid == sketch.createdByUid" flat icon color="error" title="Delete this sketch" @click="deleteSketch(sketch)">

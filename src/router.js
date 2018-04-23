@@ -27,7 +27,7 @@ export default new Router({
       props: true
     },
     {
-      path: "/sketch/:id",
+      path: "/sketch/:id/:title?",
       name: "sketch",
       component: SketchDetails,
       props: true
