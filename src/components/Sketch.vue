@@ -5,11 +5,16 @@
     </v-card-title>
     <v-card-text v-html="body"></v-card-text>
     <v-card-actions>
-      by <router-link :to="authorLink">{{author}}</router-link>
       <v-spacer></v-spacer>
+      <v-btn v-if="showDetailsLink" :to="{name: 'sketch', params: {id: this.sketch.id}}" flat icon title="Details">
+        <v-icon>more_horiz</v-icon>
+      </v-btn>
       <v-btn v-if="$globals.isAuthenticated && $globals.currentUser.uid == sketch.createdByUid" flat icon color="error" title="Delete this sketch" @click="deleteSketch(sketch)">
         <v-icon>delete</v-icon>
       </v-btn>
+    </v-card-actions>
+    <v-card-actions>
+      by <router-link :to="{name: 'user', params: {uid: this.sketch.createdByUid}}">{{author}}</router-link>
     </v-card-actions>
   </v-card>
 </template>
@@ -51,7 +56,18 @@ const animalNames = [
 ];
 
 export default {
-  props: ["sketch"],
+  props: {
+    sketch: {
+      default: () => {
+        return {};
+      },
+      type: Object
+    },
+    showDetailsLink: {
+      default: true,
+      type: Boolean
+    }
+  },
   computed: {
     title() {
       return this.sketch.title;
@@ -61,9 +77,6 @@ export default {
     },
     author() {
       return this.sketch.createdBy.displayName;
-    },
-    authorLink() {
-      return `/user/${this.sketch.createdByUid}`;
     }
   },
   methods: {
