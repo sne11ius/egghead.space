@@ -14,7 +14,7 @@
               <li>Include "preview image" in the alt text:.<br>
                 Example: <code>![Alt txt. Used for <u>preview image</u>](https://xmpl.url/image.jpeg "title txt")</code>
               </li>
-              <li>Include "preview image" int the title text:<br>
+              <li>Include "preview image" in the title text:<br>
                 Example: <code>![Alt txt](https://xmpl.url/image.jpeg "Title txt. Used for <u>preview image</u>"")</code>
               </li>
               <li>If you don't give us any hints, we will just use the first image and call it a day.
