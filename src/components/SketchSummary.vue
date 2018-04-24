@@ -7,7 +7,7 @@
     <v-card-actions>
       <span class="author-link">by <router-link :to="{name: 'user', params: {uid: this.sketch.createdByUid}}">{{author}}</router-link></span>
       <v-spacer></v-spacer>
-      <v-btn v-if="showDetailsLink" :to="{name: 'sketch', params: {id: this.sketch.id, title: this.sketch.title.replace(/\s/g, '+')}}" flat>
+      <v-btn v-if="showDetailsLink" :to="{name: 'sketch', params: {id: this.sketch.id, title: this.sketch.title.replace(/\s/g, '+')}}" flat small color="primary">
         Show more
       </v-btn>
     </v-card-actions>
@@ -82,8 +82,8 @@ export default {
   }
   .author-link {
     position: relative;
-    top: 15px;
-    left: -5px;
+    top: 12px;
+    left: -4px;
     a {
       text-decoration: none;
     }
