@@ -1,11 +1,49 @@
 <template>
   <v-container grid-list-md fluid fill-height>
+    <v-dialog v-model="showHelp" max-width="580px">
+      <v-card>
+        <v-card-title>
+          <h3 class="headline mb-0">Help</h3>
+        </v-card-title>
+        <v-card-text class="help">
+          <p>You can control which image we choose for your sketches preview:
+            <ol>
+              <li>Make the URL end with "preview_image":<br>
+                Example: <code>![Alt txt](https://xmpl.url/image.jpeg#<u>preview_image</u> "title txt")</code>
+              </li>
+              <li>Include "preview image" in the alt text:.<br>
+                Example: <code>![Alt txt. Used for <u>preview image</u>](https://xmpl.url/image.jpeg "title txt")</code>
+              </li>
+              <li>Include "preview image" int the title text:<br>
+                Example: <code>![Alt txt](https://xmpl.url/image.jpeg "Title txt. Used for <u>preview image</u>"")</code>
+              </li>
+              <li>If you don't give us any hints, we will just use the first image and call it a day.
+              </li>
+            </ol>
+          </p>
+        </v-card-text>
+        <v-card-actions>
+          <v-spacer></v-spacer>
+          <v-btn color="primary" flat @click.stop="showHelp=false">Got it</v-btn>
+        </v-card-actions>
+      </v-card>
+    </v-dialog>
     <v-layout row wrap>
       <v-flex id="input-container">
         <v-card >
           <v-card-title>
             <h3 class="headline mb-0">Create new sketch</h3>
+            <v-spacer></v-spacer>
+            <v-btn @click="showHelp = true" flat icon>
+              <v-icon>help_outline</v-icon>
+            </v-btn>
           </v-card-title>
+          <div id="protip">
+            Protip:
+            <p>If you include images in your sketch (which you totally should btw),
+            we will include one of them in your sketches preview. Click Help to see how.
+            </p>
+          </div>
           <v-card-text>
             <v-text-field v-model="title" required label="Add a good title"></v-text-field>
             <div id="editor">
@@ -51,7 +89,7 @@ export default {
       sketches: [],
       title: "",
       body: "",
-      dialog: false,
+      showHelp: false,
       next: null
     };
   },
@@ -124,6 +162,16 @@ export default {
 }
 .CodeMirror,
 .CodeMirror-scroll {
-  max-height: 500px;
+  max-height: 50px;
+}
+#protip {
+  margin-left: 50px;
+  margin-right: 30px;
+}
+.help ol {
+  margin: 10px 10px 15px 30px;
+  li + li {
+    margin-top: 7px;
+  }
 }
 </style>
