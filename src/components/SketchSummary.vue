@@ -3,7 +3,7 @@
     <v-card-title primary-title>
       <h3 class="headline text-title" v-html="title"></h3>
     </v-card-title>
-    <v-card-text v-html="truncatedBody" class="text-preview fade-out"></v-card-text>
+    <v-card-text v-text="strippedBody" class="text-preview fade-out"></v-card-text>
     <v-card-actions>
       <span class="author-link">by <router-link :to="{name: 'user', params: {uid: this.sketch.createdByUid}}">{{author}}</router-link></span>
       <v-spacer></v-spacer>
@@ -16,6 +16,7 @@
 
 <script>
 import striptags from "striptags";
+import shave from "shave";
 
 export default {
   props: {
@@ -30,23 +31,39 @@ export default {
       type: Boolean
     }
   },
+  mounted: function() {
+    this.$nextTick(function() {
+      window.addEventListener("resize", this.handleResize);
+    });
+  },
+  beforeDestroy: function() {
+    window.removeEventListener("resize", this.handleResize);
+  },
+  updated() {
+    this.$nextTick(() => {
+      this.handleResize();
+    });
+  },
   computed: {
     title() {
-      const maxLength = 28;
-      return this.sketch.title.length <= maxLength
-        ? this.sketch.title
-        : this.sketch.title.substr(0, maxLength) + "&hellip;";
+      const maxLength = 50;
+      return this.sketch.title.substr(0, maxLength);
     },
-    truncatedBody() {
-      const html = this.marked(this.sketch.body);
-      const truncatedBody = striptags(html, ["p"])
-        .replace(/<p>/g, "")
-        .replace(/<\/p>/g, "");
-      console.log(`truncated: ${truncatedBody}`);
-      return truncatedBody;
+    strippedBody() {
+      const headingsRegex = /(<h1>.*<\/h1>)|(<h2>.*<\/h2>)|(<h3>.*<\/h3>)|(<h4>.*<\/h4>)|(<h5>.*<\/h5>)|(<h6>.*<\/h6>)/g;
+      return striptags(
+        this.marked(this.sketch.body).replace(headingsRegex, "")
+      );
     },
     author() {
       return this.sketch.createdBy.displayName;
+    }
+  },
+  methods: {
+    handleResize() {
+      this.$nextTick(() => {
+        shave(".text-preview", 130);
+      });
     }
   }
 };
@@ -55,26 +72,13 @@ export default {
 <style lang="scss">
 .sketch {
   .text-title {
+    white-space: nowrap;
     overflow: hidden;
+    text-overflow: ellipsis;
   }
   .text-preview {
     height: 100px;
     overflow: hidden;
-  }
-  .fade-out {
-    position: relative;
-    max-height: 350px; // change the height
-  }
-  .fade-out:after {
-    /* prettier-ignore */
-    content: '';
-    position: absolute;
-    top: 0;
-    bottom: 0;
-    left: 0;
-    right: 0;
-    /* prettier-ignore */
-    background-image: linear-gradient( rgba(255, 255, 255, 0) 50%, rgba(255, 255, 255, 1) 100% );
   }
   .author-link {
     position: relative;
