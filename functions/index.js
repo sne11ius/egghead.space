@@ -6,11 +6,11 @@ const marked = require("marked");
 function findImages(markdown) {
   const renderer = new marked.Renderer();
   const images = [];
-  renderer.image = function(href, title, text) {
+  renderer.image = function(href, title, alt) {
     images.push({
-      href: href,
-      title: title,
-      text: text
+      href: href || "",
+      title: title || "",
+      alt: alt || ""
     });
     return marked.Renderer.prototype.image.apply(this, arguments);
   };
@@ -18,20 +18,50 @@ function findImages(markdown) {
   return images;
 }
 
+function findBy(
+  images,
+  attributeName,
+  search = "preview image",
+  mustEndWith = false
+) {
+  const img = images.find(img => {
+    const attributeValue = img[attributeName].toLowerCase();
+    if (mustEndWith) {
+      return attributeValue.endsWith(search.toLowerCase());
+    } else {
+      return attributeValue.includes(search.toLowerCase());
+    }
+  });
+  if (img) {
+    console.log(
+      `Found user marked image by ${attributeName}: ${JSON.stringify(img)}`
+    );
+  }
+  return img && img.href;
+}
+
 function selectImage(body) {
   const images = findImages(body);
-  const userMarkedImages = images.filter(image => {
-    return image.href.endsWith("preview_image");
-  });
-  if (userMarkedImages.length > 0) {
-    const userMarkedImage = userMarkedImages[0];
-    console.log(`Found user marked image: ${JSON.stringify(userMarkedImage)}`);
-    console.log("... and using this image for preview.");
-    return userMarkedImage.href;
+  const markedByUrlHref = findBy(images, "href", "preview_image", true);
+  if (markedByUrlHref) {
+    return markedByUrlHref;
   }
-  console.log("No user marked image. Selecting best image :D");
-  console.log("No yet...");
-  return null;
+  const markedByTextHref = findBy(images, "alt");
+  if (markedByTextHref) {
+    return markedByTextHref;
+  }
+  const markedByTitleHref = findBy(images, "title");
+  if (markedByTitleHref) {
+    return markedByTitleHref;
+  }
+  console.log(
+    "No user marked image. Selecting best image by advanced ImagaMagic magic :D"
+  );
+  const firstImage = images[0];
+  console.log(
+    `Just kidding, we use the first image: ${JSON.stringify(firstImage)}`
+  );
+  return firstImage;
 }
 
 exports.onSketchCreated = functions.firestore
