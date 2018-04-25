@@ -61,7 +61,7 @@ function selectImage(body) {
   console.log(
     `Just kidding, we use the first image: ${JSON.stringify(firstImage)}`
   );
-  return firstImage;
+  return firstImage.href;
 }
 
 exports.onSketchCreated = functions.firestore
