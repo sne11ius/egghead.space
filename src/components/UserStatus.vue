@@ -3,11 +3,11 @@
     <v-dialog v-model="showSignInDialog" transition="dialog-bottom-transition">
       <div id="firebaseui-auth-container"></div>
     </v-dialog>
-    <v-btn v-if="$globals.currentUser == null" @click="openLoginDialog" color="primary">
+    <v-btn v-if="$globals.currentUser == null" @click="openLoginDialog">
       <span>Sign in</span>
       <v-icon>fa fa-sign-in-alt</v-icon>
     </v-btn>
-    <v-btn v-else @click="logoutClicked" color="primary">
+    <v-btn v-else @click="logoutClicked">
       <span>Sign out</span>
       <v-icon>fa fa-sign-out-alt</v-icon>
     </v-btn>
@@ -70,6 +70,11 @@ export default {
 </script>
 
 <style lang="scss" scoped>
+.user-status {
+  position: relative;
+  top: 23px;
+  right: 10px;
+}
 .user-status i {
   margin-left: 17px;
 }

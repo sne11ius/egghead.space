@@ -6,33 +6,15 @@
     </div>
     <div id="app" v-else>
       <GlobalSnackbar></GlobalSnackbar>
-      <v-navigation-drawer
-        fixed
-        v-model="drawer"
-        app
-      >
-        <v-list dense>
-        <v-list-tile to="/">
-          <v-list-tile-action>
-            <v-icon>home</v-icon>
-          </v-list-tile-action>
-          <v-list-tile-content>
-            <v-list-tile-title>Home</v-list-tile-title>
-          </v-list-tile-content>
-        </v-list-tile>
-        <v-list-tile @click="contactClicked">
-          <v-list-tile-action>
-            <v-icon>contact_mail</v-icon>
-          </v-list-tile-action>
-          <v-list-tile-content>
-            <v-list-tile-title>Contact</v-list-tile-title>
-          </v-list-tile-content>
-        </v-list-tile>
-      </v-list>
-      </v-navigation-drawer>
-      <v-toolbar color="indigo" dark fixed app>
-        <v-toolbar-side-icon @click.stop="drawer = !drawer"></v-toolbar-side-icon>
-        <v-toolbar-title>egghead.space</v-toolbar-title>
+      <v-toolbar color="indigo" app class="main-toolbar">
+        <v-toolbar-title class="title">
+          <h1>
+            <router-link to="/" class="home-link">
+              egghead.space
+            </router-link>
+            <img src="logo_200.png">
+          </h1>
+        </v-toolbar-title>
         <v-spacer></v-spacer>
         <UserStatus/>
       </v-toolbar>
@@ -70,7 +52,6 @@ export default {
   },
   data() {
     return {
-      drawer: null,
       unknownUserState: true
     };
   },
@@ -146,5 +127,27 @@ export default {
 .component-fade-enter,
 .component-fade-leave-to {
   opacity: 0;
+}
+.main-toolbar {
+  height: 110px;
+  .title {
+    position: absolute;
+    left: 37%;
+    overflow: visible;
+  }
+  h1 {
+    font-size: 45px;
+    position: relative;
+    top: -5px;
+  }
+  img {
+    height: 80px;
+    position: relative;
+    top: 26px;
+  }
+  .home-link {
+    text-decoration: none;
+    color: white;
+  }
 }
 </style>
