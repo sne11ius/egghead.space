@@ -10,4 +10,6 @@
 
 http://www.timqian.com/star-history/#facebook/react&angular/angular&vuejs/vue
 
+http://www.npmtrends.com/angular-vs-react-vs-vue-vs-@angular/core
+
 ## Licenses
