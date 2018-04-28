@@ -19,3 +19,6 @@ firebase-debug.log
 *.ntvs*
 *.njsproj
 *.sln
+
+#yarn 
+yarn.lock
