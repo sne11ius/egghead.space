@@ -6,14 +6,14 @@
     </div>
     <div id="app" v-else>
       <GlobalSnackbar></GlobalSnackbar>
-      <v-toolbar color="indigo" app class="main-toolbar">
+      <v-toolbar app class="main-toolbar" color="primary">
         <v-toolbar-title class="title">
           <h1>
             <router-link to="/" class="home-link">
               egghead.space
             </router-link>
-            <img src="logo_200.png">
           </h1>
+          <img src="logo_200.png">
         </v-toolbar-title>
         <v-spacer></v-spacer>
         <UserStatus/>
@@ -126,22 +126,26 @@ export default {
 .component-fade-leave-to {
   opacity: 0;
 }
+main.content {
+  padding-top: 90px !important;
+}
 .main-toolbar {
-  height: 110px;
+  height: 90px;
   .title {
-    position: absolute;
-    left: 37%;
     overflow: visible;
+    position: absolute;
+    left: 50%;
+    transform: translate(-50%, 0%);
   }
   h1 {
-    font-size: 45px;
-    position: relative;
-    top: -5px;
+    font-size: 38px;
+    display: inline-block;
   }
   img {
-    height: 80px;
+    height: 60px;
     position: relative;
-    top: 26px;
+    top: 17px;
+    margin-left: 20px;
   }
   .home-link {
     text-decoration: none;

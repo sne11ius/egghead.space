@@ -5,10 +5,18 @@ import router from "./router";
 import VueFire from "vuefire";
 import "vuetify/dist/vuetify.min.css";
 import VuetifyConfirm from "vuetify-confirm";
+// import colors from "vuetify/es5/util/colors";
 
 import "@/assets/main.scss";
 
-Vue.use(Vuetify);
+Vue.use(Vuetify, {
+  theme: {
+    primary: "#0a6aa6",
+    secondary: "#023859",
+    accent: "#70a649"
+  }
+});
+
 Vue.use(VueFire);
 Vue.use(VuetifyConfirm, {
   buttonTrueText: "Yes",
