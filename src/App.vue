@@ -7,7 +7,7 @@
     <div id="app" v-else>
       <GlobalSnackbar></GlobalSnackbar>
       <AppHeader></AppHeader>
-      <v-content>
+      <v-content v-bind:class="{ isHome: isHomeView }">
         <transition name="component-fade" mode="out-in">
           <router-view/>
         </transition>
@@ -89,6 +89,11 @@ export default {
       // eslint-disable-next-line
       console.log("contact clicked");
     }
+  },
+  computed: {
+    isHomeView: function() {
+      return this.$route.path === "/";
+    }
   }
 };
 </script>
@@ -117,5 +122,8 @@ export default {
 }
 main.content {
   padding-top: 90px !important;
+}
+main.content.isHome {
+  padding-top: 0px !important;
 }
 </style>

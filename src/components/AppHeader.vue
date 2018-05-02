@@ -1,16 +1,21 @@
 <template>
-  <v-toolbar app class="main-toolbar" color="primary">
-    <v-toolbar-title class="title">
-      <h1>
-        <router-link to="/" class="home-link">
-          egghead.space
-        </router-link>
-      </h1>
-      <img src="logo_200.png">
-    </v-toolbar-title>
-    <v-spacer></v-spacer>
-    <UserStatus/>
-  </v-toolbar>
+  <div id="app-header">
+    <v-toolbar app class="main-toolbar" color="primary">
+      <v-toolbar-title class="title">
+        <h1>
+          <router-link to="/" class="home-link">
+            egghead.space
+          </router-link>
+        </h1>
+        <img src="logo_200.png">
+      </v-toolbar-title>
+      <v-spacer></v-spacer>
+      <UserStatus/>
+    </v-toolbar>
+    <div v-if="isHomeView" id="parallax">
+      <v-parallax src="header_image.jpeg" height="450"></v-parallax>
+    </div>
+  </div>
 </template>
 
 <script>
@@ -20,6 +25,11 @@ export default {
   name: "AppHeader",
   components: {
     UserStatus
+  },
+  computed: {
+    isHomeView: function() {
+      return this.$route.path === "/";
+    }
   }
 };
 </script>
@@ -47,5 +57,8 @@ export default {
     text-decoration: none;
     color: white;
   }
+}
+#parallax {
+  margin-top: 90px;
 }
 </style>
