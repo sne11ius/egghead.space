@@ -6,18 +6,7 @@
     </div>
     <div id="app" v-else>
       <GlobalSnackbar></GlobalSnackbar>
-      <v-toolbar app class="main-toolbar" color="primary">
-        <v-toolbar-title class="title">
-          <h1>
-            <router-link to="/" class="home-link">
-              egghead.space
-            </router-link>
-          </h1>
-          <img src="logo_200.png">
-        </v-toolbar-title>
-        <v-spacer></v-spacer>
-        <UserStatus/>
-      </v-toolbar>
+      <AppHeader></AppHeader>
       <v-content>
         <transition name="component-fade" mode="out-in">
           <router-view/>
@@ -31,7 +20,7 @@
 import firebase from "firebase";
 
 import GlobalSnackbar from "@/components/GlobalSnackbar.vue";
-import UserStatus from "@/components/UserStatus.vue";
+import AppHeader from "@/components/AppHeader.vue";
 import FirebaseUtil from "@/service/FirebaseUtil.js";
 
 import { db } from "@/firebase";
@@ -46,7 +35,7 @@ const stripSensitiveData = user => {
 export default {
   name: "App",
   components: {
-    UserStatus,
+    AppHeader,
     GlobalSnackbar
   },
   data() {
@@ -128,28 +117,5 @@ export default {
 }
 main.content {
   padding-top: 90px !important;
-}
-.main-toolbar {
-  height: 90px;
-  .title {
-    overflow: visible;
-    position: absolute;
-    left: 50%;
-    transform: translate(-50%, 0%);
-  }
-  h1 {
-    font-size: 38px;
-    display: inline-block;
-  }
-  img {
-    height: 60px;
-    position: relative;
-    top: 17px;
-    margin-left: 20px;
-  }
-  .home-link {
-    text-decoration: none;
-    color: white;
-  }
 }
 </style>
