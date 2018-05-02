@@ -13,18 +13,47 @@
       <UserStatus/>
     </v-toolbar>
     <div v-if="isHomeView" id="parallax">
-      <v-parallax src="header_image.jpeg" height="450"></v-parallax>
+      <v-parallax src="header_image.jpeg" height="450">
+        <v-container fluid>
+          <v-layout row>
+            <v-spacer></v-spacer>
+            <v-flex xs12>
+              <v-text-field
+                id="search"
+                v-model="searchText"
+                label="Search a sketch"
+                color="primary"
+                solo
+                append-icon="search"
+                :append-icon-cb="search"
+              ></v-text-field>
+            </v-flex>
+            <v-spacer></v-spacer>
+          </v-layout>
+        </v-container>
+      </v-parallax>
     </div>
   </div>
 </template>
 
 <script>
 import UserStatus from "@/components/UserStatus.vue";
+import EventBus from "@/service/EventBus.js";
 
 export default {
   name: "AppHeader",
   components: {
     UserStatus
+  },
+  data() {
+    return {
+      searchText: ""
+    };
+  },
+  methods: {
+    search: function() {
+      EventBus.info(`Searching for '${this.searchText}'`);
+    }
   },
   computed: {
     isHomeView: function() {
@@ -60,5 +89,12 @@ export default {
 }
 #parallax {
   margin-top: 90px;
+  .row {
+    transform: translate(0%, 50%);
+    height: 80%;
+    .xs12 {
+      max-width: 500px;
+    }
+  }
 }
 </style>
