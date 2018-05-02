@@ -31,7 +31,6 @@
 import firebase from "firebase";
 
 import GlobalSnackbar from "@/components/GlobalSnackbar.vue";
-import EventBus from "@/service/EventBus.js";
 import UserStatus from "@/components/UserStatus.vue";
 import FirebaseUtil from "@/service/FirebaseUtil.js";
 
@@ -75,7 +74,6 @@ export default {
           })
           .then(() => {
             this.$globals.currentUser = user;
-            EventBus.info(`Successfully logged in as ${user.displayName}`);
           })
           .catch(error => {
             // eslint-disable-next-line

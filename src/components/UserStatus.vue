@@ -35,7 +35,6 @@ export default {
         .signOut()
         .then(() => {
           this.$globals.currentUser = null;
-          EventBus.info("Successfully logged out");
         })
         .catch(error => {
           // eslint-disable-next-line
