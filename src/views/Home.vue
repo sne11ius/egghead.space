@@ -29,7 +29,6 @@
 <script>
 import TopSketches from "@/components/TopSketches.vue";
 import SketchSummary from "@/components/SketchSummary.vue";
-import "simplemde/dist/simplemde.min.css";
 import { db } from "@/firebase";
 
 const orderedSketches = db.collection("sketches").orderBy("created", "desc");

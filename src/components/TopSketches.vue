@@ -6,9 +6,10 @@
         <v-tab ripple>Rating</v-tab>
         <v-tab ripple>Comments</v-tab>
         <v-tab-item>
-          <v-card>
-            Newes Sketches here
-          </v-card>
+          <sketch-tiny v-for="sketch in newestSketches" :sketch="sketch" :key="sketch.id"></sketch-tiny>
+          <v-btn flat small color="primary">
+            Show all
+          </v-btn>
         </v-tab-item>
         <v-tab-item>
           <v-card>
@@ -36,17 +37,38 @@
 </template>
 
 <script>
+import SketchTiny from "@/components/SketchTiny.vue";
+import { db } from "@/firebase";
+
+const newestSketches = db
+  .collection("sketches")
+  .orderBy("created", "desc")
+  .limit(10);
+
 export default {
   name: "TopSketches",
+  components: {
+    SketchTiny
+  },
   data() {
     return {
       timePeriod: "This week",
       active: "",
-      items: ["This week", "This month", "All time"]
+      items: ["This week", "This month", "All time"],
+      newestSketches: []
     };
+  },
+  firestore: {
+    newestSketches: newestSketches
   }
 };
 </script>
+
+<style>
+#top-sketches .toolbar__content {
+  height: auto !important;
+}
+</style>
 
 <style lang="scss" scoped>
 #time-period {
