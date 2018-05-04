@@ -13,7 +13,10 @@
         </v-tab-item>
         <v-tab-item>
           <v-card>
-            Best rated Sketches here
+            <sketch-tiny v-for="sketch in bestRatedSketches" :sketch="sketch" :key="sketch.id"></sketch-tiny>
+            <v-btn flat small color="primary">
+              Show all
+            </v-btn>
           </v-card>
         </v-tab-item>
         <v-tab-item>
@@ -45,6 +48,11 @@ const newestSketches = db
   .orderBy("created", "desc")
   .limit(10);
 
+const bestRatedSketches = db
+  .collection("sketches")
+  .orderBy("totalLikes", "desc")
+  .limit(10);
+
 export default {
   name: "TopSketches",
   components: {
@@ -55,11 +63,13 @@ export default {
       timePeriod: "This week",
       active: "",
       items: ["This week", "This month", "All time"],
-      newestSketches: []
+      newestSketches: [],
+      bestRatedSketches: []
     };
   },
   firestore: {
-    newestSketches: newestSketches
+    newestSketches: newestSketches,
+    bestRatedSketches: bestRatedSketches
   }
 };
 </script>
