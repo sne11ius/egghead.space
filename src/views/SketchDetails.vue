@@ -6,14 +6,14 @@
       </v-flex>
       <v-flex xs6 class="details">
         <div class="likes">
-          <v-icon v-if="didLike" large color="pink">favorite</v-icon>
+          <v-icon v-if="didLike" large color="pink" :title="didLikeTitle">favorite</v-icon>
           <v-icon v-else large color="grey">favorite</v-icon>
-          <v-progress-circular v-if="isLoading" indeterminate color="primary"></v-progress-circular>
+          <v-progress-circular v-if="isLoading" class="wait-icon" indeterminate color="primary"></v-progress-circular>
           <div v-else class="like-interaction">
-            <v-btn v-if="didLike" icon @click="invertLike">
+            <v-btn v-if="didLike" icon @click="invertLike" title="I want my egg back!">
               <v-icon>remove</v-icon>
             </v-btn>
-            <v-btn v-else icon @click="invertLike">
+            <v-btn v-else icon @click="invertLike" title="Add an egg to the basket">
               <v-icon>add</v-icon>
             </v-btn>
           </div>
@@ -22,7 +22,7 @@
               no
             </span>
             <span v-else>
-              {{totalLikes}}&ensp;
+              {{totalLikes}}&nbsp;
             </span>egg<span v-if="1 < totalLikes">s</span> in the basket
             <span v-if="0 === totalLikes">
               yet
@@ -41,6 +41,7 @@
 import Firebase from "firebase";
 import EventBus from "@/service/EventBus.js";
 import Sketch from "@/components/Sketch.vue";
+import { distanceInWordsToNow } from "date-fns/";
 import { db } from "@/firebase";
 
 const sketches = db.collection("sketches");
@@ -80,8 +81,18 @@ export default {
         );
       }
     },
+    didLikeTitle: function() {
+      return `You added your egg ${distanceInWordsToNow(
+        this.sketch.likes[[this.$globals.currentUser.uid]].lastChanged.toDate()
+      )} ago`;
+    },
     totalLikes: function() {
       return this.sketch.totalLikes || 0;
+    }
+  },
+  watch: {
+    didLike: function() {
+      this.isLoading = false;
     }
   },
   methods: {
@@ -121,9 +132,6 @@ export default {
               likes: likes
             });
           })
-          .then(() => {
-            _this.isLoading = false;
-          })
           .catch(function(error) {
             console.log("Transaction failed: ", error);
             _this.isLoading = false;
@@ -140,6 +148,16 @@ export default {
   .likes {
     button {
       margin-left: 0px;
+    }
+    .wait-icon {
+      height: 28px !important;
+      width: 28px !important;
+      position: relative;
+      top: 10px;
+      left: 4px;
+      margin-top: 0;
+      margin-left: 0;
+      margin-right: 16px;
     }
     .like-interaction {
       display: inline-block;
