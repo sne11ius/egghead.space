@@ -1,4 +1,6 @@
 const functions = require("firebase-functions");
+const admin = require("firebase-admin");
+admin.initializeApp();
 
 const marked = require("marked");
 
@@ -109,3 +111,64 @@ exports.onSketchModified = functions.firestore
     }
     return null;
   });
+
+const subWeeks = require("date-fns/sub_weeks");
+const subMonths = require("date-fns/sub_months");
+const isWithinRange = require("date-fns/is_within_range");
+
+exports.updatePeriodicLikes = functions.https.onRequest((req, res) => {
+  console.log("Updating weekly and monthly likes...");
+  const firestore = admin.firestore();
+  const now = new Date();
+  const oneWeekAgo = subWeeks(now, 1);
+  const oneMonthAgo = subMonths(now, 1);
+  firestore
+    .collection("sketches")
+    .get()
+    .then(querySnapshot => {
+      let updateData = [];
+      querySnapshot.forEach(docSnapshot => {
+        const data = docSnapshot.data();
+        let likesLastWeek = 0;
+        let likesLastMonth = 0;
+        if (data.likes) {
+          for (var i in data.likes) {
+            const like = data.likes[i];
+            if (like && like.didLike) {
+              const lastChanged = new Date(like.lastChanged);
+              if (isWithinRange(lastChanged, oneWeekAgo, now)) {
+                likesLastWeek++;
+              }
+              if (isWithinRange(lastChanged, oneMonthAgo, now)) {
+                likesLastMonth++;
+              }
+            }
+          }
+        }
+        updateData.push({
+          docRef: docSnapshot.ref,
+          likesLastWeek: likesLastWeek,
+          likesLastMonth: likesLastMonth
+        });
+      });
+      return updateData;
+    })
+    .then(updateData => {
+      const promises = updateData.map(data => {
+        return data.docRef.update({
+          likesLastWeek: data.likesLastWeek,
+          likesLastMonth: data.likesLastMonth
+        });
+      });
+      return Promise.all(promises);
+    })
+    .then(() => {
+      console.log("finished");
+      res.send("ok");
+      return true;
+    })
+    .catch(error => {
+      console.log("Error: " + JSON.stringify(error));
+      res.status(500).send("Error: " + JSON.stringify(error));
+    });
+});
