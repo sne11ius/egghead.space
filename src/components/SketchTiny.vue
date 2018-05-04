@@ -3,7 +3,7 @@
     <div class="image">
       <img v-if="this.sketch.previewImage" :src="this.sketch.previewImage">
       <div v-else class="preview-placeholder"></div>
-    <v-icon>fas fa-heart</v-icon> 500
+    <v-icon>fas fa-heart</v-icon> {{sketch.totalLikes || 0 }}
     </div>
     <h3 class="text-title" v-html="title"></h3>
     <v-btn class="details-link" :to="{name: 'sketch', params: {id: this.sketch.id, title: this.sketch.title.replace(/\s/g, '+')}}" flat small color="primary">
