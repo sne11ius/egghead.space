@@ -100,7 +100,7 @@ exports.onSketchModified = functions.firestore
       console.log("Image has changed. Setting new property");
       return change.after.ref.set(
         {
-          previewImage: userMarkedImage.href
+          previewImage: imageLink
         },
         {
           merge: true
