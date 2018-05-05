@@ -1,10 +1,10 @@
 <template>
   <v-container>
     <v-layout row wrap>
-      <v-flex xs6>
-        <Sketch :sketch="sketch" :showDetailsLink=false></Sketch>
+      <v-flex xs12 md6>
+        <Sketch :sketch="sketch" :showDetailsLink=false :showAuthor=false></Sketch>
       </v-flex>
-      <v-flex xs6 class="details">
+      <v-flex xs12 md6 class="details">
         <div class="likes">
           <v-icon v-if="didLike" large color="pink" :title="didLikeTitle">favorite</v-icon>
           <v-icon v-else large color="grey">favorite</v-icon>
@@ -29,8 +29,24 @@
             </span>
           </h5>
         </div>
-        <div>
-          Meta data here...
+        <div class="author-link">
+          <router-link :to="{name: 'user', params: {uid: this.sketch.createdByUid, username: this.sketch.createdBy.displayName.replace(/\s/g, '+')}}">{{this.sketch.createdBy.displayName}}</router-link>
+        </div>
+        <div class="created">{{creationDate}}</div>
+        <div class="comments">
+          <h2>{{comments.length}} Comments</h2>
+          <div v-for="comment in comments" :key="comment.id">
+            {{comment.body}}
+          </div>
+          <v-text-field
+            v-model="newCommentBody"
+            name="input-7-1"
+            label="Add a comment"
+            hint="Please be polite ;)"
+            multi-line
+          ></v-text-field>
+          <v-spacer></v-spacer>
+          <v-btn :disabled="this.newCommentBody.length === 0" flat small color="primary" @click="submitComment">Submit comment</v-btn>
         </div>
       </v-flex>
     </v-layout>
@@ -41,7 +57,7 @@
 import Firebase from "firebase";
 import EventBus from "@/service/EventBus.js";
 import Sketch from "@/components/Sketch.vue";
-import { distanceInWordsToNow } from "date-fns/";
+import { distanceInWordsToNow, format } from "date-fns/";
 import { db } from "@/firebase";
 
 const sketches = db.collection("sketches");
@@ -54,19 +70,30 @@ export default {
   },
   created: function() {
     this.$bind("sketch", sketches.doc(this.id));
+    this.$bind(
+      "comments",
+      sketches
+        .doc(this.id)
+        .collection("comments")
+        .orderBy("created", "asc")
+    );
   },
   data() {
     return {
+      // Weird route/component-binding stuff forces us to add details...
       sketch: {
         id: "",
         body: "",
+        created: "0",
         createdBy: {
-          displayName: ""
+          displayName: "Loading..."
         },
         createdByUid: "lazy"
       },
+      comments: [],
       show: true,
-      isLoading: false
+      isLoading: false,
+      newCommentBody: ""
     };
   },
   computed: {
@@ -88,6 +115,12 @@ export default {
     },
     totalLikes: function() {
       return this.sketch.totalLikes || 0;
+    },
+    creationDate: function() {
+      if (!(this.sketch.created && this.sketch.created.toDate)) {
+        return "Created a long time ago";
+      }
+      return format(this.sketch.created.toDate(), "YYYY-MM-DD HH:mm");
     }
   },
   watch: {
@@ -96,6 +129,30 @@ export default {
     }
   },
   methods: {
+    submitComment: function() {
+      console.log("Comment text: " + this.newCommentBody);
+      const userRef = db
+        .collection("users")
+        .doc(this.$globals.currentUser.uid)
+        .collection("public")
+        .doc("userInfo");
+      sketches
+        .doc(this.id)
+        .collection("comments")
+        .add({
+          createdBy: userRef,
+          createdByUid: this.$globals.currentUser.uid,
+          body: this.newCommentBody,
+          created: Firebase.firestore.FieldValue.serverTimestamp()
+        })
+        .then(() => {
+          this.newCommentBody = "";
+        })
+        .catch(error => {
+          console.log("Could not comment: " + error);
+          EventBus.error("Comment creation failed.");
+        });
+    },
     invertLike: function() {
       if (!this.$globals.isAuthenticated) {
         EventBus.info("You must be logged in to share the love.");
@@ -146,6 +203,7 @@ export default {
 .details {
   padding: 7px;
   .likes {
+    min-height: 60px;
     button {
       margin-left: 0px;
     }
@@ -169,6 +227,10 @@ export default {
       position: relative;
       top: 2px;
     }
+  }
+  .created,
+  .comments {
+    margin-top: 10px;
   }
 }
 </style>
