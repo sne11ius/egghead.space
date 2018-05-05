@@ -6,14 +6,14 @@
         <v-tab ripple>Rating</v-tab>
         <v-tab ripple>Comments</v-tab>
         <v-tab-item>
-          <sketch-tiny v-for="sketch in newestSketches" :sketch="sketch" :key="sketch.id"></sketch-tiny>
+          <sketch-tiny v-for="sketch in newest" :sketch="sketch" :key="sketch.id"></sketch-tiny>
           <v-btn flat small color="primary">
             Show all
           </v-btn>
         </v-tab-item>
         <v-tab-item>
           <v-card>
-            <sketch-tiny v-for="sketch in bestRatedSketches" :sketch="sketch" :key="sketch.id"></sketch-tiny>
+            <sketch-tiny v-for="sketch in sketchesByRating" :sketch="sketch" :key="sketch.id"></sketch-tiny>
             <v-btn flat small color="primary">
               Show all
             </v-btn>
@@ -28,6 +28,8 @@
         <v-select
             id="time-period"
             :items="items"
+            item-text="label"
+            item-value="value"
             v-model="timePeriod"
             label="From..."
             single-line
@@ -43,12 +45,22 @@
 import SketchTiny from "@/components/SketchTiny.vue";
 import { db } from "@/firebase";
 
-const newestSketches = db
+const newest = db
   .collection("sketches")
   .orderBy("created", "desc")
   .limit(10);
 
-const bestRatedSketches = db
+const bestRatedLastWeek = db
+  .collection("sketches")
+  .orderBy("likesLastWeek", "desc")
+  .limit(10);
+
+const bestRatedLastMonth = db
+  .collection("sketches")
+  .orderBy("likesLastMonth", "desc")
+  .limit(10);
+
+const bestRatedAllTime = db
   .collection("sketches")
   .orderBy("totalLikes", "desc")
   .limit(10);
@@ -60,16 +72,45 @@ export default {
   },
   data() {
     return {
-      timePeriod: "This week",
+      timePeriod: "week",
       active: "",
-      items: ["This week", "This month", "All time"],
-      newestSketches: [],
-      bestRatedSketches: []
+      items: [
+        {
+          label: "This week",
+          value: "week"
+        },
+        {
+          label: "This month",
+          value: "month"
+        },
+        {
+          label: "All time",
+          value: "allTime"
+        }
+      ],
+      newest: [],
+      bestRatedAllTime: [],
+      bestRatedLastWeek: [],
+      bestRatedLastMonth: []
     };
   },
+  computed: {
+    sketchesByRating: function() {
+      switch (this.timePeriod) {
+        case "week":
+          return this.bestRatedLastWeek;
+        case "month":
+          return this.bestRatedLastMonth;
+        case "allTime":
+          return this.bestRatedAllTime;
+      }
+    }
+  },
   firestore: {
-    newestSketches: newestSketches,
-    bestRatedSketches: bestRatedSketches
+    newest: newest,
+    bestRatedLastWeek: bestRatedLastWeek,
+    bestRatedLastMonth: bestRatedLastMonth,
+    bestRatedAllTime: bestRatedAllTime
   }
 };
 </script>
