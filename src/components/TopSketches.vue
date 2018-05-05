@@ -1,7 +1,7 @@
 <template>
   <div id="top-sketches">
     <v-toolbar tabs>
-      <v-tabs v-model="active">
+      <v-tabs v-model="activeTab">
         <v-tab ripple>Newest</v-tab>
         <v-tab ripple>Rating</v-tab>
         <v-tab ripple>Comments</v-tab>
@@ -26,6 +26,7 @@
         </v-tab-item>
         <v-spacer></v-spacer>
         <v-select
+            v-if="activeTab !== '0'"
             id="time-period"
             :items="items"
             item-text="label"
@@ -73,7 +74,7 @@ export default {
   data() {
     return {
       timePeriod: "week",
-      active: "",
+      activeTab: "0",
       items: [
         {
           label: "This week",
