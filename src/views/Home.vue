@@ -1,22 +1,17 @@
 <template>
   <v-container fluid grid-list-lg>
     <v-layout row wrap>
-      <!--v-flex xs12 md6 lg4 v-for="sketch of orderedSketches" :key="sketch.id">
-        <v-card flat tile>
-          <SketchSummary :sketch="sketch"></SketchSummary>
-        </v-card>
-      </v-flex-->
-      <v-flex xs4>
+      <v-flex d-flex xs12 sm6 md4>
         <v-card>
           Featured
         </v-card>
       </v-flex>
-      <v-flex xs4>
+      <v-flex d-flex xs12 sm6 md4>
         <v-card>
           Teaser Text
         </v-card>
       </v-flex>
-      <v-flex xs4>
+      <v-flex d-flex xs12 sm12 md4>
         <TopSketches></TopSketches>
       </v-flex>
     </v-layout>
