@@ -44,6 +44,9 @@ function findBy(
 
 function selectImage(body) {
   const images = findImages(body);
+  if (images.length === 0) {
+    return null;
+  }
   const markedByUrlHref = findBy(images, "href", "preview_image", true);
   if (markedByUrlHref) {
     return markedByUrlHref;
@@ -96,6 +99,7 @@ exports.onSketchModified = functions.firestore
     const previousData = change.before.data();
     if (body === previousData.body) {
       console.log("Body didn't change, nothing to do.");
+      return null;
     }
     const imageLink = selectImage(body);
     if (imageLink !== null && imageLink !== data.previewImage) {
@@ -112,12 +116,40 @@ exports.onSketchModified = functions.firestore
     return null;
   });
 
+exports.onCommentCreated = functions.firestore
+  .document("sketches/{sketchId}/comments/{commentId}")
+  .onCreate((snap, context) => {
+    const sketchId = context.params.sketchId;
+    const firestore = admin.firestore();
+    const sketchRef = firestore.collection("sketches").doc(sketchId);
+    return sketchRef.get().then(sketch => {
+      const commentCount = (sketch.commentCount || 0) + 1;
+      return sketchRef.update({
+        commentCount: commentCount
+      });
+    });
+  });
+
+exports.onCommentDeleted = functions.firestore
+  .document("sketches/{sketchId}/comments/{commentId}")
+  .onDelete((snap, context) => {
+    const sketchId = context.params.sketchId;
+    const firestore = admin.firestore();
+    const sketchRef = firestore.collection("sketches").doc(sketchId);
+    return sketchRef.get().then(sketch => {
+      const commentCount = sketch.commentCount - 1;
+      return sketchRef.update({
+        commentCount: commentCount
+      });
+    });
+  });
+
 const subWeeks = require("date-fns/sub_weeks");
 const subMonths = require("date-fns/sub_months");
 const isWithinRange = require("date-fns/is_within_range");
 
 exports.updatePeriodicLikes = functions.https.onRequest((req, res) => {
-  console.log("Updating weekly and monthly likes...");
+  console.log("Updating weekly and monthly likes and comments...");
   const firestore = admin.firestore();
   const now = new Date();
   const oneWeekAgo = subWeeks(now, 1);
@@ -125,14 +157,14 @@ exports.updatePeriodicLikes = functions.https.onRequest((req, res) => {
   firestore
     .collection("sketches")
     .get()
-    .then(querySnapshot => {
+    .then(sketchesQuerySnapshot => {
       let updateData = [];
-      querySnapshot.forEach(docSnapshot => {
+      sketchesQuerySnapshot.forEach(docSnapshot => {
         const data = docSnapshot.data();
         let likesLastWeek = 0;
         let likesLastMonth = 0;
         if (data.likes) {
-          for (var i in data.likes) {
+          for (let i in data.likes) {
             const like = data.likes[i];
             if (like && like.didLike) {
               const lastChanged = new Date(like.lastChanged);
@@ -145,11 +177,42 @@ exports.updatePeriodicLikes = functions.https.onRequest((req, res) => {
             }
           }
         }
-        updateData.push({
-          docRef: docSnapshot.ref,
-          likesLastWeek: likesLastWeek,
-          likesLastMonth: likesLastMonth
-        });
+        // Promises are hard
+        /*
+        let commentsLastWeek = 0;
+        let commentsLastMonth = 0;
+        firestore
+          .collection("sketches")
+          .doc(docSnapshot.id)
+          .collection("comments")
+          .get()
+          .then(commentsQuerySnapshot => {
+            commentsQuerySnapshot.forEach(commentSnapshot => {
+              const comment = commentSnapshot.data();
+              const lastChanged = new Date(comment.created);
+              if (isWithinRange(lastChanged, oneWeekAgo, now)) {
+                commentsLastWeek++;
+              }
+              if (isWithinRange(lastChanged, oneMonthAgo, now)) {
+                commentsLastMonth++;
+              }
+            });
+            return true;
+          })
+          .catch(error => {
+            console.log("Uuupsi");
+            throw error;
+          });
+          */
+      });
+      updateData.push({
+        docRef: docSnapshot.ref,
+        likesLastWeek: likesLastWeek,
+        likesLastMonth: likesLastMonth
+        /*,
+        commentsLastWeek: commentsLastWeek,
+        commentsLastMonth: commentsLastMonth
+        */
       });
       return updateData;
     })
@@ -158,6 +221,10 @@ exports.updatePeriodicLikes = functions.https.onRequest((req, res) => {
         return data.docRef.update({
           likesLastWeek: data.likesLastWeek,
           likesLastMonth: data.likesLastMonth
+          /*,
+          commentsLastWeek: data.commentsLastWeek,
+          commentsLastMonth: data.commentsLastMonth
+          */
         });
       });
       return Promise.all(promises);
