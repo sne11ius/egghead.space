@@ -50,7 +50,7 @@ export default {
     }
     .details-link {
       position: absolute;
-      top: 74%;
+      top: 71%;
       right: 0px;
     }
   }
