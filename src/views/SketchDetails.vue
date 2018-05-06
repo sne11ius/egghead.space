@@ -130,7 +130,6 @@ export default {
   },
   methods: {
     submitComment: function() {
-      console.log("Comment text: " + this.newCommentBody);
       const userRef = db
         .collection("users")
         .doc(this.$globals.currentUser.uid)
