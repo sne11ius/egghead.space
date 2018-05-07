@@ -21,7 +21,10 @@
         </v-tab-item>
         <v-tab-item>
           <v-card>
-            Most commented Sketches here
+            <sketch-tiny v-for="sketch in sketchesByComments" :sketch="sketch" :key="sketch.id"></sketch-tiny>
+            <v-btn flat small color="primary">
+              Show all
+            </v-btn>
           </v-card>
         </v-tab-item>
         <v-spacer></v-spacer>
@@ -66,6 +69,21 @@ const bestRatedAllTime = db
   .orderBy("totalLikes", "desc")
   .limit(10);
 
+const mostCommentedLastWeek = db
+  .collection("sketches")
+  .orderBy("commentsLastWeek", "desc")
+  .limit(10);
+
+const mostCommentedLastMonth = db
+  .collection("sketches")
+  .orderBy("commentsLastMonth", "desc")
+  .limit(10);
+
+const mostCommentedAllTime = db
+  .collection("sketches")
+  .orderBy("commentCount", "desc")
+  .limit(10);
+
 export default {
   name: "TopSketches",
   components: {
@@ -92,7 +110,10 @@ export default {
       newest: [],
       bestRatedAllTime: [],
       bestRatedLastWeek: [],
-      bestRatedLastMonth: []
+      bestRatedLastMonth: [],
+      mostCommentedLastWeek: [],
+      mostCommentedLastMonth: [],
+      mostCommentedAllTime: []
     };
   },
   computed: {
@@ -105,13 +126,26 @@ export default {
         case "allTime":
           return this.bestRatedAllTime;
       }
+    },
+    sketchesByComments: function() {
+      switch (this.timePeriod) {
+        case "week":
+          return this.mostCommentedLastWeek;
+        case "month":
+          return this.mostCommentedLastMonth;
+        case "allTime":
+          return this.mostCommentedAllTime;
+      }
     }
   },
   firestore: {
-    newest: newest,
-    bestRatedLastWeek: bestRatedLastWeek,
-    bestRatedLastMonth: bestRatedLastMonth,
-    bestRatedAllTime: bestRatedAllTime
+    newest,
+    bestRatedLastWeek,
+    bestRatedLastMonth,
+    bestRatedAllTime,
+    mostCommentedLastWeek,
+    mostCommentedLastMonth,
+    mostCommentedAllTime
   }
 };
 </script>
