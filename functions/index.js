@@ -125,7 +125,7 @@ exports.onCommentCreated = functions.firestore
     return sketchRef.get().then(sketch => {
       const commentCount = (sketch.commentCount || 0) + 1;
       return sketchRef.update({
-        commentCount: commentCount
+        commentCount
       });
     });
   });
@@ -139,7 +139,7 @@ exports.onCommentDeleted = functions.firestore
     return sketchRef.get().then(sketch => {
       const commentCount = sketch.commentCount - 1;
       return sketchRef.update({
-        commentCount: commentCount
+        commentCount
       });
     });
   });
@@ -149,7 +149,7 @@ const subMonths = require("date-fns/sub_months");
 const isWithinRange = require("date-fns/is_within_range");
 
 exports.updatePeriodicLikes = functions.https.onRequest((req, res) => {
-  console.log("Updating weekly and monthly likes and comments...");
+  console.log("Updating weekly and monthly likes...");
   const firestore = admin.firestore();
   const now = new Date();
   const oneWeekAgo = subWeeks(now, 1);
@@ -157,14 +157,14 @@ exports.updatePeriodicLikes = functions.https.onRequest((req, res) => {
   firestore
     .collection("sketches")
     .get()
-    .then(sketchesQuerySnapshot => {
+    .then(querySnapshot => {
       let updateData = [];
-      sketchesQuerySnapshot.forEach(docSnapshot => {
+      querySnapshot.forEach(docSnapshot => {
         const data = docSnapshot.data();
         let likesLastWeek = 0;
         let likesLastMonth = 0;
         if (data.likes) {
-          for (let i in data.likes) {
+          for (var i in data.likes) {
             const like = data.likes[i];
             if (like && like.didLike) {
               const lastChanged = new Date(like.lastChanged);
@@ -177,42 +177,11 @@ exports.updatePeriodicLikes = functions.https.onRequest((req, res) => {
             }
           }
         }
-        // Promises are hard
-        /*
-        let commentsLastWeek = 0;
-        let commentsLastMonth = 0;
-        firestore
-          .collection("sketches")
-          .doc(docSnapshot.id)
-          .collection("comments")
-          .get()
-          .then(commentsQuerySnapshot => {
-            commentsQuerySnapshot.forEach(commentSnapshot => {
-              const comment = commentSnapshot.data();
-              const lastChanged = new Date(comment.created);
-              if (isWithinRange(lastChanged, oneWeekAgo, now)) {
-                commentsLastWeek++;
-              }
-              if (isWithinRange(lastChanged, oneMonthAgo, now)) {
-                commentsLastMonth++;
-              }
-            });
-            return true;
-          })
-          .catch(error => {
-            console.log("Uuupsi");
-            throw error;
-          });
-          */
-      });
-      updateData.push({
-        docRef: docSnapshot.ref,
-        likesLastWeek: likesLastWeek,
-        likesLastMonth: likesLastMonth
-        /*,
-        commentsLastWeek: commentsLastWeek,
-        commentsLastMonth: commentsLastMonth
-        */
+        updateData.push({
+          docRef: docSnapshot.ref,
+          likesLastWeek,
+          likesLastMonth
+        });
       });
       return updateData;
     })
@@ -221,10 +190,6 @@ exports.updatePeriodicLikes = functions.https.onRequest((req, res) => {
         return data.docRef.update({
           likesLastWeek: data.likesLastWeek,
           likesLastMonth: data.likesLastMonth
-          /*,
-          commentsLastWeek: data.commentsLastWeek,
-          commentsLastMonth: data.commentsLastMonth
-          */
         });
       });
       return Promise.all(promises);
@@ -235,7 +200,78 @@ exports.updatePeriodicLikes = functions.https.onRequest((req, res) => {
       return true;
     })
     .catch(error => {
-      console.log("Error: " + JSON.stringify(error));
+      console.error(error);
+      res.status(500).send("Error: " + JSON.stringify(error));
+    });
+});
+
+exports.updatePeriodicComments = functions.https.onRequest((req, res) => {
+  console.log("Updating weekly and monthly comments...");
+  const firestore = admin.firestore();
+  const now = new Date();
+  const oneWeekAgo = subWeeks(now, 1);
+  const oneMonthAgo = subMonths(now, 1);
+  let sketchDocSnapshots = [];
+  firestore
+    .collection("sketches")
+    .get()
+    .then(sketchesQuerySnapshot => {
+      let promises = [];
+      sketchesQuerySnapshot.forEach(sketchDocSnapshot => {
+        sketchDocSnapshots.push(sketchDocSnapshot);
+        promises.push(
+          firestore
+            .collection("sketches")
+            .doc(sketchDocSnapshot.id)
+            .collection("comments")
+            .get()
+        );
+      });
+      return Promise.all(promises);
+    })
+    .then(commentsLists => {
+      const updateData = [];
+      for (let i = 0; i < sketchDocSnapshots.length; i++) {
+        const docRef = sketchDocSnapshots[i].ref;
+        const commentsRef = commentsLists[i];
+        let commentsLastWeek = 0;
+        let commentsLastMonth = 0;
+        if (!commentsRef.empty) {
+          commentsRef.forEach(commentSnapshot => {
+            const comment = commentSnapshot.data();
+            const lastChanged = new Date(comment.created);
+            if (isWithinRange(lastChanged, oneWeekAgo, now)) {
+              commentsLastWeek++;
+            }
+            if (isWithinRange(lastChanged, oneMonthAgo, now)) {
+              commentsLastMonth++;
+            }
+          });
+          updateData.push({
+            docRef: docRef,
+            commentsLastWeek,
+            commentsLastMonth
+          });
+        }
+      }
+      return updateData;
+    })
+    .then(updateData => {
+      const promises = updateData.map(data => {
+        return data.docRef.update({
+          commentsLastWeek: data.commentsLastWeek,
+          commentsLastMonth: data.commentsLastMonth
+        });
+      });
+      return Promise.all(promises);
+    })
+    .then(() => {
+      console.log("finished");
+      res.send("ok");
+      return true;
+    })
+    .catch(error => {
+      console.error(error);
       res.status(500).send("Error: " + JSON.stringify(error));
     });
 });
