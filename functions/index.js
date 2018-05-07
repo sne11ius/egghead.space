@@ -247,12 +247,12 @@ exports.updatePeriodicComments = functions.https.onRequest((req, res) => {
               commentsLastMonth++;
             }
           });
-          updateData.push({
-            docRef: docRef,
-            commentsLastWeek,
-            commentsLastMonth
-          });
         }
+        updateData.push({
+          docRef: docRef,
+          commentsLastWeek,
+          commentsLastMonth
+        });
       }
       return updateData;
     })
