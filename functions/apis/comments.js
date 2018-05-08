@@ -1,5 +1,5 @@
 const functions = require("firebase-functions");
-const admin = require("../admin.js");
+const firestore = require("../firestore.js");
 
 const subWeeks = require("date-fns/sub_weeks");
 const subMonths = require("date-fns/sub_months");
@@ -9,7 +9,6 @@ exports.onCommentCreated = functions.firestore
   .document("sketches/{sketchId}/comments/{commentId}")
   .onCreate((snap, context) => {
     const sketchId = context.params.sketchId;
-    const firestore = admin.firestore();
     const sketchRef = firestore.collection("sketches").doc(sketchId);
     return sketchRef.get().then(sketch => {
       const commentCount = (sketch.commentCount || 0) + 1;
@@ -23,7 +22,6 @@ exports.onCommentDeleted = functions.firestore
   .document("sketches/{sketchId}/comments/{commentId}")
   .onDelete((snap, context) => {
     const sketchId = context.params.sketchId;
-    const firestore = admin.firestore();
     const sketchRef = firestore.collection("sketches").doc(sketchId);
     return sketchRef.get().then(sketch => {
       const commentCount = sketch.commentCount - 1;
@@ -35,7 +33,6 @@ exports.onCommentDeleted = functions.firestore
 
 exports.updatePeriodicComments = functions.https.onRequest((req, res) => {
   console.log("Updating weekly and monthly comments...");
-  const firestore = admin.firestore();
   const now = new Date();
   const oneWeekAgo = subWeeks(now, 1);
   const oneMonthAgo = subMonths(now, 1);

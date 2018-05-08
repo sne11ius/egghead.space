@@ -1,7 +1,6 @@
 const functions = require("firebase-functions");
+const firestore = require("../firestore.js");
 const marked = require("marked");
-
-const admin = require("../admin.js");
 
 const subWeeks = require("date-fns/sub_weeks");
 const subMonths = require("date-fns/sub_months");
@@ -121,7 +120,6 @@ exports.onSketchModified = functions.firestore
 
 exports.updatePeriodicLikes = functions.https.onRequest((req, res) => {
   console.log("Updating weekly and monthly likes...");
-  const firestore = admin.firestore();
   const now = new Date();
   const oneWeekAgo = subWeeks(now, 1);
   const oneMonthAgo = subMonths(now, 1);
