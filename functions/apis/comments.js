@@ -1,5 +1,5 @@
 const functions = require("firebase-functions");
-const admin = require("admin.js");
+const admin = require("../admin.js");
 
 const subWeeks = require("date-fns/sub_weeks");
 const subMonths = require("date-fns/sub_months");
