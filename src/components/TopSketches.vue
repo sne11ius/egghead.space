@@ -35,10 +35,8 @@
             item-text="label"
             item-value="value"
             v-model="timePeriod"
-            label="From..."
-            single-line
             class="tabs__item"
-            solo
+            append-icon=""
           ></v-select>
       </v-tabs>
     </v-toolbar>
@@ -95,15 +93,15 @@ export default {
       activeTab: "0",
       items: [
         {
-          label: "This week",
+          label: "7 days",
           value: "week"
         },
         {
-          label: "This month",
+          label: "30 days",
           value: "month"
         },
         {
-          label: "All time",
+          label: "Ever",
           value: "allTime"
         }
       ],
@@ -151,6 +149,10 @@ export default {
 </script>
 
 <style>
+#top-sketches {
+  max-width: 100%;
+}
+
 #top-sketches .toolbar__content {
   height: auto !important;
 }
