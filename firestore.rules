@@ -5,8 +5,7 @@ service cloud.firestore {
     }
 
     function isModerator() {
-      let modEntry = get(/databases/moderators/$(request.auth))
-      return isSignedIn() && modEntry && modEntry.isModerator
+      return isSignedIn() && get(/databases/moderators/$(request.auth)) && get(/databases/moderators/$(request.auth)).isModerator
     }
 
     match /{document=**} {
