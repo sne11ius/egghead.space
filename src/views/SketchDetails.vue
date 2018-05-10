@@ -48,19 +48,22 @@
         </div>
         <div class="created">{{creationDate}}</div>
         <div class="comments">
-          <h2>{{comments.length}} Comments</h2>
-          <div v-for="comment in comments" :key="comment.id">
-            {{comment.body}}
+          <div class="create-comment">
+            <v-btn icon color="primary" title="Write comment" v-scroll-to="'#comment-textfield'" @click="focusCommentTextfield">
+              <v-icon>add</v-icon>
+            </v-btn>
           </div>
+          <h2>{{comments.length}} Comments</h2>
+          <Comment v-for="comment in comments" :comment="comment" :key="comment.id"></Comment>
           <v-text-field
+            id="comment-textfield"
             v-model="newCommentBody"
-            name="input-7-1"
             label="Add a comment"
             hint="Please be polite ;)"
+            ref="commentTextfield"
             multi-line
           ></v-text-field>
-          <v-spacer></v-spacer>
-          <v-btn :disabled="this.newCommentBody.length === 0" flat small color="primary" @click="submitComment">Submit comment</v-btn>
+          <v-btn class="submitComment" :disabled="this.newCommentBody.length === 0" small color="primary" @click="submitComment">Submit comment</v-btn>
         </div>
       </v-flex>
     </v-layout>
@@ -71,6 +74,7 @@
 import Firebase from "firebase";
 import EventBus from "@/service/EventBus.js";
 import Sketch from "@/components/Sketch.vue";
+import Comment from "@/components/Comment.vue";
 import { distanceInWordsToNow, format } from "date-fns/";
 import { db } from "@/firebase";
 
@@ -80,7 +84,8 @@ export default {
   name: "SketchDetails",
   props: ["id"],
   components: {
-    Sketch
+    Sketch,
+    Comment
   },
   created: function() {
     this.$bind("sketch", sketches.doc(this.id));
@@ -136,7 +141,7 @@ export default {
       if (!(this.sketch.created && this.sketch.created.toDate)) {
         return "Created a long time ago";
       }
-      return format(this.sketch.created.toDate(), "YYYY-MM-DD HH:mm");
+      return format(this.sketch.created.toDate(), "MMMM D. YYYY HH:mm");
     },
     isModerator: function() {
       /* eslint-disable vue/no-async-in-computed-properties */
@@ -240,6 +245,9 @@ export default {
         .catch(error => {
           console.log(error);
         });
+    },
+    focusCommentTextfield: function() {
+      this.$refs.commentTextfield.focus();
     }
   }
 };
@@ -274,9 +282,39 @@ export default {
       top: 2px;
     }
   }
+  .created {
+    border-bottom: 1px solid #0a6aa6;
+  }
   .created,
   .comments {
     margin-top: 10px;
   }
+  .comments {
+    padding-top: 30px;
+    .create-comment {
+      float: right;
+      position: relative;
+      top: -5px;
+      button {
+        margin-right: 0;
+      }
+    }
+    & h2 {
+      margin-bottom: 10px;
+    }
+    .submitButton {
+      float: right;
+      margin-right: 0;
+      margin-top: 0;
+    }
+  }
+}
+</style>
+
+<style lang="scss">
+.comments button {
+  float: right;
+  margin-right: 0;
+  margin-top: 0;
 }
 </style>

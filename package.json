@@ -19,6 +19,7 @@
     "striptags": "^3.1.1",
     "vue": "^2.5.13",
     "vue-router": "^3.0.1",
+    "vue-scrollto": "^2.11.0",
     "vuefire": "^2.0.0-alpha.10",
     "vuetify": "^1.0.17",
     "vuetify-confirm": "0.0.4"
