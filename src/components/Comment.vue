@@ -29,6 +29,9 @@ export default {
       );
     },
     creationDate() {
+      if (!(this.comment && this.comment.created)) {
+        return "";
+      }
       return format(this.comment.created.toDate(), "MMMM D. YYYY HH:mm");
     }
   }
