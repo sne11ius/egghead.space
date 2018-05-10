@@ -4,7 +4,7 @@
       <v-flex d-flex xs12 md6 lg4>
         <v-container fluid grid-list-lg id="featured-container">
           <v-layout row wrap>
-            <v-flex d-flex>
+            <v-flex>
               <v-card>
                 <v-card-title>
                   <h3 class="headline">Featured sketch</h3>
@@ -125,6 +125,7 @@ export default {
   padding: 0;
   .flex {
     padding-bottom: 0;
+    width: 100%;
     & + .flex {
       padding-top: 0;
     }
