@@ -1,10 +1,24 @@
 <template>
   <v-container>
+    <v-dialog v-model="showFeatureThisDialog">
+      <v-card>
+        <v-card-title class="headline">Please enter a little teaser text</v-card-title>
+        <v-card-text>
+          <v-text-field multi-line v-model="featureThisText"></v-text-field>
+        </v-card-text>
+        <v-card-actions>
+          <v-spacer></v-spacer>
+          <v-btn flat="flat" @click.native="showFeatureThisDialog = false">Cancel</v-btn>
+          <v-btn color="primary" flat="flat" @click.native="submitFeatureThis">Feature this!</v-btn>
+        </v-card-actions>
+      </v-card>
+    </v-dialog>
     <v-layout row wrap>
       <v-flex xs12 md6>
         <Sketch :sketch="sketch" :showDetailsLink=false :showAuthor=false></Sketch>
       </v-flex>
       <v-flex xs12 md6 class="details">
+        <v-btn v-if="isModerator" @click="showFeatureThisDialog = true">Feature this</v-btn>
         <div class="likes">
           <v-icon v-if="didLike" large color="pink" :title="didLikeTitle">favorite</v-icon>
           <v-icon v-else large color="grey">favorite</v-icon>
@@ -93,7 +107,9 @@ export default {
       comments: [],
       show: true,
       isLoading: false,
-      newCommentBody: ""
+      newCommentBody: "",
+      showFeatureThisDialog: false,
+      featureThisText: ""
     };
   },
   computed: {
@@ -121,6 +137,21 @@ export default {
         return "Created a long time ago";
       }
       return format(this.sketch.created.toDate(), "YYYY-MM-DD HH:mm");
+    },
+    isModerator: function() {
+      /* eslint-disable vue/no-async-in-computed-properties */
+      return (
+        this.$globals.currentUser &&
+        db
+          .collection("moderators")
+          .doc(this.$globals.currentUser.uid)
+          .get()
+          .then(
+            moderatorInfo =>
+              moderatorInfo.exist && moderatorInfo.data().isModerator
+          )
+      );
+      /* eslint-enable vue/no-async-in-computed-properties */
     }
   },
   watch: {
@@ -193,6 +224,22 @@ export default {
             _this.isLoading = false;
           });
       });
+    },
+    submitFeatureThis: function() {
+      db
+        .collection("featuredSketches")
+        .add({
+          sketch: db.collection("sketches").doc(this.sketch.id),
+          featureText: this.featureThisText,
+          featuredSince: Firebase.firestore.FieldValue.serverTimestamp()
+        })
+        .then(() => {
+          this.showFeatureThisDialog = false;
+          this.featureThisText = "";
+        })
+        .catch(error => {
+          console.log(error);
+        });
     }
   }
 };
