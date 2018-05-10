@@ -9,6 +9,7 @@
     "lint": "vue-cli-service lint"
   },
   "dependencies": {
+    "date-fns": "^1.29.0",
     "firebase": "^4.13.1",
     "firebaseui": "^2.7.0",
     "markdown-it": "^8.4.1",

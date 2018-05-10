@@ -20,8 +20,8 @@
     ],
     "rewrites": [
       {
-        "source": "/helloEgghead",
-        "function": "helloEgghead"
+        "source": "/updatePeriodicLikes",
+        "function": "updatePeriodicLikes"
       }
     ]
   },

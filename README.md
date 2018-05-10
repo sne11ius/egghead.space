@@ -12,4 +12,8 @@ http://www.timqian.com/star-history/#facebook/react&angular/angular&vuejs/vue
 
 http://www.npmtrends.com/angular-vs-react-vs-vue-vs-@angular/core
 
+## Cron jobs
+
+Cron jobs for firebase functions run @ [cron-job.org](https://cron-job.org)
+
 ## Licenses

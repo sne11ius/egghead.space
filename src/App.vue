@@ -6,37 +6,8 @@
     </div>
     <div id="app" v-else>
       <GlobalSnackbar></GlobalSnackbar>
-      <v-navigation-drawer
-        fixed
-        v-model="drawer"
-        app
-      >
-        <v-list dense>
-        <v-list-tile to="/">
-          <v-list-tile-action>
-            <v-icon>home</v-icon>
-          </v-list-tile-action>
-          <v-list-tile-content>
-            <v-list-tile-title>Home</v-list-tile-title>
-          </v-list-tile-content>
-        </v-list-tile>
-        <v-list-tile @click="contactClicked">
-          <v-list-tile-action>
-            <v-icon>contact_mail</v-icon>
-          </v-list-tile-action>
-          <v-list-tile-content>
-            <v-list-tile-title>Contact</v-list-tile-title>
-          </v-list-tile-content>
-        </v-list-tile>
-      </v-list>
-      </v-navigation-drawer>
-      <v-toolbar color="indigo" dark fixed app>
-        <v-toolbar-side-icon @click.stop="drawer = !drawer"></v-toolbar-side-icon>
-        <v-toolbar-title>egghead.space</v-toolbar-title>
-        <v-spacer></v-spacer>
-        <UserStatus/>
-      </v-toolbar>
-      <v-content>
+      <AppHeader></AppHeader>
+      <v-content v-bind:class="{ isHome: isHomeView }">
         <transition name="component-fade" mode="out-in">
           <router-view/>
         </transition>
@@ -49,8 +20,7 @@
 import firebase from "firebase";
 
 import GlobalSnackbar from "@/components/GlobalSnackbar.vue";
-import EventBus from "@/service/EventBus.js";
-import UserStatus from "@/components/UserStatus.vue";
+import AppHeader from "@/components/AppHeader.vue";
 import FirebaseUtil from "@/service/FirebaseUtil.js";
 
 import { db } from "@/firebase";
@@ -65,12 +35,11 @@ const stripSensitiveData = user => {
 export default {
   name: "App",
   components: {
-    UserStatus,
+    AppHeader,
     GlobalSnackbar
   },
   data() {
     return {
-      drawer: null,
       unknownUserState: true
     };
   },
@@ -94,7 +63,6 @@ export default {
           })
           .then(() => {
             this.$globals.currentUser = user;
-            EventBus.info(`Successfully logged in as ${user.displayName}`);
           })
           .catch(error => {
             // eslint-disable-next-line
@@ -121,6 +89,11 @@ export default {
       // eslint-disable-next-line
       console.log("contact clicked");
     }
+  },
+  computed: {
+    isHomeView: function() {
+      return this.$route.path === "/";
+    }
   }
 };
 </script>
@@ -146,5 +119,11 @@ export default {
 .component-fade-enter,
 .component-fade-leave-to {
   opacity: 0;
+}
+main.content {
+  padding-top: 90px !important;
+}
+main.content.isHome {
+  padding-top: 0px !important;
 }
 </style>

@@ -21,7 +21,7 @@ export default new Router({
       component: Create
     },
     {
-      path: "/user/:uid",
+      path: "/user/:uid/:username?",
       name: "user",
       component: User,
       props: true
