@@ -11,7 +11,7 @@ exports.onCommentCreated = functions.firestore
     const sketchId = context.params.sketchId;
     const sketchRef = firestore.collection("sketches").doc(sketchId);
     return sketchRef.get().then(sketch => {
-      const commentCount = (sketch.commentCount || 0) + 1;
+      const commentCount = (sketch.data().commentCount || 0) + 1;
       return sketchRef.update({
         commentCount
       });
@@ -24,7 +24,7 @@ exports.onCommentDeleted = functions.firestore
     const sketchId = context.params.sketchId;
     const sketchRef = firestore.collection("sketches").doc(sketchId);
     return sketchRef.get().then(sketch => {
-      const commentCount = sketch.commentCount - 1;
+      const commentCount = sketch.data().commentCount - 1;
       return sketchRef.update({
         commentCount
       });
