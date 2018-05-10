@@ -3,8 +3,8 @@
     <div class="image">
       <img v-if="this.sketch.previewImage" :src="this.sketch.previewImage">
       <div v-else class="preview-placeholder"></div>
-      <v-icon>fas fa-heart</v-icon> {{sketch.totalLikes || 0 }}<br>
-      <v-icon>fas fa-comment</v-icon> {{sketch.commentCount || 0}}
+      <v-icon :title="likesTitle">fas fa-heart</v-icon> {{sketch.totalLikes || 0 }}<br>
+      <v-icon :title="commentsTitle">fas fa-comment</v-icon> {{sketch.commentCount || 0}}
     </div>
     <h3 class="text-title" v-html="title"></h3>
     <v-btn class="details-link" :to="{name: 'sketch', params: {id: this.sketch.id, title: this.sketch.title.replace(/\s/g, '+')}}" flat small color="primary">
@@ -28,6 +28,14 @@ export default {
     title() {
       const maxLength = 50;
       return this.sketch.title.substr(0, maxLength);
+    },
+    likesTitle() {
+      return (this.sketch.totalLikes || 0) + " people like this sketch";
+    },
+    commentsTitle() {
+      return (
+        (this.sketch.commentCount || 0) + " people commented on this sketch"
+      );
     }
   }
 };
