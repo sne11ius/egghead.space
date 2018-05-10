@@ -5,7 +5,7 @@ import router from "./router";
 import VueFire from "vuefire";
 import "vuetify/dist/vuetify.min.css";
 import VuetifyConfirm from "vuetify-confirm";
-// import colors from "vuetify/es5/util/colors";
+import VueScrollTo from "vue-scrollto";
 
 import "@/assets/main.scss";
 
@@ -25,6 +25,7 @@ Vue.use(VuetifyConfirm, {
   icon: "warning",
   title: "Warning"
 });
+Vue.use(VueScrollTo);
 
 const globals = new Vue({
   data: {
