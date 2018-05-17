@@ -1,31 +1,8 @@
 service cloud.firestore {
   match /databases/{database}/documents {
-    function isSignedIn() {
-      return request.auth != null;
-    }
-
-    function isModerator() {
-      return isSignedIn() && get(/databases/moderators/$(request.auth)) && get(/databases/moderators/$(request.auth)).isModerator
-    }
-
     match /{document=**} {
       allow read: if true;
-      allow write: if request.auth != null;
-    }
-    // https://stackoverflow.com/a/46590877/649835
-    match /users/{userId} {
-      match /private/{anything=**} {
-        // Only the user can read documents in their private collection
-        allow read, write: if request.auth.uid == userId;
-      }
-    }
-    match /moderators/{anything=**} {
-      allow read: if true;
-      allow write: if isModerator()
-    }
-    match /featuredSketches/{anything=**} {
-      allow read: if true;
-      allow write: if isModerator()
+      allow write: if request.auth.uid != null;
     }
   }
 }
