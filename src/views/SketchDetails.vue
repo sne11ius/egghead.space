@@ -97,6 +97,19 @@ export default {
         .orderBy("created", "asc")
     );
   },
+  mounted: function() {
+    if (!this.$globals.isAuthenticated) {
+      return;
+    }
+    db
+      .collection("moderators")
+      .doc(this.$globals.currentUser.uid)
+      .get()
+      .then(moderatorInfo => {
+        this.isModerator =
+          moderatorInfo.exists && moderatorInfo.data().isModerator;
+      });
+  },
   data() {
     return {
       // Weird route/component-binding stuff forces us to add details...
@@ -114,7 +127,8 @@ export default {
       isLoading: false,
       newCommentBody: "",
       showFeatureThisDialog: false,
-      featureThisText: ""
+      featureThisText: "",
+      isModerator: false
     };
   },
   computed: {
@@ -142,21 +156,6 @@ export default {
         return "Created a long time ago";
       }
       return format(this.sketch.created.toDate(), "MMMM D. YYYY HH:mm");
-    },
-    isModerator: function() {
-      /* eslint-disable vue/no-async-in-computed-properties */
-      return (
-        this.$globals.currentUser &&
-        db
-          .collection("moderators")
-          .doc(this.$globals.currentUser.uid)
-          .get()
-          .then(
-            moderatorInfo =>
-              moderatorInfo.exist && moderatorInfo.data().isModerator
-          )
-      );
-      /* eslint-enable vue/no-async-in-computed-properties */
     }
   },
   watch: {
@@ -236,7 +235,8 @@ export default {
         .add({
           sketch: db.collection("sketches").doc(this.sketch.id),
           featureText: this.featureThisText,
-          featuredSince: Firebase.firestore.FieldValue.serverTimestamp()
+          featuredSince: Firebase.firestore.FieldValue.serverTimestamp(),
+          featuredBy: this.$globals.currentUser.uid
         })
         .then(() => {
           this.showFeatureThisDialog = false;
