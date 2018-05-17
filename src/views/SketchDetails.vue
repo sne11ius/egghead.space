@@ -1,5 +1,5 @@
 <template>
-  <v-container>
+  <v-container grid-list-lg>
     <v-dialog v-model="showFeatureThisDialog">
       <v-card>
         <v-card-title class="headline">Please enter a little teaser text</v-card-title>
@@ -18,53 +18,57 @@
         <Sketch :sketch="sketch" :showDetailsLink=false :showAuthor=false></Sketch>
       </v-flex>
       <v-flex xs12 md6 class="details">
-        <v-btn v-if="isModerator" @click="showFeatureThisDialog = true">Feature this</v-btn>
-        <div class="likes">
-          <v-icon v-if="didLike" large color="pink" :title="didLikeTitle">favorite</v-icon>
-          <v-icon v-else large color="grey">favorite</v-icon>
-          <v-progress-circular v-if="isLoading" class="wait-icon" indeterminate color="primary"></v-progress-circular>
-          <div v-else class="like-interaction">
-            <v-btn v-if="didLike" icon @click="invertLike" title="I want my egg back!">
-              <v-icon>remove</v-icon>
-            </v-btn>
-            <v-btn v-else icon @click="invertLike" title="Add an egg to the basket">
-              <v-icon>add</v-icon>
-            </v-btn>
-          </div>
-          <h5>
-            <span v-if="0 === totalLikes">
-              no
-            </span>
-            <span v-else>
-              {{totalLikes}}&nbsp;
-            </span>egg<span v-if="1 < totalLikes">s</span> in the basket
-            <span v-if="0 === totalLikes">
-              yet
-            </span>
-          </h5>
-        </div>
-        <div class="author-link">
-          <router-link :to="{name: 'user', params: {uid: this.sketch.createdByUid, username: this.sketch.createdBy.displayName.replace(/\s/g, '+')}}">{{this.sketch.createdBy.displayName}}</router-link>
-        </div>
-        <div class="created">{{creationDate}}</div>
-        <div class="comments">
-          <div class="create-comment">
-            <v-btn icon color="primary" title="Write comment" v-scroll-to="'#comment-textfield'" @click="focusCommentTextfield">
-              <v-icon>add</v-icon>
-            </v-btn>
-          </div>
-          <h2>{{comments.length}} Comments</h2>
-          <Comment v-for="comment in comments" :comment="comment" :key="comment.id"></Comment>
-          <v-text-field
-            id="comment-textfield"
-            v-model="newCommentBody"
-            label="Add a comment"
-            hint="Please be polite ;)"
-            ref="commentTextfield"
-            multi-line
-          ></v-text-field>
-          <v-btn class="submitComment" :disabled="this.newCommentBody.length === 0" small color="primary" @click="submitComment">Submit comment</v-btn>
-        </div>
+        <v-card>
+          <v-card-text>
+            <v-btn v-if="isModerator" @click="showFeatureThisDialog = true">Feature this</v-btn>
+            <div class="likes">
+              <v-icon v-if="didLike" large color="pink" :title="didLikeTitle">favorite</v-icon>
+              <v-icon v-else large color="grey">favorite</v-icon>
+              <v-progress-circular v-if="isLoading" class="wait-icon" indeterminate color="primary"></v-progress-circular>
+              <div v-else class="like-interaction">
+                <v-btn v-if="didLike" icon @click="invertLike" title="I want my egg back!">
+                  <v-icon>remove</v-icon>
+                </v-btn>
+                <v-btn v-else icon @click="invertLike" title="Add an egg to the basket">
+                  <v-icon>add</v-icon>
+                </v-btn>
+              </div>
+              <h5>
+                <span v-if="0 === totalLikes">
+                  no
+                </span>
+                <span v-else>
+                  {{totalLikes}}&nbsp;
+                </span>egg<span v-if="1 < totalLikes">s</span> in the basket
+                <span v-if="0 === totalLikes">
+                  yet
+                </span>
+              </h5>
+            </div>
+            <div class="author-link">
+              Author: <router-link :to="{name: 'user', params: {uid: this.sketch.createdByUid, username: this.sketch.createdBy.displayName.replace(/\s/g, '+')}}">{{this.sketch.createdBy.displayName}}</router-link>
+            </div>
+            <div class="created">Date: {{creationDate}}</div>
+            <div class="comments">
+              <div class="create-comment">
+                <v-btn icon color="primary" title="Write comment" v-scroll-to="'#comment-textfield'" @click="focusCommentTextfield">
+                  <v-icon>add</v-icon>
+                </v-btn>
+              </div>
+              <h2>{{comments.length}} Comments</h2>
+              <Comment v-for="comment in comments" :comment="comment" :key="comment.id"></Comment>
+              <v-text-field
+                id="comment-textfield"
+                v-model="newCommentBody"
+                label="Add a comment"
+                hint="Please be polite ;)"
+                ref="commentTextfield"
+                multi-line
+              ></v-text-field>
+              <v-btn class="submitComment" :disabled="this.newCommentBody.length === 0" small color="primary" @click="submitComment">Submit comment</v-btn>
+            </div>
+          </v-card-text>
+        </v-card>
       </v-flex>
     </v-layout>
   </v-container>
@@ -255,7 +259,9 @@ export default {
 
 <style lang="scss" scoped>
 .details {
-  padding: 7px;
+  .card {
+    padding-bottom: 15px;
+  }
   .likes {
     min-height: 60px;
     button {
@@ -284,6 +290,7 @@ export default {
   }
   .created {
     border-bottom: 1px solid #0a6aa6;
+    padding-bottom: 20px;
   }
   .created,
   .comments {
@@ -297,15 +304,11 @@ export default {
       top: -5px;
       button {
         margin-right: 0;
+        top: 0px;
       }
     }
     & h2 {
       margin-bottom: 10px;
-    }
-    .submitButton {
-      float: right;
-      margin-right: 0;
-      margin-top: 0;
     }
   }
 }
@@ -316,5 +319,7 @@ export default {
   float: right;
   margin-right: 0;
   margin-top: 0;
+  position: relative;
+  top: -12px;
 }
 </style>

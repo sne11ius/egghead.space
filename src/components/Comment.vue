@@ -42,12 +42,16 @@ export default {
 .comment {
   border-bottom: 1px solid #0a6aa6;
   padding-bottom: 5px;
-  & + .comment {
-    margin-top: 17px;
-  }
+  padding-left: 8px;
+  border-left: 1px solid #0a6aa6;
+  padding-right: 5px;
+  margin-bottom: 17px;
   .comment-body {
     margin-top: 7px;
     margin-bottom: 7px;
+  }
+  .created {
+    float: right;
   }
   .author-link {
     margin-right: 20px;
