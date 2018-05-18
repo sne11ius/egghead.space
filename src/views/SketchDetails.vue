@@ -169,6 +169,10 @@ export default {
   },
   methods: {
     submitComment: function() {
+      if (!this.$globals.isAuthenticated) {
+        EventBus.info("Please sign in to submit your comment.");
+        return;
+      }
       const userRef = db
         .collection("users")
         .doc(this.$globals.currentUser.uid)
