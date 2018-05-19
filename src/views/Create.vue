@@ -67,11 +67,17 @@
           </v-card-text>
         </v-card>
       </v-flex>
+      <v-flex v-else id="file-upload">
+        <v-card>
+          <FileUpload></FileUpload>
+        </v-card>
+      </v-flex>
     </v-layout>
   </v-container>
 </template>
 
 <script>
+import FileUpload from "@/components/FileUpload.vue";
 import Firebase from "firebase";
 import EventBus from "@/service/EventBus.js";
 import SimpleMDE from "simplemde";
@@ -84,6 +90,9 @@ let simpleMde;
 
 export default {
   name: "Create",
+  components: {
+    FileUpload
+  },
   data() {
     return {
       sketches: [],
