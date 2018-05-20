@@ -16,7 +16,7 @@ import "uppy/dist/uppy.min.css";
 export default {
   name: "FileUpload",
   mounted() {
-    const storageRef = storage.ref();
+    const storageRef = storage.ref().child("temp");
     const uppy = Uppy({
       autoProceed: false,
       restrictions: {
