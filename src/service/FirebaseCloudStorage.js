@@ -44,6 +44,8 @@ export default class FirebaseCloudStorage extends Plugin {
             },
             () => {
               uploadTask.snapshot.ref.getDownloadURL().then(downloadUrl => {
+                const file = this.uppy.getFile(id);
+                file.downloadUrl = downloadUrl;
                 this.uppy.emit(
                   "upload-success",
                   file,

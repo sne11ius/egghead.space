@@ -69,7 +69,8 @@
       </v-flex>
       <v-flex v-else id="file-upload">
         <v-card>
-          <FileUpload></FileUpload>
+          <MediaList :items="medias" v-on:item-clicked="itemClicked"></MediaList>
+          <FileUpload v-on:media-added="mediaAdded"></FileUpload>
         </v-card>
       </v-flex>
     </v-layout>
@@ -77,6 +78,7 @@
 </template>
 
 <script>
+import MediaList from "@/components/MediaList.vue";
 import FileUpload from "@/components/FileUpload.vue";
 import Firebase from "firebase";
 import EventBus from "@/service/EventBus.js";
@@ -91,6 +93,7 @@ let simpleMde;
 export default {
   name: "Create",
   components: {
+    MediaList,
     FileUpload
   },
   data() {
@@ -99,7 +102,8 @@ export default {
       title: "",
       body: "",
       showHelp: false,
-      next: null
+      next: null,
+      medias: []
     };
   },
   mounted() {
@@ -157,18 +161,31 @@ export default {
           simpleMde.value("");
           this.$router.push("/");
         });
+    },
+    mediaAdded(file, previewDownloadUrl) {
+      this.medias.push({ file, previewDownloadUrl });
+    },
+    itemClicked(item) {
+      const imageLink = `![Alt text](${item.file.downloadUrl})`;
+      const editor = simpleMde.codemirror;
+      const selection = editor.getSelection();
+      if (selection.length > 0) {
+        editor.replaceSelection(imageLink);
+      } else {
+        const doc = editor.getDoc();
+        const cursor = doc.getCursor();
+        const pos = {
+          line: cursor.line,
+          ch: cursor.ch
+        };
+        doc.replaceRange(imageLink, pos);
+      }
     }
   }
 };
 </script>
 
 <style lang="scss" scoped>
-#sign-in-warning {
-  flex: 40;
-}
-#input-container {
-  flex: 100;
-}
 .CodeMirror,
 .CodeMirror-scroll {
   max-height: 50px;
