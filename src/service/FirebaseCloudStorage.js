@@ -26,6 +26,7 @@ export default class FirebaseCloudStorage extends Plugin {
           const metaData = {
             contentType: file.type
           };
+          this.uppy.emit("upload-started", file);
           const uploadTask = fileRef.put(file.data, metaData);
           uploadTask.on(
             "state_changed",
@@ -35,10 +36,10 @@ export default class FirebaseCloudStorage extends Plugin {
                 bytesUploaded: snapshot.bytesTransferred,
                 bytesTotal: snapshot.totalBytes
               };
-              console.log(progressInfo);
               this.uppy.emit("upload-progress", file, progressInfo);
             },
             error => {
+              this.uppy.emit("upload-error", file, error);
               reject(error);
             },
             () => {
