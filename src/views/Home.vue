@@ -50,7 +50,8 @@
           <v-card-text>
             <p>
               There's that one thingy you thought about and you think it's awesome. Find out what
-              others think about it and <router-link to="/create">create a sketch</router-link>.
+              others think about it and<br>
+              <v-btn id="create-btn" color="primary" router-link to="/create">create a sketch</v-btn>
             </p>
           </v-card-text>
         </v-card>
@@ -130,5 +131,10 @@ export default {
       padding-top: 0;
     }
   }
+}
+#create-btn {
+  float: right;
+  padding-left: 20px;
+  padding-right: 20px;
 }
 </style>
