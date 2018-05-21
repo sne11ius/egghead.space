@@ -36,17 +36,21 @@ export default {
         inline: true,
         target: "#upload-area",
         width: "100%",
-        note: "Images only, up to 10 MB",
+        height: "300px",
+        note: "Images only, up to 10 MB per file",
         showProgressDetails: true,
         proudlyDisplayPoweredByUppy: false
       })
       .use(FirebaseCloudStorage, { storageRef })
       .run();
+
     uppy.on("upload-success", (file, snapshot) => {
       const previewRef = storageRef.child(uuid());
       fetch(file.preview)
         .then(response => {
           if (response.ok) {
+            uppy.removeFile(file.id);
+            this.$emit("post-process", file);
             return response.blob();
           }
           throw new Error("Could not fetch blob url");
@@ -94,11 +98,12 @@ export default {
               }
             })
             .then(() => {
-              uppy.removeFile(file.id);
+              // uppy.removeFile(file.id);
               this.$emit(
                 "media-added",
                 file,
                 previewDownloadUrl,
+                snapshot,
                 previewSnapshot
               );
             });

@@ -29,7 +29,7 @@
       </v-card>
     </v-dialog>
     <v-layout row wrap>
-      <v-flex id="input-container">
+      <v-flex id="input-container" s12 md9>
         <v-card >
           <v-card-title>
             <h3 class="headline mb-0">Create new sketch</h3>
@@ -57,7 +57,7 @@
           </v-card-actions>
         </v-card>
       </v-flex>
-      <v-flex id="sign-in-warning" v-if="!$globals.isAuthenticated">
+      <v-flex id="sign-in-warning" v-if="!$globals.isAuthenticated" s12>
         <v-card>
           <v-card-title>
             <h3 class="headline mb-0">You want to share an idea? Awesome!</h3>
@@ -67,10 +67,12 @@
           </v-card-text>
         </v-card>
       </v-flex>
-      <v-flex v-else id="file-upload">
+      <v-flex v-else id="file-upload" s12 md3>
         <v-card>
-          <MediaList :items="medias" v-on:item-clicked="itemClicked"></MediaList>
-          <FileUpload v-on:media-added="mediaAdded"></FileUpload>
+          <MediaList :items="medias" v-on:add="add" v-on:remove="remove" ref="mediaList"></MediaList>
+        </v-card>
+        <v-card>
+          <FileUpload v-on:media-added="mediaAdded" v-on:post-process="postProcess" ref="fileUpload"></FileUpload>
         </v-card>
       </v-flex>
     </v-layout>
@@ -162,10 +164,14 @@ export default {
           this.$router.push("/");
         });
     },
-    mediaAdded(file, previewDownloadUrl) {
-      this.medias.push({ file, previewDownloadUrl });
+    mediaAdded(file, previewDownloadUrl, snapshot, previewSnapshot) {
+      this.$refs.mediaList.stopIndicatePostProcess(file);
+      this.medias.push({ file, previewDownloadUrl, snapshot, previewSnapshot });
     },
-    itemClicked(item) {
+    postProcess(file) {
+      this.$refs.mediaList.indicatePostProcess(file);
+    },
+    add(item) {
       const imageLink = `![Alt text](${item.file.downloadUrl})`;
       const editor = simpleMde.codemirror;
       const selection = editor.getSelection();
@@ -180,6 +186,9 @@ export default {
         };
         doc.replaceRange(imageLink, pos);
       }
+    },
+    remove(item, index) {
+      this.medias.splice(index, 1);
     }
   }
 };
