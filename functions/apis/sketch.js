@@ -1,6 +1,8 @@
 const functions = require("firebase-functions");
 const firebase = require("../firebase.js");
 const firestore = firebase.firestore;
+const storage = firebase.storage;
+const bucket = storage.bucket();
 const marked = require("marked");
 
 const subWeeks = require("date-fns/sub_weeks");
@@ -77,7 +79,184 @@ exports.onSketchCreated = functions.firestore
   .onCreate((snap, context) => {
     console.log("Sketch created. Id: '%s'", snap.id);
     const data = snap.data();
-    const body = data.body;
+    // Since this sketch is save for the first time, all medias must be moved out of temp to
+    // deliver them from being removed by temp-cleanup-task.
+    // This code is ... pita. Object literals could be shorter with the spread properties syntax,
+    // but this is only supported in node >= 8.6 and we are stuck with 6.14...
+    // s. https://node.green/#ES2018-features-object-rest-spread-properties
+    const medias = data.medias;
+    let body = data.body;
+    Promise.all(
+      // Step 1: move files
+      medias.map((media, index) => {
+        return new Promise((resolve, reject) => {
+          const sourcePath = media.path;
+          const sourceFile = bucket.file(sourcePath);
+          const targetPath = `medias/${snap.id}/${index}`;
+          const targetFile = bucket.file(targetPath);
+          sourceFile
+            .move(targetFile)
+            .then(() => {
+              return resolve({
+                sourcePath,
+                targetPath,
+                mediaDownloadUrl: media.url,
+                previewDownloadUrl: media.preview.download
+              });
+            })
+            .catch(error => reject(error));
+        });
+      })
+    )
+      .then(movedFiles => {
+        // Step 2: move preview files
+        return Promise.all(
+          movedFiles.map(
+            ({
+              sourcePath,
+              targetPath,
+              mediaDownloadUrl,
+              previewDownloadUrl
+            }) => {
+              return new Promise((resolve, reject) => {
+                const previewSourcePath = media.preview.path;
+                const previewSourceFile = bucket.file(previewSourcePath);
+                const previewTargetPath = `medias/${snap.id}/${index}_preview`;
+                const previewTargetFile = bucket.file(previewTargetPath);
+                /* eslint-disable promise/no-nesting */
+                previewSourceFile
+                  .move(previewTargetFile)
+                  .then(() => {
+                    return resolve({
+                      sourcePath,
+                      targetPath,
+                      previewSourcePath,
+                      previewTargetPath,
+                      mediaDownloadUrl,
+                      previewDownloadUrl
+                    });
+                  })
+                  .catch(error => reject(error));
+                /* eslint-enable promise/no-nesting */
+              });
+            }
+          )
+        );
+      })
+      .then(movedFilesAndPreviews => {
+        // Step 3: create new download urls
+        return Promise.all(
+          movedFilesAndPreviews.map(
+            ({
+              sourcePath,
+              targetPath,
+              previewSourcePath,
+              previewTargetPath,
+              mediaDownloadUrl,
+              previewDownloadUrl
+            }) => {
+              return new Promise((resolve, reject) => {
+                /* eslint-disable promise/no-nesting */
+                const storageRef = storage
+                  .ref(targetPath)
+                  .getDownloadURL()
+                  .then(downloadUrl => {
+                    return resolve({
+                      sourcePath,
+                      targetPath,
+                      previewSourcePath,
+                      previewTargetPath,
+                      mediaDownloadUrl,
+                      updatedMediaDownloadUrl: downloadUrl,
+                      previewDownloadUrl
+                    });
+                  })
+                  .catch(error => reject(error));
+                /* eslint-enable promise/no-nesting */
+              });
+            }
+          )
+        );
+      })
+      .then(movedFilesAndPreviews => {
+        // Step 4: create new preview download urls
+        return Promise.all(
+          movedFilesAndPreviews.map(
+            ({
+              sourcePath,
+              targetPath,
+              previewSourcePath,
+              previewTargetPath,
+              mediaDownloadUrl,
+              updatedMediaDownloadUrl,
+              previewDownloadUrl
+            }) => {
+              return new Promise((resolve, reject) => {
+                /* eslint-disable promise/no-nesting */
+                const storageRef = storage
+                  .ref(previewTargetPath)
+                  .getDownloadURL()
+                  .then(downloadUrl => {
+                    return resolve({
+                      sourcePath,
+                      targetPath,
+                      previewSourcePath,
+                      previewTargetPath,
+                      mediaDownloadUrl,
+                      updatedMediaDownloadUrl,
+                      previewDownloadUrl,
+                      updatedPreviewDownloadUrl: downloadUrl
+                    });
+                  })
+                  .catch(error => reject(error));
+                /* eslint-enable promise/no-nesting */
+              });
+            }
+          )
+        );
+      })
+      .then(movedFilesAndPreviews => {
+        // Step 5a: update sketch body
+        movedFilesAndPreviews.forEach(
+          ({
+            sourcePath,
+            targetPath,
+            previewSourcePath,
+            previewTargetPath,
+            mediaDownloadUrl,
+            updatedMediaDownloadUrl,
+            previewDownloadUrl,
+            updatedPreviewDownloadUrl
+          }) => {
+            const regex = new RegExp(mediaDownloadUrl, "g");
+            body = body.replace(regex, updatedMediaDownloadUrl);
+          }
+        );
+        // Step 5b: update sketch media list
+        const updatedMedias = movedFilesAndPreviews.map(({ asd }) => {
+          return {
+            url: updatedMediaDownloadUrl,
+            path: targetPath,
+            preview: {
+              url: updatedPreviewDownloadUrl,
+              path: previewTargetPath
+            }
+          };
+        });
+        snap.ref.set(
+          {
+            body: body,
+            medias: updatedMedias
+          },
+          {
+            merge: true
+          }
+        );
+        return true;
+      })
+      .catch(error => {
+        console.error(error);
+      });
     const imageLink = selectImage(body);
     if (imageLink !== null && imageLink !== data.previewImage) {
       console.log("Image has changed. Setting new property");
