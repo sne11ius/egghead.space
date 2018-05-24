@@ -97,13 +97,12 @@ export default {
                 previewUrl: previewDownloadUrl
               }
             })
-            .then(() => {
-              // uppy.removeFile(file.id);
+            .then(updatedSnapshot => {
               this.$emit(
                 "media-added",
                 file,
                 previewDownloadUrl,
-                snapshot,
+                updatedSnapshot,
                 previewSnapshot
               );
             });
