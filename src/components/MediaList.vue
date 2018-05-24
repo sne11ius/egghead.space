@@ -7,8 +7,8 @@
             <v-card-media :src="item.previewDownloadUrl" height="200px">
             </v-card-media>
             <v-card-actions>
-              <v-btn fab small color="primary" @click="$emit('add', item, index)" title="Insert into markdown">
-                <v-icon>add</v-icon>
+              <v-btn small color="primary" @click="$emit('add', item, index)" title="Insert this image into markdown">
+                Add to text
               </v-btn>
               <v-spacer></v-spacer>
               <v-btn fab small @click="$emit('remove', item, index)" title="Delete">
