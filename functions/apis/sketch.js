@@ -233,16 +233,27 @@ exports.onSketchCreated = functions.firestore
           }
         );
         // Step 5b: update sketch media list
-        const updatedMedias = movedFilesAndPreviews.map(({ asd }) => {
-          return {
-            url: updatedMediaDownloadUrl,
-            path: targetPath,
-            preview: {
-              url: updatedPreviewDownloadUrl,
-              path: previewTargetPath
-            }
-          };
-        });
+        const updatedMedias = movedFilesAndPreviews.map(
+          ({
+            sourcePath,
+            targetPath,
+            previewSourcePath,
+            previewTargetPath,
+            mediaDownloadUrl,
+            updatedMediaDownloadUrl,
+            previewDownloadUrl,
+            updatedPreviewDownloadUrl
+          }) => {
+            return {
+              url: updatedMediaDownloadUrl,
+              path: targetPath,
+              preview: {
+                url: updatedPreviewDownloadUrl,
+                path: previewTargetPath
+              }
+            };
+          }
+        );
         snap.ref.set(
           {
             body: body,
