@@ -1,5 +1,6 @@
 const functions = require("firebase-functions");
-const firestore = require("../firestore.js");
+const firebase = require("../firebase.js");
+const firestore = firebase.firestore;
 const marked = require("marked");
 
 const subWeeks = require("date-fns/sub_weeks");
