@@ -117,7 +117,6 @@ export default {
     });
     simpleMde.value("");
   },
-  // eslint-disable-next-line
   beforeRouteLeave: function(to, from, next) {
     if (
       !this.$globals.isAuthenticated ||
@@ -144,6 +143,7 @@ export default {
         EventBus.error("Please add a body.");
         return;
       }
+      console.log(this.medias);
       const userRef = db
         .collection("users")
         .doc(this.$globals.currentUser.uid)
@@ -155,7 +155,17 @@ export default {
           createdByUid: this.$globals.currentUser.uid,
           title: this.title,
           body: body,
-          created: Firebase.firestore.FieldValue.serverTimestamp()
+          created: Firebase.firestore.FieldValue.serverTimestamp(),
+          medias: this.medias.map(media => {
+            return {
+              path: media.snapshot.fullPath,
+              url: media.file.downloadUrl,
+              preview: {
+                path: media.previewSnapshot.ref.fullPath,
+                url: media.previewDownloadUrl
+              }
+            };
+          })
         })
         .then(() => {
           EventBus.info(`Sketch '${this.title}' created.`);
