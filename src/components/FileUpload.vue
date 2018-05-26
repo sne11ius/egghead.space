@@ -38,8 +38,7 @@ export default {
         width: "100%",
         height: "300px",
         note: "Images only, up to 10 MB per file",
-        showProgressDetails: true,
-        proudlyDisplayPoweredByUppy: false
+        showProgressDetails: true
       })
       .use(FirebaseCloudStorage, { storageRef })
       .run();
