@@ -57,7 +57,7 @@
           </v-card-actions>
         </v-card>
       </v-flex>
-      <v-flex id="sign-in-warning" v-if="!$globals.isAuthenticated" s12>
+      <v-flex id="sign-in-warning" v-if="!$globals.isAuthenticated" s12 md3>
         <v-card>
           <v-card-title>
             <h3 class="headline mb-0">You want to share an idea? Awesome!</h3>
