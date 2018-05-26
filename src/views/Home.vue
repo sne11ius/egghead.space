@@ -9,9 +9,7 @@
                 <v-card-title>
                   <h3 class="headline">Featured sketch</h3>
                 </v-card-title>
-                <v-card-text>
-                  {{featureText}}
-                </v-card-text>
+                <v-card-text v-html="featureText"></v-card-text>
               </v-card>
             </v-flex>
             <v-flex>
