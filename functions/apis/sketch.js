@@ -1,10 +1,17 @@
 const functions = require("firebase-functions");
-const firestore = require("../firestore.js");
+const firebase = require("../firebase.js");
+const firestore = firebase.firestore;
+const storage = firebase.storage;
+const bucket = storage.bucket();
 const marked = require("marked");
 
+const subDays = require("date-fns/sub_days");
 const subWeeks = require("date-fns/sub_weeks");
 const subMonths = require("date-fns/sub_months");
 const isWithinRange = require("date-fns/is_within_range");
+const isBefore = require("date-fns/is_before");
+
+const escapeStringRegexp = require("escape-string-regexp");
 
 // Finds all images from a markdown text
 function findImages(markdown) {
@@ -76,20 +83,223 @@ exports.onSketchCreated = functions.firestore
   .onCreate((snap, context) => {
     console.log("Sketch created. Id: '%s'", snap.id);
     const data = snap.data();
-    const body = data.body;
-    const imageLink = selectImage(body);
-    if (imageLink !== null && imageLink !== data.previewImage) {
-      console.log("Image has changed. Setting new property");
-      return snap.ref.set(
-        {
-          previewImage: imageLink
-        },
-        {
-          merge: true
+
+    // Since this sketch is saved for the first time, all medias must be moved out of temp to
+    // deliver them from being removed by temp-cleanup-task.
+    //
+    // This code is ... pita. Object literals could be shorter with the spread properties syntax,
+    // but this is only supported in node >= 8.6 and we are stuck with 6.14...
+    // s. https://node.green/#ES2018-features-object-rest-spread-properties
+    //
+    // Also, the individual function blocks *could* be extracted into seperate functions
+
+    // This is gonna be a wild ride... ;)
+    const medias = data.medias;
+    let body = data.body;
+    return Promise.all(
+      // Step 1: move files
+      medias.map((media, index) => {
+        return new Promise((resolve, reject) => {
+          const sourcePath = media.path;
+          const sourceFile = bucket.file(sourcePath);
+          const targetPath = `medias/${snap.id}/${index}`;
+          const targetFile = bucket.file(targetPath);
+          sourceFile
+            .move(targetFile)
+            .then(() => {
+              return resolve({
+                sourcePath,
+                targetPath,
+                mediaDownloadUrl: media.url,
+                previewPath: media.preview.path,
+                previewDownloadUrl: media.preview.url
+              });
+            })
+            .catch(error => reject(error));
+        });
+      })
+    )
+      .then(movedFiles => {
+        // Step 2: move preview files
+        return Promise.all(
+          movedFiles.map(
+            (
+              {
+                sourcePath,
+                targetPath,
+                mediaDownloadUrl,
+                previewPath,
+                previewDownloadUrl
+              },
+              index
+            ) => {
+              return new Promise((resolve, reject) => {
+                const previewSourcePath = previewPath;
+                const previewSourceFile = bucket.file(previewSourcePath);
+                const previewTargetPath = `medias/${snap.id}/${index}_preview`;
+                const previewTargetFile = bucket.file(previewTargetPath);
+                /* eslint-disable promise/no-nesting */
+                previewSourceFile
+                  .move(previewTargetFile)
+                  .then(() => {
+                    return resolve({
+                      sourcePath,
+                      targetPath,
+                      previewSourcePath,
+                      previewTargetPath,
+                      mediaDownloadUrl,
+                      previewDownloadUrl
+                    });
+                  })
+                  .catch(error => reject(error));
+                /* eslint-enable promise/no-nesting */
+              });
+            }
+          )
+        );
+      })
+      .then(movedFilesAndPreviews => {
+        // Step 3: create new download urls
+        return Promise.all(
+          movedFilesAndPreviews.map(
+            ({
+              sourcePath,
+              targetPath,
+              previewSourcePath,
+              previewTargetPath,
+              mediaDownloadUrl,
+              previewDownloadUrl
+            }) => {
+              return new Promise((resolve, reject) => {
+                // s. https://stackoverflow.com/a/43764656/649835
+                bucket.file(targetPath).getMetadata((error, metadata) => {
+                  if (error) {
+                    console.error(error);
+                    return reject(error);
+                  }
+                  const token = metadata.metadata.firebaseStorageDownloadTokens;
+                  const updatedMediaDownloadUrl = `https://firebasestorage.googleapis.com/v0/b/${
+                    bucket.name
+                  }/o/${encodeURIComponent(
+                    targetPath
+                  )}?alt=media&token=${token}`;
+                  return resolve({
+                    sourcePath,
+                    targetPath,
+                    previewSourcePath,
+                    previewTargetPath,
+                    mediaDownloadUrl,
+                    updatedMediaDownloadUrl,
+                    previewDownloadUrl
+                  });
+                });
+              });
+            }
+          )
+        );
+      })
+      .then(movedFilesAndPreviews => {
+        // Step 4: create new preview download urls
+        return Promise.all(
+          movedFilesAndPreviews.map(
+            ({
+              sourcePath,
+              targetPath,
+              previewSourcePath,
+              previewTargetPath,
+              mediaDownloadUrl,
+              updatedMediaDownloadUrl,
+              previewDownloadUrl
+            }) => {
+              return new Promise((resolve, reject) => {
+                bucket
+                  .file(previewTargetPath)
+                  .getMetadata((error, metadata) => {
+                    if (error) {
+                      console.error(error);
+                      return reject(error);
+                    }
+                    const token =
+                      metadata.metadata.firebaseStorageDownloadTokens;
+                    const updatedPreviewDownloadUrl = `https://firebasestorage.googleapis.com/v0/b/${
+                      bucket.name
+                    }/o/${encodeURIComponent(
+                      previewTargetPath
+                    )}?alt=media&token=${token}`;
+                    return resolve({
+                      sourcePath,
+                      targetPath,
+                      previewSourcePath,
+                      previewTargetPath,
+                      mediaDownloadUrl,
+                      updatedMediaDownloadUrl,
+                      previewDownloadUrl,
+                      updatedPreviewDownloadUrl
+                    });
+                  });
+              });
+            }
+          )
+        );
+      })
+      .then(movedFilesAndPreviews => {
+        // Step 5a: update sketch body
+        movedFilesAndPreviews.forEach(
+          ({
+            sourcePath,
+            targetPath,
+            previewSourcePath,
+            previewTargetPath,
+            mediaDownloadUrl,
+            updatedMediaDownloadUrl,
+            previewDownloadUrl,
+            updatedPreviewDownloadUrl
+          }) => {
+            const regex = new RegExp(escapeStringRegexp(mediaDownloadUrl), "g");
+            body = body.replace(regex, updatedMediaDownloadUrl);
+          }
+        );
+        // Step 5b: update sketch media list
+        const updatedMedias = movedFilesAndPreviews.map(
+          ({
+            sourcePath,
+            targetPath,
+            previewSourcePath,
+            previewTargetPath,
+            mediaDownloadUrl,
+            updatedMediaDownloadUrl,
+            previewDownloadUrl,
+            updatedPreviewDownloadUrl
+          }) => {
+            return {
+              url: updatedMediaDownloadUrl,
+              path: targetPath,
+              preview: {
+                url: updatedPreviewDownloadUrl,
+                path: previewTargetPath
+              }
+            };
+          }
+        );
+        return snap.ref.update({
+          body,
+          medias: updatedMedias
+        });
+      })
+      .then(() => {
+        const imageLink = selectImage(body);
+        if (imageLink !== null && imageLink !== data.previewImage) {
+          console.log("Image has changed. Setting new property");
+          return snap.ref.update({
+            previewImage: imageLink
+          });
         }
-      );
-    }
-    return null;
+        return null;
+      })
+      .catch(error => {
+        console.error(error);
+        return false;
+      });
   });
 
 exports.onSketchModified = functions.firestore
@@ -117,6 +327,47 @@ exports.onSketchModified = functions.firestore
     }
     return null;
   });
+
+exports.removeUnusedMediaFiles = functions.https.onRequest((req, res) => {
+  console.log("Removing old temp files...");
+  const now = new Date();
+  const oneDayAgo = subDays(now, 1);
+  return bucket.getFiles({ prefix: "temp/" }).then(results => {
+    const files = results[0];
+    console.log(files.length + " files found");
+    let deletedCount = 0;
+    /* eslint-disable promise/no-nesting */
+    return Promise.all(
+      files.map(file =>
+        file.getMetadata().then(data => ({ file, metadata: data[0] }))
+      )
+    )
+      .then(filesWithMetadata => {
+        return Promise.all(
+          filesWithMetadata.map(({ file, metadata }) => {
+            const updated = new Date(metadata.updated);
+            if (isBefore(updated, oneDayAgo)) {
+              console.log("delete", file);
+              deletedCount++;
+              return file.delete();
+            }
+            return true;
+          })
+        );
+        /* eslint-enable promise/no-nesting */
+      })
+      .then(() => {
+        console.log(deletedCount + " files removed.");
+        console.log("finished");
+        res.send("ok");
+        return true;
+      })
+      .catch(error => {
+        console.error(error);
+        res.status(500).send("Error: " + JSON.stringify(error));
+      });
+  });
+});
 
 exports.updatePeriodicLikes = functions.https.onRequest((req, res) => {
   console.log("Updating weekly and monthly likes...");

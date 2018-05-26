@@ -29,7 +29,7 @@
       </v-card>
     </v-dialog>
     <v-layout row wrap>
-      <v-flex id="input-container">
+      <v-flex id="input-container" s12 md9>
         <v-card >
           <v-card-title>
             <h3 class="headline mb-0">Create new sketch</h3>
@@ -57,7 +57,7 @@
           </v-card-actions>
         </v-card>
       </v-flex>
-      <v-flex id="sign-in-warning" v-if="!$globals.isAuthenticated">
+      <v-flex id="sign-in-warning" v-if="!$globals.isAuthenticated" s12 md3>
         <v-card>
           <v-card-title>
             <h3 class="headline mb-0">You want to share an idea? Awesome!</h3>
@@ -67,11 +67,21 @@
           </v-card-text>
         </v-card>
       </v-flex>
+      <v-flex v-else id="file-upload" s12 md3>
+        <v-card>
+          <MediaList :items="medias" v-on:add="add" v-on:remove="remove" ref="mediaList"></MediaList>
+        </v-card>
+        <v-card>
+          <FileUpload v-on:media-added="mediaAdded" v-on:post-process="postProcess" ref="fileUpload"></FileUpload>
+        </v-card>
+      </v-flex>
     </v-layout>
   </v-container>
 </template>
 
 <script>
+import MediaList from "@/components/MediaList.vue";
+import FileUpload from "@/components/FileUpload.vue";
 import Firebase from "firebase";
 import EventBus from "@/service/EventBus.js";
 import SimpleMDE from "simplemde";
@@ -84,13 +94,18 @@ let simpleMde;
 
 export default {
   name: "Create",
+  components: {
+    MediaList,
+    FileUpload
+  },
   data() {
     return {
       sketches: [],
       title: "",
       body: "",
       showHelp: false,
-      next: null
+      next: null,
+      medias: []
     };
   },
   mounted() {
@@ -102,7 +117,6 @@ export default {
     });
     simpleMde.value("");
   },
-  // eslint-disable-next-line
   beforeRouteLeave: function(to, from, next) {
     if (
       !this.$globals.isAuthenticated ||
@@ -129,6 +143,7 @@ export default {
         EventBus.error("Please add a body.");
         return;
       }
+      console.log(this.medias);
       const userRef = db
         .collection("users")
         .doc(this.$globals.currentUser.uid)
@@ -140,7 +155,17 @@ export default {
           createdByUid: this.$globals.currentUser.uid,
           title: this.title,
           body: body,
-          created: Firebase.firestore.FieldValue.serverTimestamp()
+          created: Firebase.firestore.FieldValue.serverTimestamp(),
+          medias: this.medias.map(media => {
+            return {
+              path: media.snapshot.fullPath,
+              url: media.file.downloadUrl,
+              preview: {
+                path: media.previewSnapshot.ref.fullPath,
+                url: media.previewDownloadUrl
+              }
+            };
+          })
         })
         .then(() => {
           EventBus.info(`Sketch '${this.title}' created.`);
@@ -148,18 +173,38 @@ export default {
           simpleMde.value("");
           this.$router.push("/");
         });
+    },
+    mediaAdded(file, previewDownloadUrl, snapshot, previewSnapshot) {
+      this.$refs.mediaList.stopIndicatePostProcess(file);
+      this.medias.push({ file, previewDownloadUrl, snapshot, previewSnapshot });
+    },
+    postProcess(file) {
+      this.$refs.mediaList.indicatePostProcess(file);
+    },
+    add(item) {
+      const imageLink = `![Alt text](${item.file.downloadUrl})`;
+      const editor = simpleMde.codemirror;
+      const selection = editor.getSelection();
+      if (selection.length > 0) {
+        editor.replaceSelection(imageLink);
+      } else {
+        const doc = editor.getDoc();
+        const cursor = doc.getCursor();
+        const pos = {
+          line: cursor.line,
+          ch: cursor.ch
+        };
+        doc.replaceRange(imageLink, pos);
+      }
+    },
+    remove(item, index) {
+      this.medias.splice(index, 1);
     }
   }
 };
 </script>
 
 <style lang="scss" scoped>
-#sign-in-warning {
-  flex: 40;
-}
-#input-container {
-  flex: 100;
-}
 .CodeMirror,
 .CodeMirror-scroll {
   max-height: 50px;
