@@ -9,6 +9,8 @@ const subWeeks = require("date-fns/sub_weeks");
 const subMonths = require("date-fns/sub_months");
 const isWithinRange = require("date-fns/is_within_range");
 
+const escapeStringRegexp = require("escape-string-regexp");
+
 // Finds all images from a markdown text
 function findImages(markdown) {
   const renderer = new marked.Renderer();
@@ -79,14 +81,20 @@ exports.onSketchCreated = functions.firestore
   .onCreate((snap, context) => {
     console.log("Sketch created. Id: '%s'", snap.id);
     const data = snap.data();
-    // Since this sketch is save for the first time, all medias must be moved out of temp to
+
+    // Since this sketch is saved for the first time, all medias must be moved out of temp to
     // deliver them from being removed by temp-cleanup-task.
+    //
     // This code is ... pita. Object literals could be shorter with the spread properties syntax,
     // but this is only supported in node >= 8.6 and we are stuck with 6.14...
     // s. https://node.green/#ES2018-features-object-rest-spread-properties
+    //
+    // Also, the individual function blocks *could* be extracted into seperate functions
+
+    // This is gonna be a wild ride... ;)
     const medias = data.medias;
     let body = data.body;
-    Promise.all(
+    return Promise.all(
       // Step 1: move files
       medias.map((media, index) => {
         return new Promise((resolve, reject) => {
@@ -101,7 +109,8 @@ exports.onSketchCreated = functions.firestore
                 sourcePath,
                 targetPath,
                 mediaDownloadUrl: media.url,
-                previewDownloadUrl: media.preview.download
+                previewPath: media.preview.path,
+                previewDownloadUrl: media.preview.url
               });
             })
             .catch(error => reject(error));
@@ -112,14 +121,18 @@ exports.onSketchCreated = functions.firestore
         // Step 2: move preview files
         return Promise.all(
           movedFiles.map(
-            ({
-              sourcePath,
-              targetPath,
-              mediaDownloadUrl,
-              previewDownloadUrl
-            }) => {
+            (
+              {
+                sourcePath,
+                targetPath,
+                mediaDownloadUrl,
+                previewPath,
+                previewDownloadUrl
+              },
+              index
+            ) => {
               return new Promise((resolve, reject) => {
-                const previewSourcePath = media.preview.path;
+                const previewSourcePath = previewPath;
                 const previewSourceFile = bucket.file(previewSourcePath);
                 const previewTargetPath = `medias/${snap.id}/${index}_preview`;
                 const previewTargetFile = bucket.file(previewTargetPath);
@@ -156,23 +169,28 @@ exports.onSketchCreated = functions.firestore
               previewDownloadUrl
             }) => {
               return new Promise((resolve, reject) => {
-                /* eslint-disable promise/no-nesting */
-                const storageRef = storage
-                  .ref(targetPath)
-                  .getDownloadURL()
-                  .then(downloadUrl => {
-                    return resolve({
-                      sourcePath,
-                      targetPath,
-                      previewSourcePath,
-                      previewTargetPath,
-                      mediaDownloadUrl,
-                      updatedMediaDownloadUrl: downloadUrl,
-                      previewDownloadUrl
-                    });
-                  })
-                  .catch(error => reject(error));
-                /* eslint-enable promise/no-nesting */
+                // s. https://stackoverflow.com/a/43764656/649835
+                bucket.file(targetPath).getMetadata((error, metadata) => {
+                  if (error) {
+                    console.error(error);
+                    return reject(error);
+                  }
+                  const token = metadata.metadata.firebaseStorageDownloadTokens;
+                  const updatedMediaDownloadUrl = `https://firebasestorage.googleapis.com/v0/b/${
+                    bucket.name
+                  }/o/${encodeURIComponent(
+                    targetPath
+                  )}?alt=media&token=${token}`;
+                  return resolve({
+                    sourcePath,
+                    targetPath,
+                    previewSourcePath,
+                    previewTargetPath,
+                    mediaDownloadUrl,
+                    updatedMediaDownloadUrl,
+                    previewDownloadUrl
+                  });
+                });
               });
             }
           )
@@ -192,11 +210,20 @@ exports.onSketchCreated = functions.firestore
               previewDownloadUrl
             }) => {
               return new Promise((resolve, reject) => {
-                /* eslint-disable promise/no-nesting */
-                const storageRef = storage
-                  .ref(previewTargetPath)
-                  .getDownloadURL()
-                  .then(downloadUrl => {
+                bucket
+                  .file(previewTargetPath)
+                  .getMetadata((error, metadata) => {
+                    if (error) {
+                      console.error(error);
+                      return reject(error);
+                    }
+                    const token =
+                      metadata.metadata.firebaseStorageDownloadTokens;
+                    const updatedPreviewDownloadUrl = `https://firebasestorage.googleapis.com/v0/b/${
+                      bucket.name
+                    }/o/${encodeURIComponent(
+                      previewTargetPath
+                    )}?alt=media&token=${token}`;
                     return resolve({
                       sourcePath,
                       targetPath,
@@ -205,11 +232,9 @@ exports.onSketchCreated = functions.firestore
                       mediaDownloadUrl,
                       updatedMediaDownloadUrl,
                       previewDownloadUrl,
-                      updatedPreviewDownloadUrl: downloadUrl
+                      updatedPreviewDownloadUrl
                     });
-                  })
-                  .catch(error => reject(error));
-                /* eslint-enable promise/no-nesting */
+                  });
               });
             }
           )
@@ -228,7 +253,7 @@ exports.onSketchCreated = functions.firestore
             previewDownloadUrl,
             updatedPreviewDownloadUrl
           }) => {
-            const regex = new RegExp(mediaDownloadUrl, "g");
+            const regex = new RegExp(escapeStringRegexp(mediaDownloadUrl), "g");
             body = body.replace(regex, updatedMediaDownloadUrl);
           }
         );
@@ -254,33 +279,25 @@ exports.onSketchCreated = functions.firestore
             };
           }
         );
-        snap.ref.set(
-          {
-            body: body,
-            medias: updatedMedias
-          },
-          {
-            merge: true
-          }
-        );
-        return true;
+        return snap.ref.update({
+          body,
+          medias: updatedMedias
+        });
+      })
+      .then(() => {
+        const imageLink = selectImage(body);
+        if (imageLink !== null && imageLink !== data.previewImage) {
+          console.log("Image has changed. Setting new property");
+          return snap.ref.update({
+            previewImage: imageLink
+          });
+        }
+        return null;
       })
       .catch(error => {
         console.error(error);
+        return false;
       });
-    const imageLink = selectImage(body);
-    if (imageLink !== null && imageLink !== data.previewImage) {
-      console.log("Image has changed. Setting new property");
-      return snap.ref.set(
-        {
-          previewImage: imageLink
-        },
-        {
-          merge: true
-        }
-      );
-    }
-    return null;
   });
 
 exports.onSketchModified = functions.firestore
