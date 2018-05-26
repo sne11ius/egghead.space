@@ -5,9 +5,11 @@ const storage = firebase.storage;
 const bucket = storage.bucket();
 const marked = require("marked");
 
+const subDays = require("date-fns/sub_days");
 const subWeeks = require("date-fns/sub_weeks");
 const subMonths = require("date-fns/sub_months");
 const isWithinRange = require("date-fns/is_within_range");
+const isBefore = require("date-fns/is_before");
 
 const escapeStringRegexp = require("escape-string-regexp");
 
@@ -325,6 +327,47 @@ exports.onSketchModified = functions.firestore
     }
     return null;
   });
+
+exports.removeUnusedMediaFiles = functions.https.onRequest((req, res) => {
+  console.log("Removing old temp files...");
+  const now = new Date();
+  const oneDayAgo = subDays(now, 1);
+  return bucket.getFiles({ prefix: "temp/" }).then(results => {
+    const files = results[0];
+    console.log(files.length + " files found");
+    let deletedCount = 0;
+    /* eslint-disable promise/no-nesting */
+    return Promise.all(
+      files.map(file =>
+        file.getMetadata().then(data => ({ file, metadata: data[0] }))
+      )
+    )
+      .then(filesWithMetadata => {
+        return Promise.all(
+          filesWithMetadata.map(({ file, metadata }) => {
+            const updated = new Date(metadata.updated);
+            if (isBefore(updated, oneDayAgo)) {
+              console.log("delete", file);
+              deletedCount++;
+              return file.delete();
+            }
+            return true;
+          })
+        );
+        /* eslint-enable promise/no-nesting */
+      })
+      .then(() => {
+        console.log(deletedCount + " files removed.");
+        console.log("finished");
+        res.send("ok");
+        return true;
+      })
+      .catch(error => {
+        console.error(error);
+        res.status(500).send("Error: " + JSON.stringify(error));
+      });
+  });
+});
 
 exports.updatePeriodicLikes = functions.https.onRequest((req, res) => {
   console.log("Updating weekly and monthly likes...");
