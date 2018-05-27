@@ -32,7 +32,7 @@
       <v-flex id="input-container" s12 md9>
         <v-card >
           <v-card-title>
-            <h3 class="headline mb-0">Create new sketch</h3>
+            <h3 class="headline mb-0">{{pageTitle}}</h3>
             <v-spacer></v-spacer>
             <v-btn @click="showHelp = true" flat icon>
               <v-icon>help_outline</v-icon>
@@ -53,7 +53,7 @@
           <v-card-actions>
             <v-spacer></v-spacer>
             <v-btn flat to="/">Cancel</v-btn>
-            <v-btn color="primary" flat @click.stop="createSketch" :disabled="!$globals.isAuthenticated">Let's do this</v-btn>
+            <v-btn color="primary" flat @click.stop="createSketch" :disabled="!$globals.isAuthenticated">{{submitButtonTitle}}</v-btn>
           </v-card-actions>
         </v-card>
       </v-flex>
@@ -98,6 +98,7 @@ export default {
     MediaList,
     FileUpload
   },
+  props: ["id"],
   data() {
     return {
       sketches: [],
@@ -107,6 +108,42 @@ export default {
       next: null,
       medias: []
     };
+  },
+  computed: {
+    isEditMode() {
+      return null !== this.id;
+    },
+    isCreateMode() {
+      return !this.isEditMode;
+    },
+    pageTitle() {
+      if (this.isEditMode) {
+        return "Edit sketch";
+      } else {
+        return "Create new sketch";
+      }
+    },
+    submitButtonTitle() {
+      if (this.isCreateMode) {
+        return "Let's do this";
+      } else {
+        return "Save changes";
+      }
+    }
+  },
+  created() {
+    if (this.id) {
+      sketches
+        .doc(this.id)
+        .get()
+        .then(snapshot => {
+          const sketch = snapshot.data();
+          this.medias.push(...sketch.medias);
+          this.title = sketch.title;
+          this.body = sketch.body;
+          simpleMde.value(this.body);
+        });
+    }
   },
   mounted() {
     this.title = "";
@@ -134,6 +171,10 @@ export default {
   },
   methods: {
     createSketch() {
+      if (this.isEditMode) {
+        EventBus.error(`Editing is not implemented yet.`);
+        return;
+      }
       const body = simpleMde.value();
       if (this.title.length === 0) {
         EventBus.error("Please add a title.");
@@ -143,7 +184,6 @@ export default {
         EventBus.error("Please add a body.");
         return;
       }
-      console.log(this.medias);
       const userRef = db
         .collection("users")
         .doc(this.$globals.currentUser.uid)
@@ -176,13 +216,19 @@ export default {
     },
     mediaAdded(file, previewDownloadUrl, snapshot, previewSnapshot) {
       this.$refs.mediaList.stopIndicatePostProcess(file);
-      this.medias.push({ file, previewDownloadUrl, snapshot, previewSnapshot });
+      this.medias.push({
+        file,
+        url: file.downloadUrl,
+        preview: { url: previewDownloadUrl },
+        snapshot,
+        previewSnapshot
+      });
     },
     postProcess(file) {
       this.$refs.mediaList.indicatePostProcess(file);
     },
     add(item) {
-      const imageLink = `![Alt text](${item.file.downloadUrl})`;
+      const imageLink = `![Alt text](${item.url})`;
       const editor = simpleMde.codemirror;
       const selection = editor.getSelection();
       if (selection.length > 0) {

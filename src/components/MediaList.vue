@@ -2,9 +2,9 @@
   <v-card>
     <v-container fluid v-show="items.length > 0 || postProcessIndicators.length > 0" id="media-list">
       <v-layout row wrap>
-        <v-flex v-for="(item, index) in items" :key="item.file.preview" class="media-container" xs12 lg6>
+        <v-flex v-for="(item, index) in items" :key="item.preview.url" class="media-container" xs12 lg6>
           <v-card tile flat>
-            <v-card-media :src="item.previewDownloadUrl" height="200px">
+            <v-card-media :src="item.preview.url" height="200px">
             </v-card-media>
             <v-card-actions>
               <v-btn small color="primary" @click="$emit('add', item, index)" title="Insert this image into markdown">
