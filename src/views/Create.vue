@@ -72,7 +72,7 @@
           <MediaList :items="medias" v-on:add="add" v-on:remove="remove" ref="mediaList"></MediaList>
         </v-card>
         <v-card>
-          <FileUpload v-on:media-added="mediaAdded" v-on:post-process="postProcess" ref="fileUpload"></FileUpload>
+          <FileUpload v-on:media-added="mediaAdded" v-on:post-process="postProcess" ref="fileUpload" :storageRef="mediaStorageRef"></FileUpload>
         </v-card>
       </v-flex>
     </v-layout>
@@ -84,13 +84,13 @@ import MediaList from "@/components/MediaList.vue";
 import FileUpload from "@/components/FileUpload.vue";
 import Firebase from "firebase";
 import EventBus from "@/service/EventBus.js";
-import SimpleMDE from "simplemde";
-import "simplemde/dist/simplemde.min.css";
-import { db } from "@/firebase";
+import easymde from "easymde";
+import "easymde/dist/easymde.min.css";
+import { db, storage } from "@/firebase";
 
 const sketches = db.collection("sketches");
 
-let simpleMde;
+let easyMde;
 
 export default {
   name: "Create",
@@ -129,6 +129,16 @@ export default {
       } else {
         return "Save changes";
       }
+    },
+    mediaStorageRef() {
+      if (this.isEditMode) {
+        return storage
+          .ref()
+          .child("medias")
+          .child(this.id);
+      } else {
+        return storage.ref().child("temp");
+      }
     }
   },
   created() {
@@ -141,24 +151,23 @@ export default {
           this.medias.push(...sketch.medias);
           this.title = sketch.title;
           this.body = sketch.body;
-          simpleMde.value(this.body);
+          easyMde.value(this.body);
         });
     }
   },
   mounted() {
     this.title = "";
-    simpleMde = new SimpleMDE({
+    easyMde = new easymde({
       element: document.querySelectorAll("#sketch-body")[0],
       autoDownloadFontAwesome: false,
       hideIcons: ["side-by-side", "fullscreen"]
     });
-    simpleMde.value("");
+    easyMde.value("");
   },
   beforeRouteLeave: function(to, from, next) {
     if (
       !this.$globals.isAuthenticated ||
-      (this.title.length > 0 ||
-        (simpleMde.value() && simpleMde.value().length > 0))
+      (this.title.length > 0 || (easyMde.value() && easyMde.value().length > 0))
     ) {
       this.$confirm("Are u sure you want to trash all your edits?").then(
         res => {
@@ -171,11 +180,7 @@ export default {
   },
   methods: {
     createSketch() {
-      if (this.isEditMode) {
-        EventBus.error(`Editing is not implemented yet.`);
-        return;
-      }
-      const body = simpleMde.value();
+      const body = easyMde.value();
       if (this.title.length === 0) {
         EventBus.error("Please add a title.");
         return;
@@ -184,35 +189,65 @@ export default {
         EventBus.error("Please add a body.");
         return;
       }
-      const userRef = db
-        .collection("users")
-        .doc(this.$globals.currentUser.uid)
-        .collection("public")
-        .doc("userInfo");
-      sketches
-        .add({
-          createdBy: userRef,
-          createdByUid: this.$globals.currentUser.uid,
-          title: this.title,
-          body: body,
-          created: Firebase.firestore.FieldValue.serverTimestamp(),
-          medias: this.medias.map(media => {
-            return {
-              path: media.snapshot.fullPath,
-              url: media.file.downloadUrl,
-              preview: {
-                path: media.previewSnapshot.ref.fullPath,
-                url: media.previewDownloadUrl
-              }
-            };
+      if (this.isEditMode) {
+        EventBus.error(`Editing is not implemented yet.`);
+        const medias = this.medias.map(({ url, preview }) => ({
+          url,
+          preview
+        }));
+        sketches
+          .doc(this.id)
+          .update({
+            title: this.title,
+            body,
+            updated: Firebase.firestore.FieldValue.serverTimestamp(),
+            updatedByUid: this.$globals.currentUser.uid,
+            medias
           })
-        })
-        .then(() => {
-          EventBus.info(`Sketch '${this.title}' created.`);
-          this.title = "";
-          simpleMde.value("");
-          this.$router.push("/");
-        });
+          .then(() => {
+            EventBus.info(`Sketch '${this.title}' updated.`);
+            const title = this.title;
+            this.title = "";
+            easyMde.value("");
+            this.$router.push({
+              name: "sketch",
+              params: {
+                id: this.id,
+                title: title.replace(/\s/g, "+")
+              }
+            });
+          });
+      } else {
+        const userRef = db
+          .collection("users")
+          .doc(this.$globals.currentUser.uid)
+          .collection("public")
+          .doc("userInfo");
+        sketches
+          .add({
+            createdBy: userRef,
+            createdByUid: this.$globals.currentUser.uid,
+            title: this.title,
+            body,
+            created: Firebase.firestore.FieldValue.serverTimestamp(),
+            medias: this.medias.map(media => {
+              return {
+                path: media.snapshot.fullPath,
+                url: media.file.downloadUrl,
+                preview: {
+                  path: media.previewSnapshot.ref.fullPath,
+                  url: media.previewDownloadUrl
+                }
+              };
+            })
+          })
+          .then(() => {
+            EventBus.info(`Sketch '${this.title}' created.`);
+            this.title = "";
+            easyMde.value("");
+            this.$router.push("/");
+          });
+      }
     },
     mediaAdded(file, previewDownloadUrl, snapshot, previewSnapshot) {
       this.$refs.mediaList.stopIndicatePostProcess(file);
@@ -229,7 +264,7 @@ export default {
     },
     add(item) {
       const imageLink = `![Alt text](${item.url})`;
-      const editor = simpleMde.codemirror;
+      const editor = easyMde.codemirror;
       const selection = editor.getSelection();
       if (selection.length > 0) {
         editor.replaceSelection(imageLink);
@@ -244,6 +279,17 @@ export default {
       }
     },
     remove(item, index) {
+      if (this.isEditMode) {
+        const body = easyMde.value();
+        if (body.includes(item.url)) {
+          const editor = easyMde.codemirror;
+          const cursor = editor.getSearchCursor(item.url);
+          cursor.findNext();
+          editor.setSelection(cursor.pos.from, cursor.pos.to);
+          EventBus.error(`Please remove from text first.`);
+          return;
+        }
+      }
       this.medias.splice(index, 1);
     }
   }
