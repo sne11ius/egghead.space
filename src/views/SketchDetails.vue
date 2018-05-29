@@ -20,7 +20,8 @@
       <v-flex xs12 md6 class="details">
         <v-card>
           <v-card-text>
-            <v-btn v-if="isModerator" @click="showFeatureThisDialog = true">Feature this</v-btn>
+            <v-btn v-if="canEdit" :to="{name: 'edit', params: {id: this.sketch.id, title: this.sketch.title.replace(/\s/g, '+')}}" title="Edit this sketch">Edit</v-btn>
+            <v-btn v-if="isModerator" @click="showFeatureThisDialog = true" title="Feature this sketch on the home page">Feature this</v-btn>
             <div class="likes">
               <v-icon v-if="didLike" large color="pink" :title="didLikeTitle">favorite</v-icon>
               <v-icon v-else large color="grey">favorite</v-icon>
@@ -136,6 +137,13 @@ export default {
     };
   },
   computed: {
+    canEdit: function() {
+      return (
+        this.$globals.isAuthenticated &&
+        (this.$globals.currentUser.uid === this.sketch.createdByUid ||
+          this.isModerator)
+      );
+    },
     didLike: function() {
       if (!this.$globals.currentUser) {
         return false;

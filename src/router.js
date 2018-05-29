@@ -21,6 +21,12 @@ export default new Router({
       component: Create
     },
     {
+      path: "/sketch/:id/:title?/edit",
+      name: "edit",
+      component: Create,
+      props: true
+    },
+    {
       path: "/user/:uid/:username?",
       name: "user",
       component: User,

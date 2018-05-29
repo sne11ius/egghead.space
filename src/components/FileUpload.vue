@@ -6,16 +6,14 @@
 <script>
 import Uppy from "uppy/lib/core";
 import Dashboard from "uppy/lib/plugins/Dashboard";
-import { storage } from "@/firebase";
 import FirebaseCloudStorage from "@/service/FirebaseCloudStorage";
-import uuid from "uuid/v4";
 
 import "uppy/dist/uppy.min.css";
 
 export default {
   name: "FileUpload",
+  props: ["storageRef"],
   mounted() {
-    const storageRef = storage.ref().child("temp");
     const uppy = Uppy({
       autoProceed: true,
       restrictions: {
@@ -40,11 +38,12 @@ export default {
         note: "Images only, up to 10 MB per file",
         showProgressDetails: true
       })
-      .use(FirebaseCloudStorage, { storageRef })
+      .use(FirebaseCloudStorage, { storageRef: this.storageRef })
       .run();
 
     uppy.on("upload-success", (file, snapshot) => {
-      const previewRef = storageRef.child(uuid());
+      const previewName = `${snapshot.ref.name}_preview`;
+      const previewRef = this.storageRef.child(previewName);
       fetch(file.preview)
         .then(response => {
           if (response.ok) {

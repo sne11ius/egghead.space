@@ -308,24 +308,62 @@ exports.onSketchModified = functions.firestore
     console.log("Sketch modified. Id: '%s'", change.after.id);
     const data = change.after.data();
     const body = data.body;
-    const previousData = change.before.data();
-    if (body === previousData.body) {
-      console.log("Body didn't change, nothing to do.");
-      return null;
-    }
-    const imageLink = selectImage(body);
-    if (imageLink !== null && imageLink !== data.previewImage) {
-      console.log("Image has changed. Setting new property");
-      return change.after.ref.set(
-        {
-          previewImage: imageLink
-        },
-        {
-          merge: true
+    return bucket
+      .getFiles({ prefix: `medias/${change.after.id}` })
+      .then(results => {
+        const files = results[0].filter(
+          file => !file.name.endsWith("_preview")
+        );
+        return Promise.all(
+          files.map(file => {
+            return new Promise((resolve, reject) => {
+              const filename = file.name;
+              const isInUse = data.medias.some(media =>
+                media.url.includes(encodeURIComponent(filename))
+              );
+              if (isInUse) {
+                return resolve();
+              }
+              // Delete media and preview
+              /* eslint-disable promise/no-nesting */
+              console.log("Delete " + file.name);
+              const preview = bucket.file(`${file.name}_preview`);
+              console.log("Delete " + preview.name);
+              return Promise.all([file.delete(), preview.delete()])
+                .then(resolve())
+                .catch(error => {
+                  console.error(error);
+                  return reject(error);
+                });
+              /* eslint-enable promise/no-nesting */
+            });
+          })
+        );
+      })
+      .then(() => {
+        const previousData = change.before.data();
+        if (body === previousData.body) {
+          console.log("Body didn't change, nothing to do.");
+          return null;
         }
-      );
-    }
-    return null;
+        const imageLink = selectImage(body);
+        if (imageLink === null || imageLink !== data.previewImage) {
+          console.log("Image has changed. Setting new property");
+          return change.after.ref.set(
+            {
+              previewImage: imageLink
+            },
+            {
+              merge: true
+            }
+          );
+        }
+        return null;
+      })
+      .catch(error => {
+        console.error(error);
+        return false;
+      });
   });
 
 exports.removeUnusedMediaFiles = functions.https.onRequest((req, res) => {
