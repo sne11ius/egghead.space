@@ -230,30 +230,29 @@ export default {
           .doc(this.$globals.currentUser.uid)
           .collection("public")
           .doc("userInfo");
-        sketches
-          .add({
-            createdBy: userRef,
-            createdByUid: this.$globals.currentUser.uid,
-            title: this.title,
-            body,
-            created: Firebase.firestore.FieldValue.serverTimestamp(),
-            medias: this.medias.map(media => {
-              return {
-                path: media.snapshot.fullPath,
-                url: media.file.downloadUrl,
-                preview: {
-                  path: media.previewSnapshot.ref.fullPath,
-                  url: media.previewDownloadUrl
-                }
-              };
-            })
+        const newSketch = {
+          createdBy: userRef,
+          createdByUid: this.$globals.currentUser.uid,
+          title: this.title,
+          body,
+          created: Firebase.firestore.FieldValue.serverTimestamp(),
+          medias: this.medias.map(media => {
+            return {
+              path: media.snapshot.fullPath,
+              url: media.file.downloadUrl,
+              preview: {
+                path: media.previewSnapshot.ref.fullPath,
+                url: media.preview.url
+              }
+            };
           })
-          .then(() => {
-            EventBus.info(`Sketch '${this.title}' created.`);
-            this.title = "";
-            easyMde.value("");
-            this.$router.push("/");
-          });
+        };
+        sketches.add(newSketch).then(() => {
+          EventBus.info(`Sketch '${this.title}' created.`);
+          this.title = "";
+          easyMde.value("");
+          this.$router.push("/");
+        });
       }
     },
     mediaAdded(file, previewDownloadUrl, snapshot, previewSnapshot) {

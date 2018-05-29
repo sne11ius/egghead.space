@@ -7,7 +7,6 @@
 import Uppy from "uppy/lib/core";
 import Dashboard from "uppy/lib/plugins/Dashboard";
 import FirebaseCloudStorage from "@/service/FirebaseCloudStorage";
-import uuid from "uuid/v4";
 
 import "uppy/dist/uppy.min.css";
 
@@ -43,7 +42,8 @@ export default {
       .run();
 
     uppy.on("upload-success", (file, snapshot) => {
-      const previewRef = this.storageRef.child(uuid());
+      const previewName = `${snapshot.ref.name}_preview`;
+      const previewRef = this.storageRef.child(previewName);
       fetch(file.preview)
         .then(response => {
           if (response.ok) {
