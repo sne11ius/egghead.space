@@ -197,7 +197,6 @@ export default {
         return;
       }
       if (this.isEditMode) {
-        EventBus.error(`Editing is not implemented yet.`);
         const medias = this.medias.map(({ url, preview }) => ({
           url,
           preview
