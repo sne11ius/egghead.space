@@ -347,7 +347,7 @@ exports.onSketchModified = functions.firestore
           return null;
         }
         const imageLink = selectImage(body);
-        if (imageLink !== null && imageLink !== data.previewImage) {
+        if (imageLink === null || imageLink !== data.previewImage) {
           console.log("Image has changed. Setting new property");
           return change.after.ref.set(
             {
