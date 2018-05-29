@@ -98,7 +98,14 @@ export default {
     MediaList,
     FileUpload
   },
-  props: ["id"],
+  props: {
+    id: {
+      default: () => {
+        return null;
+      },
+      type: String
+    }
+  },
   data() {
     return {
       sketches: [],
@@ -279,16 +286,14 @@ export default {
       }
     },
     remove(item, index) {
-      if (this.isEditMode) {
-        const body = easyMde.value();
-        if (body.includes(item.url)) {
-          const editor = easyMde.codemirror;
-          const cursor = editor.getSearchCursor(item.url);
-          cursor.findNext();
-          editor.setSelection(cursor.pos.from, cursor.pos.to);
-          EventBus.error(`Please remove from text first.`);
-          return;
-        }
+      const body = easyMde.value();
+      if (body.includes(item.url)) {
+        const editor = easyMde.codemirror;
+        const cursor = editor.getSearchCursor(item.url);
+        cursor.findNext();
+        editor.setSelection(cursor.pos.from, cursor.pos.to);
+        EventBus.error(`Please remove from text first.`);
+        return;
       }
       this.medias.splice(index, 1);
     }
