@@ -4,7 +4,19 @@
       <v-flex xs12 md6>
         <v-card class="user-details">
           <v-card-title primary-title>
-            <h3 class="headline mb-0">{{user.displayName}}</h3>
+            <h3 v-if="!usernameEditor" class="headline mb-0">{{user.displayName}}</h3>
+            <span v-if="usernameEditor">
+              <v-text-field v-model="user.displayName"></v-text-field>
+            </span>
+            <v-btn v-if="isCurrentUser && !usernameEditor" class="edit-inline" fab small flat color="primary" title="Change username" @click="usernameEditor = !usernameEditor">
+              <v-icon>edit</v-icon>
+            </v-btn>
+            <v-btn v-if="usernameEditor" title="Save" fab small flat color="primary" @click="updateUsername">
+              <v-icon>save</v-icon>
+            </v-btn>
+            <v-btn v-if="usernameEditor" title="Cancel" fab small flat color="error" @click="usernameEditor = !usernameEditor">
+              <v-icon>cancel</v-icon>
+            </v-btn>
           </v-card-title>
           <v-card-text>
             <img v-if="user.photoURL" class="avatar" :src="user.photoURL" alt="avatar">
@@ -59,7 +71,8 @@ export default {
         displayName: "",
         createdAt: null
       },
-      comments: []
+      comments: [],
+      usernameEditor: false
     };
   },
   computed: {
@@ -84,6 +97,12 @@ export default {
     },
     joinedDate() {
       return format(new Date(parseInt(this.user.createdAt)), "MMMM D. YYYY");
+    },
+    isCurrentUser() {
+      return (
+        this.$globals.isAuthenticated &&
+        this.$globals.currentUser.uid === this.user.uid
+      );
     }
   },
   created: function() {
@@ -105,6 +124,20 @@ export default {
         .collection("comments")
         .orderBy("created", "desc")
     );
+  },
+  methods: {
+    updateUsername() {
+      users
+        .doc(this.uid)
+        .collection("public")
+        .doc("userInfo")
+        .update({
+          displayName: this.user.displayName
+        })
+        .then(() => {
+          this.usernameEditor = false;
+        });
+    }
   },
   watch: {
     // user(user) {
