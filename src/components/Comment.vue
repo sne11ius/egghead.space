@@ -6,9 +6,9 @@
     </div>
     <div class="comment-footer">
       <span v-if="showUserLink" class="author-link"><router-link :to="{name: 'user', params: {uid: this.comment.createdByUid, username: linkUsername}}">{{author}}</router-link></span>
-      <span class="created">{{creationDate}}</span>
+      <span v-bind:class="{ created: true, fixPos: sketchLink !== ''}">{{creationDate}}</span>
       <v-btn v-if="sketchLink !== ''" class="details-link" :to="{name: 'sketch', params: {id: this.sketchId, commentId: this.commentId, title: this.sketchTitle.replace(/\s/g, '+')}}" flat small color="primary">
-        Show more
+        Take me there
       </v-btn>
     </div>
   </div>
@@ -91,8 +91,10 @@ export default {
     margin-bottom: 7px;
   }
   .created {
-    padding-top: 10px;
     float: right;
+    &.fixPos {
+      padding-top: 13px;
+    }
   }
   .author-link {
     margin-right: 20px;
