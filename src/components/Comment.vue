@@ -1,5 +1,6 @@
 <template>
   <div class="comment" :id="this.comment.id">
+    <h4 v-if="sketchTitle !== '_'" class="comment-header">For sketch &bdquo;{{sketchTitle}}&ldquo;</h4>
     <div class="comment-body">
       {{comment.body}}
     </div>
