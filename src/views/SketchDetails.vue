@@ -347,7 +347,7 @@ export default {
 }
 @keyframes highlight {
   0% {
-    background: #ffff99; /* lovely yellow colour */
+    background: #f3f39d;
   }
   100% {
     background: none;
@@ -355,7 +355,7 @@ export default {
 }
 
 .highlight {
-  animation: highlight 2s;
+  animation: highlight 3s;
 }
 </style>
 
