@@ -21,10 +21,14 @@
         <v-card>
           <v-card-text>
             <v-icon medium class="total-likes-icon">fas fa-heart</v-icon> {{totalLikes}} earned eggs<br>
-            From:<br>
-            [undisclosed location]<br>
-            Joined:<br>
-            {{joinedDate}}<br>
+            <div class="details">
+              Joined:<br>
+              {{joinedDate}}<br>
+            </div>
+            <div class="comments">
+              <h4 class="headline">Recent comments</h4>
+              <Comment v-for="comment in comments" :comment="comment.ref" :key="comment.ref.id" :showUserLink=false :sketchLink="comment.refString"></Comment>
+            </div>
           </v-card-text>
         </v-card>
       </v-flex>
@@ -34,7 +38,9 @@
 
 <script>
 import SketchTiny from "@/components/SketchTiny.vue";
+import Comment from "@/components/Comment.vue";
 import { db } from "@/firebase";
+import { format } from "date-fns/";
 
 const sketches = db.collection("sketches");
 const users = db.collection("users");
@@ -43,7 +49,8 @@ export default {
   name: "User",
   props: ["uid"],
   components: {
-    SketchTiny
+    SketchTiny,
+    Comment
   },
   data() {
     return {
@@ -51,7 +58,8 @@ export default {
       user: {
         displayName: "",
         createdAt: null
-      }
+      },
+      comments: []
     };
   },
   computed: {
@@ -64,7 +72,7 @@ export default {
       ) {
         return "Tell people about yourself";
       } else {
-        return "This user did not say something about themselves yet.";
+        return "This user did not say anything about themselves yet.";
       }
     },
     totalLikes() {
@@ -75,7 +83,7 @@ export default {
       );
     },
     joinedDate() {
-      return "[tbd.]";
+      return format(new Date(parseInt(this.user.createdAt)), "MMMM D. YYYY");
     }
   },
   created: function() {
@@ -90,11 +98,18 @@ export default {
         .collection("public")
         .doc("userInfo")
     );
+    this.$bind(
+      "comments",
+      users
+        .doc(this.uid)
+        .collection("comments")
+        .orderBy("created", "desc")
+    );
   },
   watch: {
-    user(user) {
-      console.log(user);
-    }
+    // user(user) {
+    // console.log(user);
+    // }
   }
 };
 </script>
@@ -121,5 +136,11 @@ h4.headline {
 }
 .total-likes-icon {
   margin-right: 10px;
+}
+.details {
+  margin-top: 15px;
+}
+.comments {
+  margin-top: 15px;
 }
 </style>
