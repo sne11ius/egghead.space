@@ -11,7 +11,7 @@
             <v-btn v-if="isCurrentUser && !displayNameEditor" class="edit-inline" fab small flat color="primary" title="Change username" @click="showDisplayNameEditor">
               <v-icon>edit</v-icon>
             </v-btn>
-            <v-btn v-if="displayNameEditor" title="Save" fab small flat color="primary" @click="updateDisplayName">
+            <v-btn v-if="displayNameEditor" title="Save changes" fab small flat color="primary" @click="updateDisplayName">
               <v-icon>check</v-icon>
             </v-btn>
             <v-btn v-if="displayNameEditor" title="Cancel" fab small flat color="error" @click="cancelDisplayNameEditor">
@@ -19,8 +19,20 @@
             </v-btn>
           </v-card-title>
           <v-card-text>
-            <img v-if="user.photoURL" class="avatar" :src="user.photoURL" alt="avatar">
-            <v-icon class="avatar" v-else>fas fa-user-circle</v-icon>
+            <div class="avatar-container">
+              <img v-if="user.photoURL" class="avatar" :src="user.photoURL" alt="avatar">
+              <v-icon class="avatar" v-else>fas fa-user-circle</v-icon>
+            </div>
+            <div id="upload-area"></div>
+            <v-btn v-if="isCurrentUser && !avatarEditor" fab small flat color="primary" title="Change avatar" @click="showAvatarEditor">
+              <v-icon>edit</v-icon>
+            </v-btn>
+            <v-btn v-if="avatarEditor" title="Save changes" fab small flat color="primary" @click="saveAvatar">
+              <v-icon>check</v-icon>
+            </v-btn>
+            <v-btn v-if="avatarEditor" title="Cancel" fab small flat color="error" @click="cancelAvatarEditor">
+              <v-icon>cancel</v-icon>
+            </v-btn>
           </v-card-text>
         </v-card>
         <h4 class="headline">Sketches created by {{user.displayName}}</h4>
@@ -46,10 +58,17 @@
 </template>
 
 <script>
+import Uppy from "uppy/lib/core";
+import Dashboard from "uppy/lib/plugins/Dashboard";
+import FirebaseCloudStorage from "@/service/FirebaseCloudStorage";
 import SketchTiny from "@/components/SketchTiny.vue";
 import Comment from "@/components/Comment.vue";
-import { db } from "@/firebase";
+import { db, storage } from "@/firebase";
 import { format } from "date-fns/";
+
+import "uppy/dist/uppy.min.css";
+
+const tempStorage = storage.ref().child("temp");
 
 const sketches = db.collection("sketches");
 const users = db.collection("users");
@@ -70,7 +89,10 @@ export default {
       },
       comments: [],
       oldDisplayName: "",
-      displayNameEditor: false
+      displayNameEditor: false,
+      avatarEditor: false,
+      uppy: null,
+      oldPhotoURL: ""
     };
   },
   computed: {
@@ -131,24 +153,123 @@ export default {
     cancelDisplayNameEditor() {
       this.user.displayName = this.oldDisplayName;
       this.displayNameEditor = false;
+    },
+    showAvatarEditor() {
+      this.avatarEditor = true;
+      this.oldPhotoURL = this.user.photoURL;
+      // document.getElementById("upload-area").innerHTML = "";
+      setTimeout(() => {
+        this.uppy = Uppy({
+          autoProceed: true,
+          restrictions: {
+            maxNumberOfFiles: 1,
+            maxFileSize: 1000000,
+            allowedFileTypes: [
+              ".jpg",
+              ".jpeg",
+              ".png",
+              ".gif",
+              ".JPG",
+              ".JPEG",
+              ".PNG",
+              ".GIF"
+            ]
+          }
+        })
+          .use(Dashboard, {
+            inline: true,
+            target: "#upload-area",
+            width: "300px",
+            height: "140px",
+            note: "Images only, up to 1 MB per file",
+            showProgressDetails: true,
+            proudlyDisplayPoweredByUppy: false,
+            locale: {
+              strings: {
+                // dropPaste: "Drop image here, paste or %{browse}"
+              }
+            }
+          })
+          .use(FirebaseCloudStorage, { storageRef: tempStorage })
+          .run();
+        const _this = this;
+        this.uppy.on("upload-success", (file, snapshot) => {
+          const newUrl = file.downloadUrl;
+          _this.user.photoURL = newUrl;
+          _this.user.photoPath = snapshot.ref.fullPath;
+          _this.uppy.removeFile(file.id);
+        });
+      }, 0);
+    },
+    saveAvatar() {
+      if (this.user.photoURL === this.oldPhotoURL) {
+        this.cancelAvatarEditor();
+      }
+      const _this = this;
+      users
+        .doc(this.uid)
+        .collection("public")
+        .doc("userInfo")
+        .update({
+          photoURL: this.user.photoURL,
+          photoPath: this.user.photoPath,
+          photoURLDidChange: true
+        })
+        .then(() => {
+          _this.uppy.close();
+          _this.avatarEditor = false;
+        });
+    },
+    cancelAvatarEditor() {
+      this.uppy.close();
+      this.avatarEditor = false;
+      this.user.photoURL = this.oldPhotoURL;
     }
-  },
-  watch: {
-    // user(user) {
-    // console.log(user);
-    // }
   }
 };
 </script>
+<style lang="scss">
+.user-details {
+  #upload-area {
+    display: inline-block;
+    position: relative;
+    top: -10px;
+    left: 5px;
+    .uppy-Dashboard-inner {
+      height: 140px;
+    }
+    .uppy-Dashboard-dropFilesTitle {
+      position: relative !important;
+      top: -72px !important;
+    }
+    .uppy-Dashboard-progressindicators {
+      position: relative;
+      top: -150px;
+    }
+    .uppy-Informer {
+      transform: none !important;
+      top: -160px;
+    }
+  }
+}
+</style>
 
 <style lang="scss" scoped>
 .user-details {
   margin-bottom: 15px;
   .avatar {
     width: 150px;
+    height: 150px;
     vertical-align: top;
     &.fa-user-circle:before {
       font-size: 140px;
+    }
+  }
+  .avatar-container {
+    display: inline-block;
+    &.upload {
+      background-color: red;
+      height: 150px;
     }
   }
 }
