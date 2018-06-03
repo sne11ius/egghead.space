@@ -4,17 +4,17 @@
       <v-flex xs12 md6>
         <v-card class="user-details">
           <v-card-title primary-title>
-            <h3 v-if="!usernameEditor" class="headline mb-0">{{user.displayName}}</h3>
-            <span v-if="usernameEditor">
+            <h3 v-if="!displayNameEditor" class="headline mb-0">{{user.displayName}}</h3>
+            <span v-if="displayNameEditor">
               <v-text-field v-model="user.displayName"></v-text-field>
             </span>
-            <v-btn v-if="isCurrentUser && !usernameEditor" class="edit-inline" fab small flat color="primary" title="Change username" @click="usernameEditor = !usernameEditor">
+            <v-btn v-if="isCurrentUser && !displayNameEditor" class="edit-inline" fab small flat color="primary" title="Change username" @click="showDisplayNameEditor">
               <v-icon>edit</v-icon>
             </v-btn>
-            <v-btn v-if="usernameEditor" title="Save" fab small flat color="primary" @click="updateUsername">
-              <v-icon>save</v-icon>
+            <v-btn v-if="displayNameEditor" title="Save" fab small flat color="primary" @click="updateDisplayName">
+              <v-icon>check</v-icon>
             </v-btn>
-            <v-btn v-if="usernameEditor" title="Cancel" fab small flat color="error" @click="usernameEditor = !usernameEditor">
+            <v-btn v-if="displayNameEditor" title="Cancel" fab small flat color="error" @click="cancelDisplayNameEditor">
               <v-icon>cancel</v-icon>
             </v-btn>
           </v-card-title>
@@ -72,7 +72,8 @@ export default {
         createdAt: null
       },
       comments: [],
-      usernameEditor: false
+      oldDisplayName: "",
+      displayNameEditor: false
     };
   },
   computed: {
@@ -126,7 +127,7 @@ export default {
     );
   },
   methods: {
-    updateUsername() {
+    updateDisplayName() {
       users
         .doc(this.uid)
         .collection("public")
@@ -135,8 +136,16 @@ export default {
           displayName: this.user.displayName
         })
         .then(() => {
-          this.usernameEditor = false;
+          this.displayNameEditor = false;
         });
+    },
+    showDisplayNameEditor() {
+      this.displayNameEditor = !this.displayNameEditor;
+      this.oldDisplayName = this.user.displayName;
+    },
+    cancelDisplayNameEditor() {
+      this.user.displayName = this.oldDisplayName;
+      this.displayNameEditor = false;
     }
   },
   watch: {
