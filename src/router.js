@@ -9,6 +9,9 @@ import SketchDetails from "./views/SketchDetails.vue";
 Vue.use(Router);
 
 export default new Router({
+  scrollBehavior() {
+    return { x: 0, y: 0 };
+  },
   routes: [
     {
       path: "/",
@@ -33,7 +36,7 @@ export default new Router({
       props: true
     },
     {
-      path: "/sketch/:id/:title?",
+      path: "/sketch/:id/:title?/:commentId?",
       name: "sketch",
       component: SketchDetails,
       props: true

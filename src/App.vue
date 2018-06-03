@@ -25,12 +25,12 @@ import FirebaseUtil from "@/service/FirebaseUtil.js";
 
 import { db } from "@/firebase";
 
-const stripSensitiveData = user => {
-  const strippedUser = Object.assign({}, user);
-  delete strippedUser["apiKey"];
-  delete strippedUser["stsTokenManager"];
-  return strippedUser;
-};
+const mkPublicInfo = ({ createdAt, displayName, photoURL, uid }) => ({
+  createdAt,
+  displayName,
+  photoURL,
+  uid
+});
 
 export default {
   name: "App",
@@ -54,12 +54,16 @@ export default {
           .doc("loginData")
           .set(userObject)
           .then(() => {
-            db
+            const publicInfo = db
               .collection("users")
               .doc(user.uid)
               .collection("public")
-              .doc("userInfo")
-              .set(stripSensitiveData(userObject));
+              .doc("userInfo");
+            return publicInfo.get().then(snapshot => {
+              if (!snapshot.exists) {
+                return publicInfo.set(mkPublicInfo(userObject));
+              }
+            });
           })
           .then(() => {
             this.$globals.currentUser = user;

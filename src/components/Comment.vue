@@ -1,21 +1,46 @@
 <template>
-  <div class="comment">
+  <div class="comment" :id="this.comment.id">
+    <h4 v-if="sketchTitle !== '_'" class="comment-header">For sketch &bdquo;{{sketchTitle}}&ldquo;</h4>
     <div class="comment-body">
       {{comment.body}}
     </div>
     <div class="comment-footer">
-      <span class="author-link"><router-link :to="{name: 'user', params: {uid: this.comment.createdByUid, username: linkUsername}}">{{author}}</router-link></span>
-      <span class="created">{{creationDate}}</span>
+      <span v-if="showUserLink" class="author-link"><router-link :to="{name: 'user', params: {uid: this.comment.createdByUid, username: linkUsername}}">{{author}}</router-link></span>
+      <span v-bind:class="{ created: true, fixPos: sketchLink !== ''}">{{creationDate}}</span>
+      <v-btn v-if="sketchLink !== ''" class="details-link" :to="{name: 'sketch', params: {id: this.sketchId, commentId: this.commentId, title: this.sketchTitle.replace(/\s/g, '+')}}" flat small color="primary">
+        Go to sketch
+      </v-btn>
     </div>
   </div>
 </template>
 
 <script>
+import { db } from "@/firebase";
 import { format } from "date-fns/";
 
 export default {
   name: "Comment",
-  props: ["comment"],
+  props: {
+    comment: {
+      default: null
+      // type: Object
+    },
+    showUserLink: {
+      default: true,
+      type: Boolean
+    },
+    sketchLink: {
+      default: "",
+      type: String
+    }
+  },
+  data() {
+    return {
+      sketchId: "_",
+      sketchTitle: "_",
+      commentId: "_"
+    };
+  },
   computed: {
     author() {
       return this.comment.createdBy.displayName;
@@ -33,6 +58,21 @@ export default {
         return "";
       }
       return format(this.comment.created.toDate(), "MMMM D. YYYY HH:mm");
+    },
+    deepLink() {
+      return this.sketchLink;
+    }
+  },
+  mounted() {
+    if (this.sketchLink) {
+      db
+        .doc(this.sketchLink)
+        .parent.parent.get()
+        .then(snapshot => {
+          this.sketchId = snapshot.id;
+          this.sketchTitle = snapshot.data().title;
+          this.commentId = this.comment.id;
+        });
     }
   }
 };
@@ -52,6 +92,9 @@ export default {
   }
   .created {
     float: right;
+    &.fixPos {
+      padding-top: 13px;
+    }
   }
   .author-link {
     margin-right: 20px;

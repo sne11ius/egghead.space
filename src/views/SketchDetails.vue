@@ -87,7 +87,7 @@ const sketches = db.collection("sketches");
 
 export default {
   name: "SketchDetails",
-  props: ["id"],
+  props: ["id", "commentId"],
   components: {
     Sketch,
     Comment
@@ -103,6 +103,16 @@ export default {
     );
   },
   mounted: function() {
+    if (this.commentId) {
+      setTimeout(() => {
+        const commentEl = document.getElementById(this.commentId);
+        this.$scrollTo(commentEl, 1000, {
+          onDone() {
+            commentEl.classList.add("highlight");
+          }
+        });
+      }, 500);
+    }
     if (!this.$globals.isAuthenticated) {
       return;
     }
@@ -194,6 +204,17 @@ export default {
           createdByUid: this.$globals.currentUser.uid,
           body: this.newCommentBody,
           created: Firebase.firestore.FieldValue.serverTimestamp()
+        })
+        .then(ref => {
+          return db
+            .collection("users")
+            .doc(this.$globals.currentUser.uid)
+            .collection("comments")
+            .add({
+              ref,
+              refString: `sketches/${this.id}/comments/${ref.id}`,
+              created: Firebase.firestore.FieldValue.serverTimestamp()
+            });
         })
         .then(() => {
           this.newCommentBody = "";
@@ -323,6 +344,18 @@ export default {
       margin-bottom: 10px;
     }
   }
+}
+@keyframes highlight {
+  0% {
+    background: #f3f39d;
+  }
+  100% {
+    background: none;
+  }
+}
+
+.highlight {
+  animation: highlight 3s;
 }
 </style>
 

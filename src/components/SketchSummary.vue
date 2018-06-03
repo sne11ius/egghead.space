@@ -6,7 +6,7 @@
     </v-card-title>
     <v-card-text v-text="strippedBody" class="text-preview fade-out"></v-card-text>
     <v-card-actions>
-      <span class="author-link">by <router-link :to="{name: 'user', params: {uid: this.sketch.createdByUid}}">{{author}}</router-link></span>
+      <span class="author-link">by <router-link :to="{name: 'user', params: {uid: this.sketch.createdByUid, username: this.sketch.createdBy.displayName.replace(/\s/g, '+')}}">{{author}}</router-link></span>
       <v-spacer></v-spacer>
       <v-btn v-if="showDetailsLink" :to="{name: 'sketch', params: {id: this.sketch.id, title: this.sketch.title.replace(/\s/g, '+')}}" flat small color="primary">
         Show more
