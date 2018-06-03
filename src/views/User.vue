@@ -21,9 +21,6 @@
           <v-card-text>
             <img v-if="user.photoURL" class="avatar" :src="user.photoURL" alt="avatar">
             <v-icon class="avatar" v-else>fas fa-user-circle</v-icon>
-            <span class="description">
-              {{description}}
-            </span>
           </v-card-text>
         </v-card>
         <h4 class="headline">Sketches created by {{user.displayName}}</h4>
@@ -77,18 +74,6 @@ export default {
     };
   },
   computed: {
-    description() {
-      if (this.user.description) {
-        return this.user.description;
-      } else if (
-        this.$globals.isAuthenticated &&
-        this.$globals.currentUser.uid === this.user.uid
-      ) {
-        return "Tell people about yourself";
-      } else {
-        return "This user did not say anything about themselves yet.";
-      }
-    },
     totalLikes() {
       return (
         (this.userSketches.length > 0 &&
@@ -165,10 +150,6 @@ export default {
     &.fa-user-circle:before {
       font-size: 140px;
     }
-  }
-  .description {
-    position: relative;
-    top: 5px;
   }
 }
 h4.headline {
