@@ -116,8 +116,7 @@ export default {
     if (!this.$globals.isAuthenticated) {
       return;
     }
-    db
-      .collection("moderators")
+    db.collection("moderators")
       .doc(this.$globals.currentUser.uid)
       .get()
       .then(moderatorInfo => {
@@ -220,8 +219,7 @@ export default {
           this.newCommentBody = "";
         })
         .catch(error => {
-          console.log("Could not comment: " + error);
-          EventBus.error("Comment creation failed.");
+          EventBus.error("Comment creation failed: " + error);
         });
     },
     invertLike: function() {
@@ -238,7 +236,7 @@ export default {
           .get(sketchRef)
           .then(function(sketch) {
             if (!sketch.exists) {
-              console.log("Cannot vote on a Sketch that doesn't exist.");
+              EventBus.error("Cannot vote on a Sketch that doesn't exist.");
             }
             let totalLikes = sketch.data().totalLikes || 0;
             let likes = sketch.data().likes || {};
@@ -261,14 +259,13 @@ export default {
             });
           })
           .catch(function(error) {
-            console.log("Transaction failed: ", error);
+            EventBus.error("Could not change vote: " + error);
             _this.isLoading = false;
           });
       });
     },
     submitFeatureThis: function() {
-      db
-        .collection("featuredSketches")
+      db.collection("featuredSketches")
         .add({
           sketch: db.collection("sketches").doc(this.sketch.id),
           featureText: this.featureThisText,
@@ -280,7 +277,7 @@ export default {
           this.featureThisText = "";
         })
         .catch(error => {
-          console.log(error);
+          EventBus.error("Could not feature this sketch: " + error);
         });
     },
     focusCommentTextfield: function() {

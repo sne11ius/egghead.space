@@ -11,12 +11,14 @@
             <v-btn v-if="isCurrentUser && !displayNameEditor" class="edit-inline" fab small flat color="primary" title="Change username" @click="showDisplayNameEditor">
               <v-icon>edit</v-icon>
             </v-btn>
-            <v-btn v-if="displayNameEditor" title="Save changes" fab small flat color="primary" @click="updateDisplayName">
-              <v-icon>check</v-icon>
-            </v-btn>
-            <v-btn v-if="displayNameEditor" title="Cancel" fab small flat color="error" @click="cancelDisplayNameEditor">
-              <v-icon>cancel</v-icon>
-            </v-btn>
+            <div v-if="displayNameEditor" class="button-container">
+              <v-btn title="Save changes" fab small flat color="primary" @click="updateDisplayName">
+                <v-icon>check</v-icon>
+              </v-btn>
+              <v-btn v-if="displayNameEditor" title="Cancel" fab small flat color="error" @click="cancelDisplayNameEditor">
+                <v-icon>cancel</v-icon>
+              </v-btn>
+            </div>
           </v-card-title>
           <v-card-text>
             <div class="avatar-container">
@@ -27,12 +29,14 @@
             <v-btn v-if="isCurrentUser && !avatarEditor" fab small flat color="primary" title="Change avatar" @click="showAvatarEditor">
               <v-icon>edit</v-icon>
             </v-btn>
-            <v-btn v-if="avatarEditor" title="Save changes" fab small flat color="primary" @click="saveAvatar">
-              <v-icon>check</v-icon>
-            </v-btn>
-            <v-btn v-if="avatarEditor" title="Cancel" fab small flat color="error" @click="cancelAvatarEditor">
-              <v-icon>cancel</v-icon>
-            </v-btn>
+            <div v-if="avatarEditor" class="button-container">
+              <v-btn title="Save changes" fab small flat color="primary" @click="saveAvatar">
+                <v-icon>check</v-icon>
+              </v-btn>
+              <v-btn title="Cancel" fab small flat color="error" @click="cancelAvatarEditor">
+                <v-icon>cancel</v-icon>
+              </v-btn>
+            </div>
           </v-card-text>
         </v-card>
         <h4 class="headline">Sketches created by {{user.displayName}}</h4>
@@ -63,6 +67,7 @@ import Dashboard from "uppy/lib/plugins/Dashboard";
 import FirebaseCloudStorage from "@/service/FirebaseCloudStorage";
 import SketchTiny from "@/components/SketchTiny.vue";
 import Comment from "@/components/Comment.vue";
+import EventBus from "@/service/EventBus.js";
 import { db, storage } from "@/firebase";
 import { format } from "date-fns/";
 
@@ -135,6 +140,12 @@ export default {
   },
   methods: {
     updateDisplayName() {
+      if (this.user.displayName.trim() === "") {
+        EventBus.error(
+          "Nothing is not a good user name. We're cool with `_` or `anon` or ... though."
+        );
+        return;
+      }
       users
         .doc(this.uid)
         .collection("public")
@@ -157,7 +168,6 @@ export default {
     showAvatarEditor() {
       this.avatarEditor = true;
       this.oldPhotoURL = this.user.photoURL;
-      // document.getElementById("upload-area").innerHTML = "";
       setTimeout(() => {
         this.uppy = Uppy({
           autoProceed: true,
@@ -180,12 +190,13 @@ export default {
             inline: true,
             target: "#upload-area",
             width: "300px",
-            height: "140px",
+            height: "100%",
             note: "Images only, up to 1 MB per file",
             showProgressDetails: true,
             proudlyDisplayPoweredByUppy: false,
             locale: {
               strings: {
+                // Placeholder {browse} doesn't seem to work...
                 // dropPaste: "Drop image here, paste or %{browse}"
               }
             }
@@ -233,18 +244,33 @@ export default {
   #upload-area {
     display: inline-block;
     position: relative;
-    top: -10px;
+    top: -14px;
     left: 5px;
+    margin-bottom: -14px;
+    &:not(:empty) {
+      height: 150px !important;
+    }
     .uppy-Dashboard-inner {
-      height: 140px;
+      height: 100%;
+    }
+    .uppy-DashboardTabs {
+      display: none;
+    }
+    .uppy-DashboardItem-preview {
+      width: 89px !important;
+      height: 89px !important;
     }
     .uppy-Dashboard-dropFilesTitle {
       position: relative !important;
-      top: -72px !important;
+      top: -94px !important;
     }
     .uppy-Dashboard-progressindicators {
       position: relative;
       top: -150px;
+    }
+    .uppy-Dashboard-note {
+      position: absolute !important;
+      top: 83px;
     }
     .uppy-Informer {
       transform: none !important;
@@ -257,6 +283,14 @@ export default {
 <style lang="scss" scoped>
 .user-details {
   margin-bottom: 15px;
+  & .input-group {
+    padding-top: 0px;
+    position: relative;
+    top: 10px;
+  }
+  .card__title {
+    height: 92px !important;
+  }
   .avatar {
     width: 150px;
     height: 150px;
@@ -270,6 +304,15 @@ export default {
     &.upload {
       background-color: red;
       height: 150px;
+    }
+  }
+  .button-container {
+    display: inline-block;
+    & button {
+      margin-right: 0;
+      & + button {
+        margin-left: 0;
+      }
     }
   }
 }

@@ -65,8 +65,7 @@ export default {
   },
   mounted() {
     if (this.sketchLink) {
-      db
-        .doc(this.sketchLink)
+      db.doc(this.sketchLink)
         .parent.parent.get()
         .then(snapshot => {
           this.sketchId = snapshot.id;

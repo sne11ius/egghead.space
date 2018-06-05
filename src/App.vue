@@ -47,8 +47,7 @@ export default {
     firebase.auth().onAuthStateChanged(user => {
       if (user) {
         const userObject = FirebaseUtil.toSimpleObject(user);
-        db
-          .collection("users")
+        db.collection("users")
           .doc(user.uid)
           .collection("private")
           .doc("loginData")

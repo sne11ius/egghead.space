@@ -91,8 +91,7 @@ export default {
     };
   },
   created: function() {
-    db
-      .collection("featuredSketches")
+    db.collection("featuredSketches")
       .orderBy("featuredSince", "desc")
       .limit(1)
       .get()
