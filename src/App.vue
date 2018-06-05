@@ -62,10 +62,11 @@ export default {
               if (!snapshot.exists) {
                 return publicInfo.set(mkPublicInfo(userObject));
               }
+              return snapshot.data();
             });
           })
-          .then(() => {
-            this.$globals.currentUser = user;
+          .then(publicUserInfo => {
+            this.$globals.currentUser = publicUserInfo;
           })
           .catch(error => {
             // eslint-disable-next-line
