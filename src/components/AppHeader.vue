@@ -1,7 +1,15 @@
 <template>
   <div id="app-header">
     <v-toolbar app class="main-toolbar" color="primary">
-      <v-toolbar-title class="title">
+      <v-toolbar-title class="title small" v-if="$vuetify.breakpoint.xs">
+        <h1>
+          <img src="logo_200.png">
+          <router-link to="/" class="home-link">
+            .space
+          </router-link>
+        </h1>
+      </v-toolbar-title>
+      <v-toolbar-title class="title" v-else>
         <h1>
           <router-link to="/" class="home-link">
             egghead.space
@@ -69,8 +77,10 @@ export default {
   .title {
     overflow: visible;
     position: absolute;
-    left: 50%;
-    transform: translate(-50%, 0%);
+    &:not(.small) {
+      left: 50%;
+      transform: translate(-50%, 0%);
+    }
   }
   h1 {
     font-size: 38px;
