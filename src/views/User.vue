@@ -11,7 +11,7 @@
             <v-btn v-if="isCurrentUser && !displayNameEditor" class="edit-inline" fab small flat color="primary" title="Change username" @click="showDisplayNameEditor">
               <v-icon>edit</v-icon>
             </v-btn>
-            <div v-if="displayNameEditor" class="button-container">
+            <div v-if="isCurrentUser && displayNameEditor" class="button-container">
               <v-btn title="Save changes" fab small flat color="primary" @click="updateDisplayName">
                 <v-icon>check</v-icon>
               </v-btn>
@@ -25,11 +25,11 @@
               <img v-if="user.photoURL" class="avatar" :src="user.photoURL" alt="avatar">
               <v-icon class="avatar" v-else>fas fa-user-circle</v-icon>
             </div>
-            <div id="upload-area"></div>
             <v-btn v-if="isCurrentUser && !avatarEditor" fab small flat color="primary" title="Change avatar" @click="showAvatarEditor">
               <v-icon>edit</v-icon>
             </v-btn>
-            <div v-if="avatarEditor" class="button-container">
+            <div v-if="isCurrentUser && avatarEditor" class="button-container">
+              <div id="upload-area"></div>
               <v-btn title="Save changes" fab small flat color="primary" @click="saveAvatar">
                 <v-icon>check</v-icon>
               </v-btn>
