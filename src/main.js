@@ -30,12 +30,25 @@ Vue.use(VueScrollTo);
 
 const globals = new Vue({
   data: {
-    currentUser: null
+    currentUser: null,
+    mouseActive: false
   },
   computed: {
     isAuthenticated() {
       return this.currentUser != null;
     }
+  },
+  created() {
+    const _this = this;
+    // s. https://codeburst.io/the-only-way-to-detect-touch-with-javascript-7791a3346685
+    window.addEventListener(
+      "mouseover",
+      function onFirstHover() {
+        _this.mouseActive = true;
+        window.removeEventListener("mouseover", onFirstHover, false);
+      },
+      false
+    );
   },
   methods: {
     loadUser(uid) {

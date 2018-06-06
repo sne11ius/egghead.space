@@ -6,7 +6,7 @@
     <v-btn v-if="$globals.currentUser == null" @click="openLoginDialog" fab title="Sign in" small>
       <v-icon>fa fa-sign-in-alt</v-icon>
     </v-btn>
-    <v-speed-dial v-else direction="bottom" transition="slide-y-transition" :open-on-hover=true>
+    <v-speed-dial v-else direction="bottom" transition="slide-y-transition" :open-on-hover="$globals.mouseActive">
       <v-btn fab slot="activator" small>
         <v-avatar v-if="$globals.currentUser.photoURL" >
           <img class="avatar" :src="$globals.currentUser.photoURL" alt="avatar">
