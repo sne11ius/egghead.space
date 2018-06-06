@@ -1,5 +1,5 @@
 <template>
-  <v-card class="sketch">
+  <v-card class="sketch" flat tile>
     <v-card-media v-if="this.sketch.previewImage" :src="this.sketch.previewImage" height="200px"></v-card-media>
     <v-card-title primary-title>
       <h3 class="headline text-title" v-html="title"></h3>

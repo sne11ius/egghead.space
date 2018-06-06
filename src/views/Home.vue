@@ -2,7 +2,7 @@
   <v-container fluid grid-list-lg>
     <v-layout row wrap>
       <v-flex d-flex xs12 md6 lg4>
-        <v-container fluid grid-list-lg id="featured-container">
+        <v-container id="featured-container">
           <v-layout row wrap>
             <v-flex>
               <v-card>
@@ -10,10 +10,10 @@
                   <h3 class="headline">Featured sketch</h3>
                 </v-card-title>
                 <v-card-text v-html="featureText"></v-card-text>
+                <v-flex>
+                  <SketchSummary :sketch="featuredSketch"></SketchSummary>
+                </v-flex>
               </v-card>
-            </v-flex>
-            <v-flex>
-              <SketchSummary :sketch="featuredSketch"></SketchSummary>
             </v-flex>
           </v-layout>
         </v-container>

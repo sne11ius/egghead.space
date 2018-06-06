@@ -1,6 +1,6 @@
 <template>
   <div id="app-header">
-    <v-toolbar app class="main-toolbar" color="primary">
+    <v-toolbar app class="main-toolbar" color="secondary">
       <v-toolbar-title class="title small" v-if="$vuetify.breakpoint.xs">
         <h1>
           <img src="logo_200.png">
@@ -20,27 +20,25 @@
       <v-spacer></v-spacer>
       <UserStatus/>
     </v-toolbar>
-    <div v-if="isHomeView" id="parallax">
-      <v-parallax src="header_image.jpeg" height="450">
-        <v-container fluid>
-          <v-layout row>
-            <v-spacer></v-spacer>
-            <v-flex xs12>
-              <v-text-field
-                id="search"
-                v-model="searchText"
-                label="Search a sketch"
-                color="primary"
-                solo
-                append-icon="search"
-                :append-icon-cb="search"
-              ></v-text-field>
-            </v-flex>
-            <v-spacer></v-spacer>
-          </v-layout>
-        </v-container>
-      </v-parallax>
-    </div>
+    <v-parallax src="header_image_2.jpeg" height="450" v-if="isHomeView" id="parallax">
+      <v-container fluid>
+        <v-layout row>
+          <v-spacer></v-spacer>
+          <v-flex xs12>
+            <v-text-field
+              id="search"
+              v-model="searchText"
+              label="Search a sketch"
+              color="primary"
+              solo
+              append-icon="search"
+              :append-icon-cb="search"
+            ></v-text-field>
+          </v-flex>
+          <v-spacer></v-spacer>
+        </v-layout>
+      </v-container>
+    </v-parallax>
   </div>
 </template>
 

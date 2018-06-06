@@ -126,6 +126,7 @@ export default {
 }
 main.content {
   padding-top: 90px !important;
+  height: 0;
 }
 main.content.isHome {
   padding-top: 0px !important;

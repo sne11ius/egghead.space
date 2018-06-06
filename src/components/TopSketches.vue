@@ -1,6 +1,6 @@
 <template>
   <div id="top-sketches">
-    <v-toolbar tabs>
+    <v-toolbar tabs flat>
       <v-tabs v-model="activeTab">
         <v-tab ripple>Newest</v-tab>
         <v-tab ripple>Rating</v-tab>
