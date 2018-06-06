@@ -65,8 +65,8 @@ export default {
               return snapshot.data();
             });
           })
-          .then(publicUserInfo => {
-            this.$globals.currentUser = publicUserInfo;
+          .then(() => {
+            this.$globals.loadUser(user.uid);
           })
           .catch(error => {
             // eslint-disable-next-line

@@ -6,6 +6,7 @@ import VueFire from "vuefire";
 import "vuetify/dist/vuetify.min.css";
 import VuetifyConfirm from "vuetify-confirm";
 import VueScrollTo from "vue-scrollto";
+import { db } from "@/firebase";
 
 import "@/assets/main.scss";
 
@@ -34,6 +35,18 @@ const globals = new Vue({
   computed: {
     isAuthenticated() {
       return this.currentUser != null;
+    }
+  },
+  methods: {
+    loadUser(uid) {
+      this.$bind(
+        "currentUser",
+        db
+          .collection("users")
+          .doc(uid)
+          .collection("public")
+          .doc("userInfo")
+      );
     }
   }
 });
