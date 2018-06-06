@@ -1,15 +1,21 @@
 <template>
   <v-card class="sketch tiny">
-    <div class="image">
-      <img v-if="this.sketch.previewImage" :src="this.sketch.previewImage">
-      <div v-else class="preview-placeholder"></div>
-      <v-icon :title="likesTitle">fas fa-heart</v-icon> {{sketch.totalLikes || 0 }}<br>
-      <v-icon :title="commentsTitle">fas fa-comment</v-icon> {{sketch.commentCount || 0}}
-    </div>
-    <h3 class="text-title" v-html="title"></h3>
-    <v-btn class="details-link" :to="{name: 'sketch', params: {id: this.sketch.id, title: this.sketch.title.replace(/\s/g, '+')}}" flat small color="primary">
-      Show more
-    </v-btn>
+    <router-link :to="{name: 'sketch', params: {id: this.sketch.id, title: this.sketch.title.replace(/\s/g, '+')}}">
+      <div class="image">
+        <img v-if="this.sketch.previewImage" :src="this.sketch.previewImage">
+        <div v-else class="preview-placeholder"></div>
+      </div>
+      <div class="summary">
+        <h3 class="text-title">{{title}}</h3>
+        <div class="counter-wrap">
+          <span class="counter" :title="likesTitle"><v-icon>fas fa-heart</v-icon> {{sketch.totalLikes || 0 }}</span><br>
+          <span class="counter" :title="commentsTitle"><v-icon>fas fa-comment</v-icon> {{sketch.commentCount || 0}}</span>
+        </div>
+      </div>
+      <v-btn class="details-link" :to="{name: 'sketch', params: {id: this.sketch.id, title: this.sketch.title.replace(/\s/g, '+')}}" flat small color="primary">
+        Show more
+      </v-btn>
+    </router-link>
   </v-card>
 </template>
 
@@ -27,15 +33,23 @@ export default {
   computed: {
     title() {
       const maxLength = 50;
-      return this.sketch.title.substr(0, maxLength);
+      let truncatedTitle = this.sketch.title.substr(0, maxLength);
+      if (truncatedTitle.length < this.sketch.title.length) {
+        truncatedTitle += "...";
+      }
+      return truncatedTitle;
     },
     likesTitle() {
-      return (this.sketch.totalLikes || 0) + " people like this sketch";
+      if (!this.sketch.totalLikes || this.sketch.totalLikes === 0) {
+        return "No likes yet.";
+      }
+      return this.sketch.totalLikes + " people like this sketch";
     },
     commentsTitle() {
-      return (
-        (this.sketch.commentCount || 0) + " people commented on this sketch"
-      );
+      if (!this.sketch.commentCount || this.sketch.commentCount === 0) {
+        return "No comments yet.";
+      }
+      return this.sketch.commentCount + " people commented on this sketch";
     }
   }
 };
@@ -43,15 +57,18 @@ export default {
 
 <style lang="scss" scoped>
 .sketch.tiny {
+  a:not(.btn) {
+    color: black;
+  }
   &.card {
     padding: 7px;
+    padding-bottom: 0;
     margin-bottom: 3px;
     margin-top: 3px;
     h3 {
       overflow: hidden;
       text-overflow: ellipsis;
       display: inline;
-      margin-left: 5px;
       position: absolute;
       top: 7px;
       font-size: 20px;
@@ -59,33 +76,48 @@ export default {
     }
     .details-link {
       position: absolute;
-      top: 76%;
+      top: 74px;
       right: 0px;
     }
   }
   .image {
-    .icon {
-      width: 30px;
-      height: 30px;
-    }
     display: inline-block;
     img {
       max-width: 100px;
       height: 100px;
       display: block;
-      margin-bottom: 5px;
     }
     .preview-placeholder {
       background-color: #cacaca;
       width: 100px;
       height: 100px;
-      margin-bottom: 5px;
+      float: left;
       &:after {
         content: "No\Apreview\Ayet";
         white-space: pre;
         position: relative;
         top: 15px;
         left: 15px;
+      }
+    }
+  }
+  .summary {
+    display: inline-block;
+    margin-left: 8px;
+    .counter-wrap {
+      position: relative;
+      bottom: 10px;
+      .counter {
+        .icon {
+          width: 25px;
+          height: 25px;
+          margin-right: 6px;
+        }
+        min-width: 100px;
+        display: inline-block;
+      }
+      br + .counter {
+        margin-top: 7px;
       }
     }
   }
