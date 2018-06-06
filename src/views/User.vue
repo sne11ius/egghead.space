@@ -104,7 +104,9 @@ export default {
     totalLikes() {
       return (
         (this.userSketches.length > 0 &&
-          this.userSketches.map(s => s.totalLikes).reduce((a, b) => a + b)) ||
+          this.userSketches
+            .map(s => s.totalLikes || 0)
+            .reduce((a, b) => a + b)) ||
         0
       );
     },
