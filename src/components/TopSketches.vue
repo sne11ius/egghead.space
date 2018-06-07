@@ -153,6 +153,10 @@ export default {
   max-width: 100%;
 }
 
+#top-sketches .toolbar {
+  background-color: transparent;
+}
+
 #top-sketches .toolbar__content {
   height: auto !important;
 }
