@@ -11,6 +11,26 @@
         <transition name="component-fade" mode="out-in">
           <router-view/>
         </transition>
+        <v-footer height="auto" color="accent">
+          <router-link to="/about">
+            Made with
+          </router-link>
+          <router-link to="/about">
+            &nbsp;<img src="egg.svg" class="egg">
+          </router-link>
+          <v-spacer></v-spacer>
+          <router-link to="/about">
+            &copy; 2018
+          </router-link>
+          &emsp;|&emsp;
+          <router-link to="/about">
+            Imprint
+          </router-link>
+          &emsp;|&emsp;
+          <router-link to="/about">
+            Privacy policy
+          </router-link>
+        </v-footer>
       </v-content>
     </div>
   </v-app>
@@ -40,7 +60,12 @@ export default {
   },
   data() {
     return {
-      unknownUserState: true
+      unknownUserState: true,
+      /* eslint-disable no-undef */
+      gitHash: __COMMIT_HASH__,
+      commitUrl:
+        "https://github.com/sne11ius/egghead.space/commits/" + __COMMIT_HASH__,
+      gitBranch: __BRANCH_NAME__
     };
   },
   mounted() {
@@ -114,6 +139,26 @@ export default {
   }
   img {
     max-height: 150px;
+  }
+}
+#app footer {
+  width: 100%;
+  color: white;
+  padding-left: 8px;
+  padding-right: 8px;
+  a {
+    color: white;
+    text-decoration: none;
+    &:hover {
+      text-decoration: underline;
+    }
+  }
+  .egg {
+    height: 20px;
+    padding-left: 3px;
+    padding-right: 1px;
+    position: relative;
+    top: 4px;
   }
 }
 .component-fade-enter-active,
