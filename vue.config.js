@@ -19,7 +19,8 @@ module.exports = {
     plugins: [
       new webpack.DefinePlugin({
         __COMMIT_HASH__: JSON.stringify(commitHash),
-        __BRANCH_NAME__: JSON.stringify(branchName)
+        __BRANCH_NAME__: JSON.stringify(branchName),
+        __BUILD_DATE__: JSON.stringify(new Date())
       })
     ],
     module: {

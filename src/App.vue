@@ -16,7 +16,7 @@
             Made with
           </router-link>
           <router-link to="/about">
-            &nbsp;<img src="egg.svg" class="egg">
+            <img src="egg.svg" class="egg">
           </router-link>
           <v-spacer></v-spacer>
           <router-link to="/about">
