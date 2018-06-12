@@ -168,10 +168,47 @@
               </v-card>
             </v-expansion-panel-content>
             <v-expansion-panel-content>
+              <div slot="header"><h2 class="headline">Terms of service</h2></div>
+              <v-card>
+                <v-card-text class="grey lighten-3">
+                  <h5>Copyright</h5>
+                  <p class="simple">
+                    egghead.space is a place to share and discuss ideas. By posting content to our
+                    site, your grant us and anyone else a worldwide, irrevocable, non-exclusive,
+                    royalty-free license to use, reproduce, adapt, publish, translate and distribute
+                    your user content on this site.
+                  </p>
+                  <p class="simple">
+                    By posting content, you also warrent the content is free of any 3rd party
+                    copyright claims.
+                  </p>
+                  <h5>Content policy</h5>
+                  <p class="simple">
+                    We will try hard not to touch the content you share. However, law and also just
+                    human decency can force us to moderate your content or in extreme cases also to
+                    remove all your content and terminate your account if you
+                    <ul>
+                      <li>Use sexually explicit images</li>
+                      <li>Use images with extreme graphic violence</li>
+                      <li>Use images that are illegal in germany (like swastikas)</li>
+                      <li>Deny the holocaust</li>
+                    </ul>
+                    Example:<br>
+                    Creating an entry with the title &bdquo;An online community for people who are into $fetish&ldquo;: Ok<br>
+                    Using explicit images displaying said $fetish in action: Probably not ok.
+                  </p>
+                </v-card-text>
+              </v-card>
+            </v-expansion-panel-content>
+            <v-expansion-panel-content>
               <div slot="header"><h2 class="headline">Imprint</h2></div>
               <v-card>
                 <v-card-text class="grey lighten-3">
-                  Imprint
+                  Imprint & ViSdP<br>
+                  Cornelius Wichering<br>
+                  Am Heidbergstift 58<br>
+                  28717 Bremen<br>
+                  Email: <a href="mailto:info@egghead.space">info@egghead.space</a>
                 </v-card-text>
               </v-card>
             </v-expansion-panel-content>
