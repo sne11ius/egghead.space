@@ -228,8 +228,31 @@
               <div slot="header"><h2 class="headline">Licenses</h2></div>
               <v-card>
                 <v-card-text class="grey lighten-3">
-                  <p>
+                  <h5>
                     We <v-icon color="accent">fa fa-heart</v-icon> open source.
+                  </h5>
+                  <p class="simple">
+                    The software running this site is available under the GNU Affero General Public License (AGPL).
+                    <ul>
+                      <li>Click <a href="/agpl-3.0.txt" target="_blank">here</a> to read the license itself</li>
+                      <li>Click <a href="https://www.gnu.org/licenses/agpl.html" target="_blank">here</a> to read more about AGPL</li>
+                      <li>Click <a href="https://github.com/sne11ius/egghead.space" target="_blank">here</a> to download a copy of this software</li>
+                    </ul>
+                  </p>
+                  <p class="simple">
+                    This site uses licensed material
+                    <ul>
+                      <li>
+                        Big "sun" background image on the frontpage: public domain by NASA:
+                        <a href="https://www.nasa.gov/jpl/pia19821/nustar-stares-at-the-sun" target="_blank">NuSTAR Stares at the Sun</a>
+                      </li>
+                      <li>
+                        Small "egg" icon in the footer: Altered image based on
+                        <a href="https://www.toicon.com/icons/hatch_hatch">hatch</a> icon by
+                        <a href="https://www.toicon.com/authors/carol" target="_blank">Carol Liao</a>,
+                        via <a href="https://www.toicon.com">toicon</a>.
+                      </li>
+                    </ul>
                   </p>
                 </v-card-text>
               </v-card>
