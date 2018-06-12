@@ -8,7 +8,7 @@
             A place to share project ideas.
           </p>
           <v-expansion-panel expand>
-            <v-expansion-panel-content>
+            <v-expansion-panel-content :value="show === 'about'">
               <div slot="header"><h2 class="headline">About</h2></div>
               <v-card>
                 <v-card-text class="grey lighten-3">
@@ -29,7 +29,7 @@
                 </v-card-text>
               </v-card>
             </v-expansion-panel-content>
-            <v-expansion-panel-content>
+            <v-expansion-panel-content :value="show === 'privacy'">
               <div slot="header"><h2 class="headline">Privacy Policy</h2></div>
               <v-card>
                 <v-card-text class="grey lighten-3">
@@ -59,19 +59,27 @@
                           <td>Cloud Functions for Firebase</td>
                           <td>IP addresses</td>
                           <td>
-                            <em>How it helps:</em> Cloud Functions uses IP addresses to execute
-                            event-handling functions and HTTP functions based on end-user actions.<br>
-                            <em>Retention:</em> Cloud functions only saves IP addresses temporarily,
-                            to provide the service.
+                            <p>
+                              <em>How it helps:</em> Cloud Functions uses IP addresses to execute
+                              event-handling functions and HTTP functions based on end-user actions.
+                            </p>
+                            <p>
+                              <em>Retention:</em> Cloud functions only saves IP addresses temporarily,
+                              to provide the service.
+                            </p>
                           </td>
                         </tr>
                         <tr>
                           <td>Firebase Hosting</td>
                           <td>IP addresses</td>
                           <td>
-                            <em>How it helps:</em> Hosting uses IP addresses of incoming requests to
-                            detect abuse and provide customers with detailed analysis of usage data.<br>
-                            <em>Retention:</em> Hosting retains IP data for a few months.
+                            <p>
+                              <em>How it helps:</em> Hosting uses IP addresses of incoming requests to
+                              detect abuse and provide customers with detailed analysis of usage data.
+                            </p>
+                            <p>
+                              <em>Retention:</em> Hosting retains IP data for a few months.
+                            </p>
                           </td>
                         </tr>
                       </table>
@@ -145,8 +153,12 @@
                             IP addresses<br>
                           </td>
                           <td>
-                            <em>How it helps:</em> Firebase Authentication uses the data to enable end-user authentication, and facilitate end-user account management. It also uses user-agent strings and IP addresses to provide added security and prevent abuse during sign-up and authentication.<br>
-                            <em>Retention:</em> Firebase Authentication keeps logged IP addresses for a few weeks. It retains other authentication information until the Firebase customer initiates deletion of the associated user, after which data is removed from live and backup systems within 180 days.
+                            <p>
+                              <em>How it helps:</em> Firebase Authentication uses the data to enable end-user authentication, and facilitate end-user account management. It also uses user-agent strings and IP addresses to provide added security and prevent abuse during sign-up and authentication.
+                            </p>
+                            <p>
+                              <em>Retention:</em> Firebase Authentication keeps logged IP addresses for a few weeks. It retains other authentication information until the Firebase customer initiates deletion of the associated user, after which data is removed from live and backup systems within 180 days.
+                            </p>
                           </td>
                         </tr>
                       </table>
@@ -167,7 +179,7 @@
                 </v-card-text>
               </v-card>
             </v-expansion-panel-content>
-            <v-expansion-panel-content>
+            <v-expansion-panel-content :value="show === 'tos'">
               <div slot="header"><h2 class="headline">Terms of service</h2></div>
               <v-card>
                 <v-card-text class="grey lighten-3">
@@ -200,7 +212,7 @@
                 </v-card-text>
               </v-card>
             </v-expansion-panel-content>
-            <v-expansion-panel-content>
+            <v-expansion-panel-content :value="show === 'imprint'">
               <div slot="header"><h2 class="headline">Imprint</h2></div>
               <v-card>
                 <v-card-text class="grey lighten-3">
@@ -212,18 +224,25 @@
                 </v-card-text>
               </v-card>
             </v-expansion-panel-content>
-            <v-expansion-panel-content>
+            <v-expansion-panel-content :value="show === 'licenses'">
               <div slot="header"><h2 class="headline">Licenses</h2></div>
-              <p>
-                We <v-icon color="accent">fa fa-heart</v-icon> open source.
-              </p>
+              <v-card>
+                <v-card-text class="grey lighten-3">
+                  <p>
+                    We <v-icon color="accent">fa fa-heart</v-icon> open source.
+                  </p>
+                </v-card-text>
+              </v-card>
             </v-expansion-panel-content>
-            <v-expansion-panel-content>
+            <v-expansion-panel-content :value="show === 'version'">
               <div slot="header"><h2 class="headline">Version</h2></div>
-              <p>
-                We are running PHP, Java, Perl, MySQL and Postgres<br>
-                Built @ {{buildDate}} from branch {{gitBranch}} @ <a :href="commitUrl">{{gitHash}}</a>
-              </p>
+                <v-card>
+                  <v-card-text class="grey lighten-3">
+                  <p>
+                    Built @ {{buildDate}} from branch {{gitBranch}} @ <a :href="commitUrl" target="_blank">{{gitHash}}</a>
+                  </p>
+                  </v-card-text>
+                </v-card>
             </v-expansion-panel-content>
           </v-expansion-panel>
         </v-flex>
@@ -235,6 +254,7 @@
 <script>
 export default {
   name: "about",
+  props: ["show"],
   data() {
     return {
       /* eslint-disable no-undef */
@@ -284,7 +304,7 @@ export default {
       background-color: #fff;
       em {
         display: inline-block;
-        width: 90px;
+        width: 85px;
       }
       td,
       th {
@@ -296,6 +316,12 @@ export default {
         }
         &:nth-of-type(2) {
           min-width: 170px;
+        }
+        p {
+          margin-bottom: 0;
+          & + p {
+            margin-top: 7px;
+          }
         }
       }
       th {

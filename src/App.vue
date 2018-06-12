@@ -12,22 +12,22 @@
           <router-view/>
         </transition>
         <v-footer height="auto" color="accent">
-          <router-link to="/about">
+          <router-link :to="{name: 'about', params: { show: 'about' }}">
             Made with
           </router-link>
-          <router-link to="/about">
+          <router-link :to="{name: 'about', params: { show: 'about' }}">
             <img src="egg.svg" class="egg">
           </router-link>
           <v-spacer></v-spacer>
-          <router-link to="/about">
+          <router-link :to="{name: 'about', params: { show: 'licenses' }}">
             &copy; 2018
           </router-link>
           &emsp;|&emsp;
-          <router-link to="/about">
+          <router-link :to="{name: 'about', params: { show: 'imprint' }}">
             Imprint
           </router-link>
           &emsp;|&emsp;
-          <router-link to="/about">
+          <router-link :to="{name: 'about', params: { show: 'privacy' }}">
             Privacy policy
           </router-link>
         </v-footer>
