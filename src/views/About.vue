@@ -42,10 +42,41 @@
                    </p>
                    <div style="display: inline-block">
                     <img src="field_of_cookies.jpeg" style="float: right; margin: 15px;">
-                    <h4>We dont't collect any data&hellip;</h4>
+                    <h4>No cookies&hellip;</h4>
                     <p>
                       We will not collect any data about you &ndash; there's no google-, facebook-
                       or $ad_company-cookie on this site. Actually, there are zero cookies.
+                    </p>
+                    <p class="simple">
+                      But we use 3rd party services that will collect your IP address:
+                      <table class="services">
+                        <tr>
+                          <th>Service</th>
+                          <th>Data</th>
+                          <th>How data helps provide the service</th>
+                        </tr>
+                        <tr>
+                          <td>Cloud Functions for Firebase</td>
+                          <td>IP addresses</td>
+                          <td>
+                            <em>How it helps:</em> Cloud Functions uses IP addresses to execute
+                            event-handling functions and HTTP functions based on end-user actions.<br>
+                            <em>Retention:</em> Cloud functions only saves IP addresses temporarily,
+                            to provide the service.
+                          </td>
+                        </tr>
+                        <tr>
+                          <td>Firebase Hosting</td>
+                          <td>IP addresses</td>
+                          <td>
+                            <em>How it helps:</em> Hosting uses IP addresses of incoming requests to
+                            detect abuse and provide customers with detailed analysis of usage data.<br>
+                            <em>Retention:</em> Hosting retains IP data for a few months.
+                          </td>
+                        </tr>
+                      </table>
+                      We can not access the collected IP addresses, but we will use the usage data
+                      to improve our service.
                     </p>
                     <h4>&hellip;until we have to</h4>
                     <h5>How you can create an account</h5>
@@ -60,11 +91,12 @@
                         <li>Github</li>
                         <li>Sign up form</li>
                       </ul>
+                      Once you sign up for an account, we will use cookies to verify your identity.
                     </p>
                     <h5>What data we collect</h5>
                     <p class="simple">
                       Disregarding your choice of sign in method, we will collect the following data
-                      about you:
+                      about you and keep it until you request us to terminate your account:
                       <ul>
                         <li>
                           <em>Display name (or &bdquo;user name&ldquo;):</em> This will be the
@@ -95,22 +127,13 @@
                           change your avatar any way you want.
                         </li>
                       </ul>
-                      Additionally, we use google firebase services to run this site. Data collected
-                      by these services can and will not accessed by us. These services will collect
-                      the following data:
+                      Additionally, we use Google firebase authentication services for the sign
+                      up / sign in process. This service will collect the following data:
                       <table class="services">
                         <tr>
                           <th>Service</th>
                           <th>Data</th>
                           <th>How data helps provide the service</th>
-                        </tr>
-                        <tr>
-                          <td>Cloud Functions for Firebase</td>
-                          <td>IP addresses</td>
-                          <td>
-                            <em>How it helps:</em> Cloud Functions uses IP addresses to execute event-handling functions and HTTP functions based on end-user actions.<br>
-                            <em>Retention:</em> Cloud functions only saves IP addresses temporarily, to provide the service.
-                          </td>
                         </tr>
                         <tr>
                           <td>Firebase Authentication</td>
@@ -124,14 +147,6 @@
                           <td>
                             <em>How it helps:</em> Firebase Authentication uses the data to enable end-user authentication, and facilitate end-user account management. It also uses user-agent strings and IP addresses to provide added security and prevent abuse during sign-up and authentication.<br>
                             <em>Retention:</em> Firebase Authentication keeps logged IP addresses for a few weeks. It retains other authentication information until the Firebase customer initiates deletion of the associated user, after which data is removed from live and backup systems within 180 days.
-                          </td>
-                        </tr>
-                        <tr>
-                          <td>Firebase Hosting</td>
-                          <td>IP addresses</td>
-                          <td>
-                            <em>How it helps:</em> <div>Hosting uses IP addresses of incoming requests to detect abuse and provide customers with detailed analysis of usage data.</div><br>
-                            <em>Retention:</em> Hosting retains IP data for a few months.
                           </td>
                         </tr>
                       </table>
