@@ -52,7 +52,10 @@
             </div>
             <div class="comments">
               <h4 class="headline">Recent comments</h4>
-              <Comment v-for="comment in comments" :comment="comment.ref" :key="comment.ref.id" :showUserLink=false :sketchLink="comment.refString"></Comment>
+              <div v-if="comments && comments.length > 0" >
+                <Comment v-for="comment in comments" :comment="comment.ref" :key="comment.ref.id" :showUserLink=false :sketchLink="comment.refString"></Comment>
+              </div>
+              <span v-else>[No comments yet]</span>
             </div>
           </v-card-text>
         </v-card>

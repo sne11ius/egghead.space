@@ -235,7 +235,7 @@
                     The software running this site is available under the GNU Affero General Public License (AGPL).
                     <ul>
                       <li>Click <a href="/agpl-3.0.txt" target="_blank">here</a> to read the license itself</li>
-                      <li>Click <a href="https://www.gnu.org/licenses/agpl.html" target="_blank">here</a> to read more about AGPL</li>
+                      <li>Click <a href="https://www.gnu.org/licenses/agpl.html" target="_blank">here</a> to read more about the AGPL</li>
                       <li>Click <a href="https://github.com/sne11ius/egghead.space" target="_blank">here</a> to download a copy of this software</li>
                     </ul>
                   </p>
@@ -269,6 +269,9 @@
             </v-expansion-panel-content>
           </v-expansion-panel>
         </v-flex>
+        <v-flex md4 center text-xs-center>
+          <img class="big-logo" src="mr_egg_500.png">
+        </v-flex>
       <v-spacer></v-spacer>
     </v-layout>
   </v-container>
@@ -292,6 +295,12 @@ export default {
 </script>
 
 <style lang="scss" scoped>
+.big-logo {
+  img {
+    max-width: 100%;
+    margin: 20px;
+  }
+}
 .about-content {
   h4 {
     margin-top: 10px;
