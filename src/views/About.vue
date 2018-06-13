@@ -26,6 +26,10 @@
                     And that's what this page is all about: <router-link to="create">sharing</router-link>,
                     discussing and maybe realising your most awesome project ideas.
                   </p>
+                  <p>
+                    If you have any questions or comments, reach out via
+                    <a href="https://twitter.com/EggheadSpace" target="_blank">twitter</a> or <a href="mailto:info@egghead.space">email</a>.
+                  </p>
                 </v-card-text>
               </v-card>
             </v-expansion-panel-content>
