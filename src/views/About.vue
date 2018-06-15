@@ -348,12 +348,6 @@ export default {
         vertical-align: top;
         padding: 5px;
         border: 2px solid #eee;
-        &:nth-of-type(1) {
-          // min-width: 200px;
-        }
-        &:nth-of-type(2) {
-          // min-width: 170px;
-        }
         p {
           margin-bottom: 0;
           & + p {
