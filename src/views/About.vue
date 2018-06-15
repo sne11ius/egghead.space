@@ -274,8 +274,7 @@
           </v-expansion-panel>
         </v-flex>
         <v-flex md4 center text-xs-center>
-          <img
-  max-width: 100%;class="big-logo" src="mr_egg_500.png">
+          <img class="big-logo" src="mr_egg_500.png">
         </v-flex>
       <v-spacer></v-spacer>
     </v-layout>
