@@ -21,21 +21,40 @@
             </div>
           </v-card-title>
           <v-card-text>
-            <div class="avatar-container">
-              <img v-if="user.photoURL" class="avatar" :src="user.photoURL" alt="avatar">
-              <v-icon class="avatar" v-else>fas fa-user-circle</v-icon>
+            <div class="email" v-if="isCurrentUser">
+              <h4 v-if="!displayEmailEditor">{{privateInfo.email}}</h4>
+              <span v-if="displayEmailEditor">
+                <v-text-field v-model="privateInfo.email"></v-text-field>
+              </span>
+              <v-btn v-if="!displayEmailEditor"  @click="showEmailEditor" fab small flat color="primary" title="Change email">
+                <v-icon>edit</v-icon>
+              </v-btn>
+              <div v-if="displayEmailEditor" class="button-container">
+                <v-btn title="Save changes" fab small flat color="primary" @click="updateEmail">
+                  <v-icon>check</v-icon>
+                </v-btn>
+                <v-btn v-if="displayEmailEditor" title="Cancel" fab small flat color="error" @click="cancelEmailEditor">
+                  <v-icon>cancel</v-icon>
+                </v-btn>
+              </div>
             </div>
-            <v-btn v-if="isCurrentUser && !avatarEditor" fab small flat color="primary" title="Change avatar" @click="showAvatarEditor">
-              <v-icon>edit</v-icon>
-            </v-btn>
-            <div v-if="isCurrentUser && avatarEditor" class="button-container">
-              <div id="upload-area"></div>
-              <v-btn title="Save changes" fab small flat color="primary" @click="saveAvatar">
-                <v-icon>check</v-icon>
+            <div class="photo">
+              <div class="avatar-container">
+                <img v-if="user.photoURL" class="avatar" :src="user.photoURL" alt="avatar">
+                <v-icon class="avatar" v-else>fas fa-user-circle</v-icon>
+              </div>
+              <v-btn v-if="isCurrentUser && !avatarEditor" fab small flat color="primary" title="Change avatar" @click="showAvatarEditor">
+                <v-icon>edit</v-icon>
               </v-btn>
-              <v-btn title="Cancel" fab small flat color="error" @click="cancelAvatarEditor">
-                <v-icon>cancel</v-icon>
-              </v-btn>
+              <div v-if="isCurrentUser && avatarEditor" class="button-container">
+                <div id="upload-area"></div>
+                <v-btn title="Save changes" fab small flat color="primary" @click="saveAvatar">
+                  <v-icon>check</v-icon>
+                </v-btn>
+                <v-btn title="Cancel" fab small flat color="error" @click="cancelAvatarEditor">
+                  <v-icon>cancel</v-icon>
+                </v-btn>
+              </div>
             </div>
           </v-card-text>
         </v-card>
@@ -95,10 +114,14 @@ export default {
         displayName: "",
         createdAt: null
       },
+      privateInfo: {
+        email: ""
+      },
       comments: [],
       oldDisplayName: "",
       displayNameEditor: false,
       avatarEditor: false,
+      displayEmailEditor: false,
       uppy: null,
       oldPhotoURL: ""
     };
@@ -119,11 +142,22 @@ export default {
     isCurrentUser() {
       return (
         this.$globals.isAuthenticated &&
-        this.$globals.currentUser.uid === this.user.uid
+        this.$globals.currentUser.uid === this.uid
       );
     }
   },
   created: function() {
+    setTimeout(() => {
+      if (this.isCurrentUser) {
+        this.$bind(
+          "privateInfo",
+          users
+            .doc(this.uid)
+            .collection("private")
+            .doc("loginData")
+        );
+      }
+    }, 2000);
     this.$bind(
       "userSketches",
       sketches.where("createdByUid", "==", this.uid).orderBy("created", "desc")
@@ -169,6 +203,33 @@ export default {
     cancelDisplayNameEditor() {
       this.user.displayName = this.oldDisplayName;
       this.displayNameEditor = false;
+    },
+    updateEmail() {
+      if (
+        this.privateInfo.email.trim() === "" ||
+        !this.privateInfo.email.includes("@")
+      ) {
+        EventBus.error("This does not seem to be a valid email.");
+        return;
+      }
+      users
+        .doc(this.uid)
+        .collection("private")
+        .doc("loginData")
+        .update({
+          email: this.privateInfo.email
+        })
+        .then(() => {
+          this.displayEmailEditor = false;
+        });
+    },
+    showEmailEditor() {
+      this.displayEmailEditor = !this.displayEmailEditor;
+      this.oldEmail = this.privateInfo.email;
+    },
+    cancelEmailEditor() {
+      this.privateInfo.email = this.oldEmail;
+      this.displayEmailEditor = !this.displayEmailEditor;
     },
     showAvatarEditor() {
       this.avatarEditor = true;
@@ -309,6 +370,23 @@ export default {
     &.upload {
       background-color: red;
       height: 150px;
+    }
+  }
+  .email {
+    display: block;
+    position: relative;
+    height: 30px;
+    top: -20px;
+    .button-container {
+      position: relative;
+      top: -25px;
+    }
+    .input-group {
+      max-width: 300px;
+      display: inline-block;
+    }
+    h4 {
+      display: inline-block;
     }
   }
   .button-container {
