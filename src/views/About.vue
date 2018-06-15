@@ -195,7 +195,7 @@
                     your user content on this site.
                   </p>
                   <p class="simple">
-                    By posting content, you also warrent the content is free of any 3rd party
+                    By posting content, you also warrant the content is free of any 3rd party
                     copyright claims.
                   </p>
                   <h5>Content policy</h5>
