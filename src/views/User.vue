@@ -41,7 +41,7 @@
             <div class="photo">
               <div class="avatar-container">
                 <img v-if="user.photoURL" class="avatar" :src="user.photoURL" alt="avatar">
-                <v-icon class="avatar" v-else>fas fa-user-circle</v-icon>
+                <v-icon class="avatar" v-else title="No avatar yet">fas fa-user-circle</v-icon>
               </div>
               <v-btn v-if="isCurrentUser && !avatarEditor" fab small flat color="primary" title="Change avatar" @click="showAvatarEditor">
                 <v-icon>edit</v-icon>
@@ -147,6 +147,8 @@ export default {
     }
   },
   created: function() {
+    // This timeout is ... bad. I just couldn't make it work with any combination of $watch or
+    // $computed
     setTimeout(() => {
       if (this.isCurrentUser) {
         this.$bind(
