@@ -45,6 +45,11 @@ import FirebaseUtil from "@/service/FirebaseUtil.js";
 
 import { db } from "@/firebase";
 
+const mkPrivateInfo = ({ email, uid }) => ({
+  email,
+  uid
+});
+
 const mkPublicInfo = ({ createdAt, displayName, photoURL, uid }) => ({
   createdAt,
   displayName,
@@ -72,20 +77,27 @@ export default {
     firebase.auth().onAuthStateChanged(user => {
       if (user) {
         const userObject = FirebaseUtil.toSimpleObject(user);
-        db.collection("users")
+        const privateRef = db
+          .collection("users")
           .doc(user.uid)
           .collection("private")
-          .doc("loginData")
-          .set(userObject)
+          .doc("loginData");
+        const publicRef = db
+          .collection("users")
+          .doc(user.uid)
+          .collection("public")
+          .doc("userInfo");
+        privateRef
+          .get()
+          .then(snapshot => {
+            if (!snapshot.exists) {
+              return privateRef.set(mkPrivateInfo(userObject));
+            }
+          })
           .then(() => {
-            const publicInfo = db
-              .collection("users")
-              .doc(user.uid)
-              .collection("public")
-              .doc("userInfo");
-            return publicInfo.get().then(snapshot => {
+            return publicRef.get().then(snapshot => {
               if (!snapshot.exists) {
-                return publicInfo.set(mkPublicInfo(userObject));
+                return publicRef.set(mkPublicInfo(userObject));
               }
               return snapshot.data();
             });
