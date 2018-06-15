@@ -42,9 +42,10 @@ export default new Router({
       props: true
     },
     {
-      path: "/about",
+      path: "/about/:show?",
       name: "about",
-      component: About
+      component: About,
+      props: true
     }
   ]
 });

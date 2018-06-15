@@ -1,10 +1,10 @@
 <template>
   <div id="app-header">
-    <v-toolbar app class="main-toolbar" color="secondary">
+    <v-toolbar app class="main-toolbar" color="primary">
       <v-toolbar-title class="title small" v-if="$vuetify.breakpoint.xs">
         <h1>
-          <img src="logo_200.png">
           <router-link to="/" class="home-link">
+            <img src="mr_egg_60.png">
             .space
           </router-link>
         </h1>
@@ -13,9 +13,9 @@
         <h1>
           <router-link to="/" class="home-link">
             egghead.space
+            <img src="mr_egg_60.png">
           </router-link>
         </h1>
-        <img src="logo_200.png">
       </v-toolbar-title>
       <v-spacer></v-spacer>
       <UserStatus/>
