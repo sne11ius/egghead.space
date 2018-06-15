@@ -274,7 +274,8 @@
           </v-expansion-panel>
         </v-flex>
         <v-flex md4 center text-xs-center>
-          <img class="big-logo" src="mr_egg_500.png">
+          <img
+  max-width: 100%;class="big-logo" src="mr_egg_500.png">
         </v-flex>
       <v-spacer></v-spacer>
     </v-layout>
@@ -300,6 +301,7 @@ export default {
 
 <style lang="scss" scoped>
 .big-logo {
+  max-width: 100%;
   img {
     max-width: 100%;
     margin: 20px;
