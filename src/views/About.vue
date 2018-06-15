@@ -45,7 +45,7 @@
                      enough.
                    </p>
                    <div style="display: inline-block">
-                    <img src="field_of_cookies.jpeg" style="float: right; margin: 15px;">
+                    <img src="field_of_cookies.jpeg" style="float: right; margin: 15px; max-width: 100%;">
                     <h4>No cookies&hellip;</h4>
                     <p>
                       We will not collect any data about you &ndash; there's no google-, facebook-
@@ -61,7 +61,7 @@
                         </tr>
                         <tr>
                           <td>Cloud Functions for Firebase</td>
-                          <td>IP addresses</td>
+                          <td>IP&nbsp;addresses</td>
                           <td>
                             <p>
                               <em>How it helps:</em> Cloud Functions uses IP addresses to execute
@@ -75,7 +75,7 @@
                         </tr>
                         <tr>
                           <td>Firebase Hosting</td>
-                          <td>IP addresses</td>
+                          <td>IP&nbsp;addresses</td>
                           <td>
                             <p>
                               <em>How it helps:</em> Hosting uses IP addresses of incoming requests to
@@ -151,10 +151,10 @@
                           <td>Firebase Authentication</td>
                           <td>
                             Passwords<br>
-                            Email addresses<br>
-                            Phone numbers<br>
-                            User agents<br>
-                            IP addresses<br>
+                            Email&nbsp;addresses<br>
+                            Phone&nbsp;numbers<br>
+                            User&nbsp;agents<br>
+                            IP&nbsp;addresses<br>
                           </td>
                           <td>
                             <p>
@@ -349,10 +349,10 @@ export default {
         padding: 5px;
         border: 2px solid #eee;
         &:nth-of-type(1) {
-          min-width: 200px;
+          // min-width: 200px;
         }
         &:nth-of-type(2) {
-          min-width: 170px;
+          // min-width: 170px;
         }
         p {
           margin-bottom: 0;
