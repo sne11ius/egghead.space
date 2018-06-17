@@ -53,7 +53,14 @@ export default {
 .sketch.card + .sketch.card {
   margin-top: 15px;
 }
-.sketch .card__text img {
-  max-width: 100%;
+.sketch .card__text {
+  img {
+    max-width: 100%;
+  }
+  ul,
+  ol {
+    margin-left: 30px;
+    margin-bottom: 16px;
+  }
 }
 </style>
