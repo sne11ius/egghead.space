@@ -128,6 +128,12 @@ export default {
       padding-top: 0;
     }
   }
+  ul,
+  ol {
+    margin-left: 30px;
+    margin-top: 16px;
+    margin-bottom: 16px;
+  }
 }
 #create-btn {
   float: right;
