@@ -9,7 +9,6 @@
                 <v-card-title>
                   <h3 class="headline">Featured sketch</h3>
                 </v-card-title>
-                <v-card-text v-html="featureText"></v-card-text>
                 <v-flex>
                   <SketchSummary :sketch="featuredSketch"></SketchSummary>
                 </v-flex>
@@ -55,29 +54,23 @@
         </v-card>
       </v-flex>
       <v-flex d-flex xs12 md12 lg4>
-        <TopSketches></TopSketches>
+        Hehe
       </v-flex>
     </v-layout>
   </v-container>
 </template>
 
 <script>
-import TopSketches from "@/components/TopSketches.vue";
-import SketchSummary from "@/components/SketchSummary.vue";
-import { db } from "@/firebase";
-
-const orderedSketches = db.collection("sketches").orderBy("created", "desc");
+import { mapState, mapActions } from 'vuex'
+import SketchSummary from "components/SketchSummary.vue";
 
 export default {
   name: "Home",
   components: {
-    SketchSummary,
-    TopSketches
+    SketchSummary
   },
   data() {
     return {
-      orderedSketches: [],
-      featureText: "",
       featuredSketch: {
         id: "not_yet",
         body: "",
@@ -90,54 +83,6 @@ export default {
       }
     };
   },
-  created: function() {
-    db.collection("featuredSketches")
-      .orderBy("featuredSince", "desc")
-      .limit(1)
-      .get()
-      .then(list => {
-        let featured;
-        list.forEach(item => {
-          featured = item.data();
-        });
-        return featured;
-      })
-      .then(featured => {
-        this.$bind("featuredSketch", featured.sketch);
-        this.featureText = featured.featureText;
-      });
-  },
-  firestore: {
-    orderedSketches
-  }
+  computed: mapState(['featured']),
 };
 </script>
-
-<style lang="scss">
-#create-sketch-button {
-  margin-top: 65px;
-  right: 20px;
-}
-#featured-container {
-  height: 100%;
-  padding: 0;
-  .flex {
-    padding-bottom: 0;
-    width: 100%;
-    & + .flex {
-      padding-top: 0;
-    }
-  }
-  ul,
-  ol {
-    margin-left: 30px;
-    margin-top: 16px;
-    margin-bottom: 16px;
-  }
-}
-#create-btn {
-  float: right;
-  padding-left: 20px;
-  padding-right: 20px;
-}
-</style>

@@ -1,6 +1,8 @@
 .DS_Store
 node_modules
-/dist
+
+functions/server/assets
+public/assets
 
 # local env files
 .env.local
@@ -20,5 +22,5 @@ firebase-debug.log
 *.njsproj
 *.sln
 
-#yarn 
+#yarn
 yarn.lock

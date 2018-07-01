@@ -6,20 +6,18 @@
     </v-card-title>
     <v-card-text v-text="strippedBody" class="text-preview fade-out"></v-card-text>
     <v-card-actions>
-      <span class="author-link">by <router-link :to="{name: 'user', params: {uid: this.sketch.createdByUid, username: this.sketch.createdBy.displayName.replace(/\s/g, '+')}}">{{author}}</router-link></span>
       <v-spacer></v-spacer>
-      <v-btn v-if="showDetailsLink" :to="{name: 'sketch', params: {id: this.sketch.id, title: this.sketch.title.replace(/\s/g, '+')}}" flat small color="primary">
-        Show more
-      </v-btn>
     </v-card-actions>
   </v-card>
 </template>
 
 <script>
-import striptags from "striptags";
-import shave from "shave";
+import striptags from 'striptags'
+import shave from 'shave'
+import markdown from 'service/MarkdownRenderer.js'
 
 export default {
+  name: 'SketchSummary',
   props: {
     sketch: {
       default: () => {
@@ -32,37 +30,37 @@ export default {
       type: Boolean
     }
   },
-  mounted: function() {
+  mounted: function () {
     this.$nextTick(function() {
-      window.addEventListener("resize", this.handleResize);
+      window.addEventListener('resize', this.handleResize);
     });
   },
-  beforeDestroy: function() {
-    window.removeEventListener("resize", this.handleResize);
+  beforeDestroy: function () {
+    window.removeEventListener('resize', this.handleResize);
   },
-  updated() {
-    this.$nextTick(() => {
+  updated () {
+    this.$nextTick (() => {
       this.handleResize();
     });
   },
   computed: {
-    title() {
+    title () {
       const maxLength = 50;
       return this.sketch.title.substr(0, maxLength);
     },
-    strippedBody() {
+    strippedBody () {
       const headingsRegex = /(<h1>.*<\/h1>)|(<h2>.*<\/h2>)|(<h3>.*<\/h3>)|(<h4>.*<\/h4>)|(<h5>.*<\/h5>)|(<h6>.*<\/h6>)/g;
       return striptags(
-        this.marked(this.sketch.body).replace(headingsRegex, "")
+        markdown.render(this.sketch.body).replace(headingsRegex, "")
       );
     },
-    author() {
+    author () {
       return this.sketch.createdBy.displayName;
     }
   },
   methods: {
-    handleResize() {
-      this.$nextTick(() => {
+    handleResize () {
+      this.$nextTick (() => {
         shave(".text-preview", 130);
       });
     }
