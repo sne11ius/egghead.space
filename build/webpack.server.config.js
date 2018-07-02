@@ -4,7 +4,6 @@ const base = require('./webpack.base.config')
 const nodeExternals = require('webpack-node-externals')
 const VueSSRServerPlugin = require('vue-server-renderer/server-plugin')
 
-
 module.exports = merge(base, {
   target: 'node',
   devtool: '#source-map',
@@ -17,6 +16,17 @@ module.exports = merge(base, {
     alias: {
       'create-api': './create-api-server.js'
     }
+  },
+  module: {
+    loaders: [
+      {
+        test: /\.js$/,
+        loader: 'babel',
+        query: {
+          presets: ['es2015']
+        }
+      }
+    ]
   },
   // https://webpack.js.org/configuration/externals/#externals
   // https://github.com/liady/webpack-node-externals

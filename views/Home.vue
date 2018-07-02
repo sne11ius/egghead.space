@@ -9,6 +9,7 @@
                 <v-card-title>
                   <h3 class="headline">Featured sketch</h3>
                 </v-card-title>
+                <v-card-text v-html="featureText"></v-card-text>
                 <v-flex>
                   <SketchSummary :sketch="featuredSketch"></SketchSummary>
                 </v-flex>
@@ -61,28 +62,23 @@
 </template>
 
 <script>
-import { mapState, mapActions } from 'vuex'
-import SketchSummary from "components/SketchSummary.vue";
+import SketchSummary from "components/SketchSummary.vue"
 
 export default {
   name: "Home",
   components: {
     SketchSummary
   },
-  data() {
-    return {
-      featuredSketch: {
-        id: "not_yet",
-        body: "",
-        title: "Loading...",
-        created: "0",
-        createdBy: {
-          displayName: "Loading..."
-        },
-        createdByUid: "lazy"
-      }
-    };
+  asyncData ({ store, route }) {
+    return store.dispatch('fetchFeatureText')
   },
-  computed: mapState(['featured']),
-};
+  computed: {
+    featureText () {
+      return this.$store.state.featureText
+    },
+    featuredSketch () {
+      return this.$store.state.featuredSketch
+    }
+  }
+}
 </script>
