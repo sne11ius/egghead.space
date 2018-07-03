@@ -48,9 +48,9 @@
           <v-card-text>
             <p>
               There's that one thingy you thought about and you think it's awesome. Find out what
-              others think about it and<br>
-              <v-btn id="create-btn" color="primary" router-link to="/create">create a sketch</v-btn>
+              others think about it and
             </p>
+            <v-btn id="create-btn" color="primary" router-link to="/create">create a sketch</v-btn>
           </v-card-text>
         </v-card>
       </v-flex>
