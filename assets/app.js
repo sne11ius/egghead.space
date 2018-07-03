@@ -8,11 +8,8 @@ import { createRouter } from 'router/index'
 import { sync } from 'vuex-router-sync'
 
 import Vuetify from 'vuetify'
-/*
-if (process.env.VUE_ENV === 'client') {
-  require('vuetify/dist/vuetify.min.css')
-}
-*/
+require('vuetify/dist/vuetify.min.css')
+
 Vue.use(Vuetify)
 
 Object.keys(Components).forEach(key => {

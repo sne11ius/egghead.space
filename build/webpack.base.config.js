@@ -47,21 +47,7 @@ module.exports = {
       },
       {
         test: /\.css$/,
-        use: [
-          {
-            loader: 'style-loader' // creates style nodes from JS strings
-          },
-          {
-            loader: 'css-loader' // translates CSS into CommonJS
-          },
-          {
-            loader: 'sass-loader' // compiles Sass to CSS
-          }
-        ]
-      },
-      {
-        test: /\.styl$/,
-        loader: ['css-loader', 'stylus-loader']
+        loader: ['vue-style-loader', 'css-loader']
       },
       {
         test: /\.(png|jpe?g|gif|svg)(\?.*)?$/,
