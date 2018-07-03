@@ -8,6 +8,11 @@ const resolve = file => path.resolve(__dirname, file)
 const { createBundleRenderer } = require('vue-server-renderer')
 const redirects = require('./router/301.json')
 
+const values = require('object.values')
+if (!Object.values) {
+  values.shim()
+}
+
 const isProd = process.env.NODE_ENV === 'production'
 const useMicroCache = process.env.MICRO_CACHE !== 'false'
 const serverInfo =
@@ -20,18 +25,21 @@ const template = fs.readFileSync(resolve('./assets/index.template.html'), 'utf-8
 
 function createRenderer (bundle, options) {
   // https://github.com/vuejs/vue/blob/dev/packages/vue-server-renderer/README.md#why-use-bundlerenderer
-  return createBundleRenderer(bundle, Object.assign(options, {
-    template,
-    // for component caching
-    cache: LRU({
-      max: 1000,
-      maxAge: 1000 * 60 * 15
-    }),
-    // this is only needed when vue-server-renderer is npm-linked
-    basedir: resolve('./public'),
-    // recommended for performance
-    runInNewContext: false
-  }))
+  return createBundleRenderer(
+    bundle,
+    Object.assign(options, {
+      template,
+      // for component caching
+      cache: LRU({
+        max: 1000,
+        maxAge: 1000 * 60 * 15
+      }),
+      // this is only needed when vue-server-renderer is npm-linked
+      basedir: resolve('./public'),
+      // recommended for performance
+      runInNewContext: false
+    })
+  )
 }
 
 let renderer
@@ -55,9 +63,10 @@ if (isProd) {
   })
 }
 
-const serve = (path, cache) => express.static(resolve(path), {
-  maxAge: cache && isProd ? 60 * 60 * 24 * 30 : 0
-})
+const serve = (path, cache) =>
+  express.static(resolve(path), {
+    maxAge: cache && isProd ? 60 * 60 * 24 * 30 : 0
+  })
 
 app.use(compression({ threshold: 0 }))
 if (!isProd) app.use('/', serve('./public', true))
@@ -126,9 +135,14 @@ function render (req, res) {
   })
 }
 
-app.get('*', isProd ? render : (req, res) => {
-  readyPromise.then(() => render(req, res))
-})
+app.get(
+  '*',
+  isProd
+    ? render
+    : (req, res) => {
+      readyPromise.then(() => render(req, res))
+    }
+)
 
 const port = process.env.PORT || 8080
 app.listen(port, '0.0.0.0', () => {
