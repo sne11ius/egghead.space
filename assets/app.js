@@ -1,4 +1,6 @@
 import Vue from 'vue'
+import Vuetify from 'vuetify'
+import 'vuetify/dist/vuetify.min.css'
 import App from './App.vue'
 import Components from 'components/_index'
 import Filters from 'filters/_index'
@@ -7,10 +9,15 @@ import store from 'store/index'
 import { createRouter } from 'router/index'
 import { sync } from 'vuex-router-sync'
 
-import Vuetify from 'vuetify'
-require('vuetify/dist/vuetify.min.css')
+import 'assets/main.scss'
 
-Vue.use(Vuetify)
+Vue.use(Vuetify, {
+  theme: {
+    primary: '#0a6aa6',
+    secondary: '#023859',
+    accent: '#70a649'
+  }
+})
 
 Object.keys(Components).forEach(key => {
   Vue.component(key, Components[key])

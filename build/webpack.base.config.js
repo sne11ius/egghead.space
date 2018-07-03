@@ -47,7 +47,11 @@ module.exports = {
       },
       {
         test: /\.css$/,
-        loader: ['vue-style-loader', 'css-loader']
+        use: ['vue-style-loader', 'css-loader']
+      },
+      {
+        test: /\.scss$/,
+        use: ['vue-style-loader', 'css-loader', 'sass-loader']
       },
       {
         test: /\.(png|jpe?g|gif|svg)(\?.*)?$/,
