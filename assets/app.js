@@ -1,6 +1,7 @@
 import Vue from 'vue'
 import Vuetify from 'vuetify'
 import 'vuetify/dist/vuetify.min.css'
+import Globals from 'mixins/globals'
 import App from './App.vue'
 import Components from 'components/_index'
 import Filters from 'filters/_index'
@@ -18,6 +19,8 @@ Vue.use(Vuetify, {
     accent: '#70a649'
   }
 })
+
+Vue.use(Globals)
 
 Object.keys(Components).forEach(key => {
   Vue.component(key, Components[key])

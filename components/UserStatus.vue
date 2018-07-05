@@ -24,10 +24,12 @@
 </template>
 
 <script>
-import EventBus from "@/service/EventBus.js";
-import firebase from "firebase";
-import firebaseui from "firebaseui";
-import "firebaseui/dist/firebaseui.css";
+import EventBus from "service/EventBus.js"
+import { api } from 'api'
+import "firebaseui/dist/firebaseui.css"
+
+const auth = api.auth
+let firebaseui
 
 export default {
   name: "UserStatus",
@@ -44,8 +46,7 @@ export default {
   },
   methods: {
     logoutClicked() {
-      firebase
-        .auth()
+      auth
         .signOut()
         .then(() => {
           this.$globals.currentUser = null;
@@ -57,8 +58,8 @@ export default {
     openLoginDialog() {
       this.showSignInDialog = true;
       const ui =
-        firebaseui.auth.AuthUI.getInstance() ||
-        new firebaseui.auth.AuthUI(firebase.auth());
+        api.firebaseui.auth.AuthUI.getInstance() ||
+        new api.firebaseui.auth.AuthUI(auth);
       ui.start("#firebaseui-auth-container", {
         signInFlow: "popup",
         callbacks: {
@@ -69,10 +70,10 @@ export default {
           }
         },
         signInOptions: [
-          firebase.auth.GoogleAuthProvider.PROVIDER_ID,
-          firebase.auth.TwitterAuthProvider.PROVIDER_ID,
-          firebase.auth.GithubAuthProvider.PROVIDER_ID,
-          firebase.auth.EmailAuthProvider.PROVIDER_ID
+          api.firebase.auth.GoogleAuthProvider.PROVIDER_ID,
+          api.firebase.auth.TwitterAuthProvider.PROVIDER_ID,
+          api.firebase.auth.GithubAuthProvider.PROVIDER_ID,
+          api.firebase.auth.EmailAuthProvider.PROVIDER_ID
         ]
       });
     }

@@ -5,7 +5,7 @@
 </template>
 
 <script>
-import EventBus from "@/service/EventBus";
+import EventBus from "service/EventBus";
 
 export default {
   name: "GlobalSnackbar",

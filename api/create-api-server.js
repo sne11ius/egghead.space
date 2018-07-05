@@ -1,6 +1,7 @@
 import Firebase from 'firebase/app'
 import 'firebase/firestore'
 import 'firebase/storage'
+import 'firebase/auth'
 import LRU from 'lru-cache'
 
 export function createAPI ({ config }) {
@@ -15,8 +16,10 @@ export function createAPI ({ config }) {
       timestampsInSnapshots: true
     })
     api = process.__API__ = {
+      firebase: Firebase,
       db: firebaseApp.firestore(),
       storage: firebaseApp.storage(),
+      auth: firebaseApp.auth(),
       onServer: true,
       // fetched item cache
       cachedItems: LRU({

@@ -1,18 +1,115 @@
 <template>
   <v-app>
     <div id="app">
-      <router-view></router-view>
+      <GlobalSnackbar></GlobalSnackbar>
+      <AppHeader></AppHeader>
+      <v-content v-bind:class="{ isHome: isHomeView }">
+        <transition name="component-fade" mode="out-in">
+          <router-view/>
+        </transition>
+        <v-footer height="auto" color="accent">
+          <router-link :to="{name: 'about', params: { show: 'about' }}">
+            Made with
+          </router-link>
+          <router-link :to="{name: 'about', params: { show: 'about' }}">
+            <img src="egg.svg" class="egg">
+          </router-link>
+          <v-spacer></v-spacer>
+          <router-link :to="{name: 'about', params: { show: 'licenses' }}">
+            &copy; 2018
+          </router-link>
+          &emsp;|&emsp;
+          <router-link :to="{name: 'about', params: { show: 'imprint' }}">
+            Imprint
+          </router-link>
+          &emsp;|&emsp;
+          <router-link :to="{name: 'about', params: { show: 'privacy' }}">
+            Privacy policy
+          </router-link>
+        </v-footer>
+      </v-content>
     </div>
   </v-app>
 </template>
 
 <script>
 import Meta from 'mixins/meta'
+import Globals from 'mixins/globals'
+import GlobalSnackbar from 'components/GlobalSnackbar.vue'
+import AppHeader from 'components/AppHeader.vue'
+import FirebaseUtil from "service/FirebaseUtil.js";
+
+import { api } from 'api'
 
 export default {
+  name: 'App',
   mixins: [Meta],
+  components: {
+    GlobalSnackbar,
+    AppHeader
+  },
   data () {
     return {
+      gitHash: __COMMIT_HASH__,
+      commitUrl:
+        'https://github.com/sne11ius/egghead.space/commits/' + __COMMIT_HASH__,
+      gitBranch: __BRANCH_NAME__
+    }
+  },
+  mounted() {
+    api.auth.onAuthStateChanged(user => {
+      if (user) {
+        const userObject = FirebaseUtil.toSimpleObject(user);
+        const privateRef = api.db
+          .collection('users')
+          .doc(user.uid)
+          .collection('private')
+          .doc('loginData')
+        const publicRef = api.db
+          .collection('users')
+          .doc(user.uid)
+          .collection('public')
+          .doc('userInfo')
+        privateRef
+          .get()
+          .then(snapshot => {
+            if (!snapshot.exists) {
+              return privateRef.set(mkPrivateInfo(userObject));
+            }
+          })
+          .then(() => {
+            return publicRef.get().then(snapshot => {
+              if (!snapshot.exists) {
+                return publicRef.set(mkPublicInfo(userObject));
+              }
+              return snapshot.data();
+            });
+          })
+          .then(() => {
+            this.$globals.loadUser(user.uid);
+          })
+          .catch(error => {
+            // eslint-disable-next-line
+            console.error('Login failed: ', error);
+            api
+              .auth
+              .signOut()
+              .then(() => {
+                this.$globals.currentUser = null;
+              })
+              .catch(error => {
+                // eslint-disable-next-line
+                console.error('Could not logout after login error.', error);
+              });
+          });
+      } else {
+        this.$globals.currentUser = null;
+      }
+    });
+  },
+  computed: {
+    isHomeView: function() {
+      return this.$route.path === '/';
     }
   }
 }

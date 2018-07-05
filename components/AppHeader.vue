@@ -1,7 +1,7 @@
 <template>
   <div id="app-header">
     <v-toolbar app class="main-toolbar" color="primary">
-      <v-toolbar-title class="title small" v-if="$vuetify.breakpoint.xs">
+      <v-toolbar-title class="title small" v-if="breakpoint">
         <h1>
           <router-link to="/" class="home-link">
             <img src="mr_egg_60.png">
@@ -18,7 +18,9 @@
         </h1>
       </v-toolbar-title>
       <v-spacer></v-spacer>
-      <UserStatus/>
+      <NoSSR>
+        <UserStatus></UserStatus>
+      </NoSSR>
     </v-toolbar>
     <v-parallax src="header_image_2.jpeg" height="450" v-if="isHomeView" id="parallax">
       <v-container fluid>
@@ -32,7 +34,7 @@
               color="primary"
               solo
               append-icon="search"
-              :append-icon-cb="search"
+              @click:append="search"
             ></v-text-field>
           </v-flex>
           <v-spacer></v-spacer>
@@ -43,18 +45,24 @@
 </template>
 
 <script>
-import UserStatus from "@/components/UserStatus.vue";
-import EventBus from "@/service/EventBus.js";
+import NoSSR from 'vue-no-ssr'
+import UserStatus from "components/UserStatus.vue";
+import EventBus from "service/EventBus.js";
 
 export default {
   name: "AppHeader",
   components: {
-    UserStatus
+    UserStatus,
+    NoSSR
   },
   data() {
     return {
-      searchText: ""
+      searchText: "",
+      isHydrated: false
     };
+  },
+  mounted () {
+    this.isHydrated = true
   },
   methods: {
     search: function() {
@@ -62,6 +70,11 @@ export default {
     }
   },
   computed: {
+    breakpoint () {
+      return this.isHydrated
+        ? this.$vuetify.breakpoint.xs
+        : true
+    },
     isHomeView: function() {
       return this.$route.path === "/";
     }

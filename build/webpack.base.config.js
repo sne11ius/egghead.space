@@ -7,6 +7,15 @@ const FriendlyErrorsPlugin = require('friendly-errors-webpack-plugin')
 const isProd = process.env.NODE_ENV === 'production'
 const resolve = file => path.resolve(__dirname, file)
 
+const commitHash = require('child_process')
+  .execSync('git rev-parse --short HEAD')
+  .toString()
+const branchName = require('child_process')
+  .execSync(
+    'git rev-parse --abbrev-ref HEAD | grep -v ^HEAD$ || git rev-parse HEAD'
+  )
+  .toString()
+
 module.exports = {
   devtool: isProd ? false : '#cheap-module-source-map',
   output: {
@@ -74,7 +83,19 @@ module.exports = {
       }),
       new ExtractTextPlugin({
         filename: 'common.[chunkhash].css'
+      }),
+      new webpack.DefinePlugin({
+        __COMMIT_HASH__: JSON.stringify(commitHash),
+        __BRANCH_NAME__: JSON.stringify(branchName),
+        __BUILD_DATE__: JSON.stringify(new Date())
       })
     ]
-    : [new FriendlyErrorsPlugin()]
+    : [
+      new FriendlyErrorsPlugin(),
+      new webpack.DefinePlugin({
+        __COMMIT_HASH__: JSON.stringify(commitHash),
+        __BRANCH_NAME__: JSON.stringify(branchName),
+        __BUILD_DATE__: JSON.stringify(new Date())
+      })
+    ]
 }

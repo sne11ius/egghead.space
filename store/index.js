@@ -59,7 +59,6 @@ export default new Vuex.Store({
             featured = doc.data()
           })
           featured.sketch.get().then(snapshot => {
-            console.log(toSketch(snapshot.data()))
             commit('setFeaturedSketch', toSketch(snapshot.data()))
             commit('setFeatureText', featured.featureText)
             resolve()
