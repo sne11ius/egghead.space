@@ -1,6 +1,16 @@
-import Firebase from 'firebase'
+import Firebase from 'firebase/app'
+import 'firebase/firestore'
+import 'firebase/storage'
 
 export function createAPI ({ config }) {
-  Firebase.initializeApp(config)
-  return Firebase
+  const firebaseApp = !Firebase.apps.length ? Firebase.initializeApp(config) : Firebase.app()
+
+  firebaseApp.firestore().settings({
+    timestampsInSnapshots: true
+  })
+  return {
+    db: firebaseApp.firestore(),
+    storage: firebaseApp.storage(),
+    onServer: false
+  }
 }

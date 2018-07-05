@@ -1,11 +1,11 @@
 import Vue from 'vue'
 import Vuex from 'vuex'
 
-import { db } from '../firebase'
+import { api } from 'api'
 
 Vue.use(Vuex)
 
-const featured = db
+const featured = api.db
   .collection('featuredSketches')
   .orderBy('featuredSince', 'desc')
   .limit(1)

@@ -1,4 +1,6 @@
-import Firebase from 'firebase'
+import Firebase from 'firebase/app'
+import 'firebase/firestore'
+import 'firebase/storage'
 import LRU from 'lru-cache'
 
 export function createAPI ({ config }) {
@@ -8,16 +10,20 @@ export function createAPI ({ config }) {
   if (process.__API__) {
     api = process.__API__
   } else {
-    Firebase.initializeApp(config)
-    api = process.__API__ = Firebase
-
-    api.onServer = true
-
-    // fetched item cache
-    api.cachedItems = LRU({
-      max: 1000,
-      maxAge: 1000 * 60 * 15 // 15 min cache
+    const firebaseApp = !Firebase.apps.length ? Firebase.initializeApp(config) : Firebase.app()
+    firebaseApp.firestore().settings({
+      timestampsInSnapshots: true
     })
+    api = process.__API__ = {
+      db: firebaseApp.firestore(),
+      storage: firebaseApp.storage(),
+      onServer: true,
+      // fetched item cache
+      cachedItems: LRU({
+        max: 1000,
+        maxAge: 1000 * 60 * 15 // 15 min cache
+      })
+    }
   }
   return api
 }
