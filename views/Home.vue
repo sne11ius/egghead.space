@@ -82,3 +82,32 @@ export default {
   }
 }
 </script>
+
+<style lang="scss">
+#create-sketch-button {
+  margin-top: 65px;
+  right: 20px;
+}
+#featured-container {
+  height: 100%;
+  padding: 0;
+  .flex {
+    padding-bottom: 0;
+    width: 100%;
+    & + .flex {
+      padding-top: 0;
+    }
+  }
+  ul,
+  ol {
+    margin-left: 30px;
+    margin-top: 16px;
+    margin-bottom: 16px;
+  }
+}
+#create-btn {
+  float: right;
+  padding-left: 20px;
+  padding-right: 20px;
+}
+</style>
