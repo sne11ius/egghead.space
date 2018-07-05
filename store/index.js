@@ -10,6 +10,38 @@ const featured = api.db
   .orderBy('featuredSince', 'desc')
   .limit(1)
 
+const toSketch = ({
+  title,
+  body,
+  commentsLastMonth,
+  commentsLastWeek,
+  created,
+  createdByUid,
+  likes,
+  totalLikes,
+  likesLastMonth,
+  likesLastWeek,
+  medias,
+  previewImage,
+  updated,
+  updatedByUid
+}) => ({
+  title,
+  body,
+  commentsLastMonth,
+  commentsLastWeek,
+  created,
+  createdByUid,
+  likes,
+  totalLikes,
+  likesLastMonth,
+  likesLastWeek,
+  medias,
+  previewImage,
+  updated,
+  updatedByUid
+})
+
 export default new Vuex.Store({
   state: {
     featureText: '',
@@ -27,11 +59,8 @@ export default new Vuex.Store({
             featured = doc.data()
           })
           featured.sketch.get().then(snapshot => {
-            const data = snapshot.data()
-            commit('setFeaturedSketch', {
-              title: data.title,
-              body: data.body
-            })
+            console.log(toSketch(snapshot.data()))
+            commit('setFeaturedSketch', toSketch(snapshot.data()))
             commit('setFeatureText', featured.featureText)
             resolve()
           })
