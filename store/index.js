@@ -12,7 +12,14 @@ export default new Vuex.Store({
       title: '',
       body: ''
     },
-    currentUser: null
+    currentUser: null,
+    newest: [],
+    bestRatedLastWeek: [],
+    bestRatedLastMonth: [],
+    bestRatedAllTime: [],
+    monstCommentedLastWeek: [],
+    monstCommentedLastMonth: [],
+    monstCommentedAllTime: []
   },
   actions: {
     fetchFeatureText ({ commit }) {
@@ -20,6 +27,32 @@ export default new Vuex.Store({
         commit('setFeatureText', text)
         commit('setFeaturedSketch', sketch)
       })
+    },
+    fetchTopSketches ({ commit }) {
+      console.log('fetchTopSketches')
+      return api.fetchTopSketches(
+        newest => {
+          commit('setNewest', newest)
+        },
+        bestRatedLastWeek => {
+          commit('setBestRatedLastWeek', bestRatedLastWeek)
+        },
+        bestRatedLastMonth => {
+          commit('setBestRatedLastMonth', bestRatedLastMonth)
+        },
+        bestRatedAllTime => {
+          commit('setBestRatedAllTime', bestRatedAllTime)
+        },
+        mostCommentedLastWeek => {
+          commit('setMostCommentedLastWeek', mostCommentedLastWeek)
+        },
+        mostCommentedLastMonth => {
+          commit('setMostCommentedLastMonth', mostCommentedLastMonth)
+        },
+        mostCommentedAllTime => {
+          commit('setMostCommentedAllTime', mostCommentedAllTime)
+        }
+      )
     },
     updateCurrentUser ({ commit }, userId) {
       console.log('update current user')
@@ -41,6 +74,28 @@ export default new Vuex.Store({
     },
     setCurrentUser (state, currentUser) {
       state.currentUser = currentUser
+    },
+    setNewest (state, newest) {
+      console.log('setNewest', newest)
+      state.newest = newest
+    },
+    setBestRatedLastWeek (state, bestRatedLastWeek) {
+      state.bestRatedLastWeek = bestRatedLastWeek
+    },
+    setBestRatedLastMonth (state, bestRatedLastMonth) {
+      state.bestRatedLastMonth = bestRatedLastMonth
+    },
+    setBestRatedAllTime (state, bestRatedAllTime) {
+      state.bestRatedAllTime = bestRatedAllTime
+    },
+    setMostCommentedLastWeek (state, mostCommentedLastWeek) {
+      state.mostCommentedLastWeek = mostCommentedLastWeek
+    },
+    setMostCommentedLastMonth (state, mostCommentedLastMonth) {
+      state.mostCommentedLastMonth = mostCommentedLastMonth
+    },
+    setMostCommentedAllTimek (state, mostCommentedAllTime) {
+      state.mostCommentedAllTime = mostCommentedAllTime
     }
   }
 })

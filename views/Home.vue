@@ -55,22 +55,29 @@
         </v-card>
       </v-flex>
       <v-flex d-flex xs12 md12 lg4>
-        Hehe
+        <TopSketches></TopSketches>
       </v-flex>
     </v-layout>
   </v-container>
 </template>
 
 <script>
-import SketchSummary from "components/SketchSummary.vue"
+import SketchSummary from 'components/SketchSummary.vue'
+import TopSketches from 'components/TopSketches.vue'
 
 export default {
-  name: "Home",
+  name: 'Home',
   components: {
-    SketchSummary
+    SketchSummary,
+    TopSketches
   },
   asyncData ({ store, route }) {
-    return store.dispatch('fetchFeatureText')
+    console.log('Home: asyncData')
+    return Promise.all([
+      store.dispatch('fetchFeatureText'),
+      //FIXME: This should really not be here
+      store.dispatch('fetchTopSketches')
+    ])
   },
   computed: {
     featureText () {

@@ -61,6 +61,41 @@ const featured = apiImpl.db
   .orderBy('featuredSince', 'desc')
   .limit(1)
 
+const newest = apiImpl.db
+  .collection('sketches')
+  .orderBy('created', 'desc')
+  .limit(10)
+
+const bestRatedLastWeek = apiImpl.db
+  .collection('sketches')
+  .orderBy('likesLastWeek', 'desc')
+  .limit(10)
+
+const bestRatedLastMonth = apiImpl.db
+  .collection('sketches')
+  .orderBy('likesLastMonth', 'desc')
+  .limit(10)
+
+const bestRatedAllTime = apiImpl.db
+  .collection('sketches')
+  .orderBy('totalLikes', 'desc')
+  .limit(10)
+
+const mostCommentedLastWeek = apiImpl.db
+  .collection('sketches')
+  .orderBy('commentsLastWeek', 'desc')
+  .limit(10)
+
+const mostCommentedLastMonth = apiImpl.db
+  .collection('sketches')
+  .orderBy('commentsLastMonth', 'desc')
+  .limit(10)
+
+const mostCommentedAllTime = apiImpl.db
+  .collection('sketches')
+  .orderBy('commentCount', 'desc')
+  .limit(10)
+
 apiImpl.fetchFeatured = onUpdate => {
   return new Promise((resolve, reject) => {
     featured.onSnapshot(featuredSnapshot => {
@@ -77,6 +112,49 @@ apiImpl.fetchFeatured = onUpdate => {
       })
     })
   })
+}
+
+apiImpl.fetchTopSketches = (
+  onNewest,
+  onBestRatedLastWeek,
+  onBestRatedLastMonth,
+  onBestRatedAllTime,
+  onMostCommentedLastWeek,
+  onMostCommentedLastMonth,
+  onMostCommentedAllTime
+) => {
+  console.log('fetchTopSketches')
+  return Promise.all([
+    new Promise((resolve, reject) => {
+      console.log('hehe')
+      newest.onSnapshot(snapshot => onNewest(snapshot))
+      return newest.get().then(resolve)
+    }),
+    () => {
+      bestRatedLastWeek.onSnapshot(snapshot => onBestRatedLastWeek(snapshot))
+      return bestRatedLastWeek.get()
+    },
+    () => {
+      bestRatedLastMonth.onSnapshot(snapshot => onBestRatedLastMonth(snapshot))
+      return bestRatedLastMonth.get()
+    },
+    () => {
+      bestRatedAllTime.onSnapshot(snapshot => onBestRatedAllTime(snapshot))
+      return bestRatedAllTime.get()
+    },
+    () => {
+      mostCommentedLastWeek.onSnapshot(snapshot => onMostCommentedLastWeek(snapshot))
+      return mostCommentedLastWeek.get()
+    },
+    () => {
+      mostCommentedLastMonth.onSnapshot(snapshot => onMostCommentedLastMonth(snapshot))
+      return mostCommentedLastMonth.get()
+    },
+    () => {
+      mostCommentedAllTime.onSnapshot(snapshot => onMostCommentedAllTime(snapshot))
+      return mostCommentedAllTime.get()
+    }
+  ])
 }
 
 apiImpl.fetchPrivateUserData = userId =>
@@ -115,9 +193,11 @@ apiImpl.setPublicUserData = userData =>
     .doc(userData.uid)
     .collection('public')
     .doc('userInfo')
-    .set(mkPublicInfo({
-      createdAt: apiImpl.firebase.firestore.FieldValue.serverTimestamp(),
-      ...userData
-    }))
+    .set(
+      mkPublicInfo({
+        createdAt: apiImpl.firebase.firestore.FieldValue.serverTimestamp(),
+        ...userData
+      })
+    )
 
 export const api = apiImpl

@@ -44,108 +44,64 @@
 </template>
 
 <script>
-import SketchTiny from "@/components/SketchTiny.vue";
-import { db } from "@/firebase";
-
-const newest = db
-  .collection("sketches")
-  .orderBy("created", "desc")
-  .limit(10);
-
-const bestRatedLastWeek = db
-  .collection("sketches")
-  .orderBy("likesLastWeek", "desc")
-  .limit(10);
-
-const bestRatedLastMonth = db
-  .collection("sketches")
-  .orderBy("likesLastMonth", "desc")
-  .limit(10);
-
-const bestRatedAllTime = db
-  .collection("sketches")
-  .orderBy("totalLikes", "desc")
-  .limit(10);
-
-const mostCommentedLastWeek = db
-  .collection("sketches")
-  .orderBy("commentsLastWeek", "desc")
-  .limit(10);
-
-const mostCommentedLastMonth = db
-  .collection("sketches")
-  .orderBy("commentsLastMonth", "desc")
-  .limit(10);
-
-const mostCommentedAllTime = db
-  .collection("sketches")
-  .orderBy("commentCount", "desc")
-  .limit(10);
+import SketchTiny from 'components/SketchTiny.vue'
 
 export default {
-  name: "TopSketches",
+  name: 'TopSketches',
   components: {
     SketchTiny
   },
   data() {
     return {
-      timePeriod: "week",
-      activeTab: "0",
+      timePeriod: 'week',
+      activeTab: '0',
       items: [
         {
-          label: "7 days",
-          value: "week"
+          label: '7 days',
+          value: 'week'
         },
         {
-          label: "30 days",
-          value: "month"
+          label: '30 days',
+          value: 'month'
         },
         {
-          label: "Ever",
-          value: "allTime"
+          label: 'Ever',
+          value: 'allTime'
         }
-      ],
-      newest: [],
-      bestRatedAllTime: [],
-      bestRatedLastWeek: [],
-      bestRatedLastMonth: [],
-      mostCommentedLastWeek: [],
-      mostCommentedLastMonth: [],
-      mostCommentedAllTime: []
-    };
-  },
-  computed: {
-    sketchesByRating: function() {
-      switch (this.timePeriod) {
-        case "week":
-          return this.bestRatedLastWeek;
-        case "month":
-          return this.bestRatedLastMonth;
-        case "allTime":
-          return this.bestRatedAllTime;
-      }
-    },
-    sketchesByComments: function() {
-      switch (this.timePeriod) {
-        case "week":
-          return this.mostCommentedLastWeek;
-        case "month":
-          return this.mostCommentedLastMonth;
-        case "allTime":
-          return this.mostCommentedAllTime;
-      }
+      ]
     }
   },
-  firestore: {
-    newest,
-    bestRatedLastWeek,
-    bestRatedLastMonth,
-    bestRatedAllTime,
-    mostCommentedLastWeek,
-    mostCommentedLastMonth,
-    mostCommentedAllTime
+  asyncData ({ store, route }) {
+    console.log('asyncData')
+    return store.dispatch('fetchTopSketches')
+  },
+  computed: {
+    newest: function () {
+      console.log('newest')
+      return this.$store.state.newest
+    },
+    sketchesByRating: function () {
+      switch (this.timePeriod) {
+        case "week":
+          return this.$store.state.bestRatedLastWeek
+        case "month":
+          return this.$store.state.bestRatedLastMonth
+        case "allTime":
+          return this.$store.state.bestRatedAllTime
+      }
+    },
+    sketchesByComments: function () {
+      switch (this.timePeriod) {
+        case "week":
+          return this.$store.state.mostCommentedLastWeek
+        case "month":
+          return this.$store.state.mostCommentedLastMonth
+        case "allTime":
+          return this.$store.state.mostCommentedAllTime
+      }
+    }
   }
-};
+}
 </script>
 
 <style>
