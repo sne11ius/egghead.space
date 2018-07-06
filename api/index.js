@@ -87,7 +87,7 @@ apiImpl.fetchPrivateUserData = userId =>
     .doc('loginData')
     .get()
 
-apiImpl.updatePrivateUserData = userData =>
+apiImpl.setPrivateUserData = userData =>
   apiImpl.db
     .collection('users')
     .doc(userData.uid)
@@ -109,12 +109,15 @@ apiImpl.fetchPublicUserData = (userId, onSnapshot) => {
   return ref.get()
 }
 
-apiImpl.updatePublicUserData = userData =>
+apiImpl.setPublicUserData = userData =>
   apiImpl.db
     .collection('users')
     .doc(userData.uid)
     .collection('public')
     .doc('userInfo')
-    .set(mkPublicInfo(userData))
+    .set(mkPublicInfo({
+      createdAt: apiImpl.firebase.firestore.FieldValue.serverTimestamp(),
+      ...userData
+    }))
 
 export const api = apiImpl
