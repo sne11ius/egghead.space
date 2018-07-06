@@ -5,43 +5,6 @@ import { api } from 'api'
 
 Vue.use(Vuex)
 
-const featured = api.db
-  .collection('featuredSketches')
-  .orderBy('featuredSince', 'desc')
-  .limit(1)
-
-const toSketch = ({
-  title,
-  body,
-  commentsLastMonth,
-  commentsLastWeek,
-  created,
-  createdByUid,
-  likes,
-  totalLikes,
-  likesLastMonth,
-  likesLastWeek,
-  medias,
-  previewImage,
-  updated,
-  updatedByUid
-}) => ({
-  title,
-  body,
-  commentsLastMonth,
-  commentsLastWeek,
-  created,
-  createdByUid,
-  likes,
-  totalLikes,
-  likesLastMonth,
-  likesLastWeek,
-  medias,
-  previewImage,
-  updated,
-  updatedByUid
-})
-
 export default new Vuex.Store({
   state: {
     featureText: '',
@@ -52,18 +15,9 @@ export default new Vuex.Store({
   },
   actions: {
     fetchFeatureText ({ commit, dispatch }) {
-      return new Promise((resolve, reject) => {
-        featured.onSnapshot(featuredSnapshot => {
-          let featured
-          featuredSnapshot.forEach(doc => {
-            featured = doc.data()
-          })
-          featured.sketch.get().then(snapshot => {
-            commit('setFeaturedSketch', toSketch(snapshot.data()))
-            commit('setFeatureText', featured.featureText)
-            resolve()
-          })
-        })
+      return api.fetchFeatured(({ text, sketch }) => {
+        commit('setFeatureText', text)
+        commit('setFeaturedSketch', sketch)
       })
     }
   },
