@@ -11,14 +11,25 @@ export default new Vuex.Store({
     featuredSketch: {
       title: '',
       body: ''
-    }
+    },
+    currentUser: null
   },
   actions: {
-    fetchFeatureText ({ commit, dispatch }) {
+    fetchFeatureText ({ commit }) {
       return api.fetchFeatured(({ text, sketch }) => {
         commit('setFeatureText', text)
         commit('setFeaturedSketch', sketch)
       })
+    },
+    updateCurrentUser ({ commit }, userId) {
+      console.log('update current user')
+      return api.fetchPublicUserData(userId, snapshot => {
+        commit('setCurrentUser', snapshot.data())
+      })
+    },
+    removeCurrentUser ({ commit }) {
+      console.log('remove current user')
+      commit('setCurrentUser', null)
     }
   },
   mutations: {
@@ -27,6 +38,9 @@ export default new Vuex.Store({
     },
     setFeaturedSketch (state, featuredSketch) {
       state.featuredSketch = featuredSketch
+    },
+    setCurrentUser (state, currentUser) {
+      state.currentUser = currentUser
     }
   }
 })

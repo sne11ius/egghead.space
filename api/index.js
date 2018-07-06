@@ -44,12 +44,24 @@ const toSketch = ({
   updatedByUid
 })
 
+const mkPrivateInfo = ({ email, uid }) => ({
+  email,
+  uid
+})
+
+const mkPublicInfo = ({ createdAt, displayName, photoURL, uid }) => ({
+  createdAt,
+  displayName,
+  photoURL,
+  uid
+})
+
 const featured = apiImpl.db
   .collection('featuredSketches')
   .orderBy('featuredSince', 'desc')
   .limit(1)
 
-apiImpl.fetchFeatured = (onUpdate) => {
+apiImpl.fetchFeatured = onUpdate => {
   return new Promise((resolve, reject) => {
     featured.onSnapshot(featuredSnapshot => {
       let featured
@@ -66,5 +78,43 @@ apiImpl.fetchFeatured = (onUpdate) => {
     })
   })
 }
+
+apiImpl.fetchPrivateUserData = userId =>
+  apiImpl.db
+    .collection('users')
+    .doc(userId)
+    .collection('private')
+    .doc('loginData')
+    .get()
+
+apiImpl.updatePrivateUserData = userData =>
+  apiImpl.db
+    .collection('users')
+    .doc(userData.uid)
+    .collection('private')
+    .doc('loginData')
+    .set(mkPrivateInfo(userData))
+
+apiImpl.fetchPublicUserData = (userId, onSnapshot) => {
+  console.log('fetchPublicUserData', arguments)
+  console.log('fetchPublicUserData', userId, onSnapshot)
+  var ref = apiImpl.db
+    .collection('users')
+    .doc(userId)
+    .collection('public')
+    .doc('userInfo')
+  if (onSnapshot) {
+    ref.onSnapshot(onSnapshot)
+  }
+  return ref.get()
+}
+
+apiImpl.updatePublicUserData = userData =>
+  apiImpl.db
+    .collection('users')
+    .doc(userData.uid)
+    .collection('public')
+    .doc('userInfo')
+    .set(mkPublicInfo(userData))
 
 export const api = apiImpl

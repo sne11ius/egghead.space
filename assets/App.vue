@@ -37,7 +37,6 @@ import Meta from 'mixins/meta'
 import Globals from 'mixins/globals'
 import GlobalSnackbar from 'components/GlobalSnackbar.vue'
 import AppHeader from 'components/AppHeader.vue'
-import FirebaseUtil from "service/FirebaseUtil.js";
 
 import { api } from 'api'
 
@@ -56,60 +55,52 @@ export default {
       gitBranch: __BRANCH_NAME__
     }
   },
-  mounted() {
+  mounted () {
     api.auth.onAuthStateChanged(user => {
       if (user) {
-        const userObject = FirebaseUtil.toSimpleObject(user);
-        const privateRef = api.db
-          .collection('users')
-          .doc(user.uid)
-          .collection('private')
-          .doc('loginData')
-        const publicRef = api.db
-          .collection('users')
-          .doc(user.uid)
-          .collection('public')
-          .doc('userInfo')
-        privateRef
-          .get()
+        api.fetchPrivateUserData(user.uid)
           .then(snapshot => {
             if (!snapshot.exists) {
-              return privateRef.set(mkPrivateInfo(userObject));
+              console.log('no snapshot')
+              return api.setPrivateUserData(user)
             }
           })
           .then(() => {
-            return publicRef.get().then(snapshot => {
+            return api.fetchPublicUserData(user.uid).then(snapshot => {
+              console.log('snapshot', snapshot)
               if (!snapshot.exists) {
-                return publicRef.set(mkPublicInfo(userObject));
+                return api.setPublicUserData(user)
               }
-              return snapshot.data();
             });
           })
           .then(() => {
-            this.$globals.loadUser(user.uid);
+            console.log('store', this.$store)
+            console.log('id', user.uid)
+            this.$store.dispatch('updateCurrentUser', user.uid)
           })
           .catch(error => {
             // eslint-disable-next-line
-            console.error('Login failed: ', error);
+            console.error('Login failed: ', error)
             api
               .auth
               .signOut()
               .then(() => {
-                this.$globals.currentUser = null;
+                this.$store.dispatch('removeCurrentUser')
               })
               .catch(error => {
                 // eslint-disable-next-line
-                console.error('Could not logout after login error.', error);
-              });
-          });
+                console.error('Could not logout after login error.', error)
+              })
+          })
       } else {
-        this.$globals.currentUser = null;
+        console.log('no user')
+        this.$store.dispatch('removeCurrentUser')
       }
-    });
+    })
   },
   computed: {
     isHomeView: function() {
-      return this.$route.path === '/';
+      return this.$route.path === '/'
     }
   }
 }

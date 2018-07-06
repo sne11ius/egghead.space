@@ -3,17 +3,17 @@
     <v-dialog v-model="showSignInDialog" transition="dialog-bottom-transition" max-width="500px">
       <div id="firebaseui-auth-container"></div>
     </v-dialog>
-    <v-btn v-if="$globals.currentUser == null" @click="openLoginDialog" fab title="Sign in" small>
+    <v-btn v-if="currentUser == null" @click="openLoginDialog" fab title="Sign in" small>
       <v-icon>fa fa-sign-in-alt</v-icon>
     </v-btn>
     <v-speed-dial v-else direction="bottom" transition="slide-y-transition" :open-on-hover="$globals.mouseActive">
       <v-btn fab slot="activator" small>
-        <v-avatar v-if="$globals.currentUser.photoURL" >
-          <img class="avatar" :src="$globals.currentUser.photoURL" alt="avatar">
+        <v-avatar v-if="currentUser.photoURL" >
+          <img class="avatar" :src="currentUser.photoURL" alt="avatar">
         </v-avatar>
         <v-icon v-else>fas fa-user-circle</v-icon>
       </v-btn>
-      <v-btn fab small title="Open profile" :to="{name: 'user', params: {uid: $globals.currentUser.uid, username: linkUsername}}">
+      <v-btn fab small title="Open profile" :to="{name: 'user', params: {uid: currentUser.uid, username: linkUsername}}">
         <v-icon>fa fa-id-card</v-icon>
       </v-btn>
       <v-btn fab small title="Sign out" @click="logoutClicked" >
@@ -40,20 +40,20 @@ export default {
     };
   },
   computed: {
-    linkUsername() {
-      return this.$globals.currentUser.displayName.replace(/\s/g, "+");
+    linkUsername () {
+      return this.$store.state.currentUser.displayName.replace(/\s/g, "+");
+    },
+    currentUser () {
+      return this.$store.state.currentUser
     }
   },
   methods: {
     logoutClicked() {
       auth
         .signOut()
-        .then(() => {
-          this.$globals.currentUser = null;
-        })
         .catch(() => {
           EventBus.error("Could not logout.");
-        });
+        })
     },
     openLoginDialog() {
       this.showSignInDialog = true;
