@@ -92,7 +92,7 @@ export default new Vuex.Store({
     setMostCommentedLastMonth (state, mostCommentedLastMonth) {
       state.mostCommentedLastMonth = mostCommentedLastMonth
     },
-    setMostCommentedAllTimek (state, mostCommentedAllTime) {
+    setMostCommentedAllTime (state, mostCommentedAllTime) {
       state.mostCommentedAllTime = mostCommentedAllTime
     }
   }
