@@ -107,11 +107,11 @@ export default {
   max-width: 100%;
 }
 
-#top-sketches .toolbar {
+#top-sketches .v-toolbar {
   background-color: transparent;
 }
 
-#top-sketches .toolbar__content {
+#top-sketches .v-toolbar__content {
   height: auto !important;
 }
 </style>
