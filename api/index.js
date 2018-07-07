@@ -13,6 +13,7 @@ const apiImpl = createAPI({
 })
 
 const toSketch = ({
+  id,
   title,
   body,
   commentsLastMonth,
@@ -28,6 +29,7 @@ const toSketch = ({
   updated,
   updatedByUid
 }) => ({
+  id,
   title,
   body,
   commentsLastMonth,
@@ -116,7 +118,10 @@ apiImpl.fetchFeatured = onUpdate => {
 
 function toData (docs) {
   const data = []
-  docs.forEach(doc => data.push(doc.data()))
+  docs.forEach(doc => data.push({
+    id: doc.id,
+    ...doc.data()
+  }))
   return data
 }
 

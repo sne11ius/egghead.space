@@ -55,7 +55,6 @@ export default new Vuex.Store({
       )
     },
     updateCurrentUser ({ commit }, userId) {
-      console.log('update current user')
       return api.fetchPublicUserData(userId, snapshot => {
         commit('setCurrentUser', snapshot.data())
       })
