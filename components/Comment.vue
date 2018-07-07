@@ -15,8 +15,8 @@
 </template>
 
 <script>
-import { db } from "@/firebase";
-import { format } from "date-fns/";
+import { db } from "@/firebase"
+import { format } from "date-fns/"
 
 export default {
   name: "Comment",
@@ -39,11 +39,11 @@ export default {
       sketchId: "_",
       sketchTitle: "_",
       commentId: "_"
-    };
+    }
   },
   computed: {
     author() {
-      return this.comment.createdBy.displayName;
+      return this.comment.createdBy.displayName
     },
     linkUsername() {
       return (
@@ -51,16 +51,16 @@ export default {
         this.comment.createdBy &&
         this.comment.createdBy.displayName &&
         this.comment.createdBy.displayName.replace(/\s/g, "+")
-      );
+      )
     },
     creationDate() {
       if (!(this.comment && this.comment.created)) {
-        return "";
+        return ""
       }
-      return format(this.comment.created.toDate(), "MMMM D. YYYY HH:mm");
+      return format(this.comment.created.toDate(), "MMMM D. YYYY HH:mm")
     },
     deepLink() {
-      return this.sketchLink;
+      return this.sketchLink
     }
   },
   mounted() {
@@ -71,10 +71,10 @@ export default {
           this.sketchId = snapshot.id;
           this.sketchTitle = snapshot.data().title;
           this.commentId = this.comment.id;
-        });
+        })
     }
   }
-};
+}
 </script>
 
 <style lang="scss" scoped>

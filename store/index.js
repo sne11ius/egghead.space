@@ -60,7 +60,6 @@ export default new Vuex.Store({
       })
     },
     removeCurrentUser ({ commit }) {
-      console.log('remove current user')
       commit('setCurrentUser', null)
     }
   },

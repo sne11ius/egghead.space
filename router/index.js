@@ -6,9 +6,10 @@ const meta = require('./meta.json')
 
 // Function to create routes
 // Is default lazy but can be changed
-function route (path, view) {
+function route(path, view) {
   return {
     path: path,
+    props: true,
     meta: meta[path],
     component: resolve => import(`views/${view}.vue`).then(resolve)
   }
@@ -16,17 +17,18 @@ function route (path, view) {
 
 Vue.use(Router)
 
-export function createRouter () {
-    const router = new Router({
-      base: __dirname,
-      mode: 'history',
-      scrollBehavior: () => ({ y: 0 }),
-      routes: [
-        route('/', 'Home'),
-        // Global redirect for 404
-        { path: '*', redirect: '/' }
-      ]
-    })
+export function createRouter() {
+  const router = new Router({
+    base: __dirname,
+    mode: 'history',
+    scrollBehavior: () => ({ y: 0 }),
+    routes: [
+      route('/', 'Home'),
+      route('/sketch/:id/:title?/:commentId?', 'SketchDetails'),
+      // Global redirect for 404
+      { path: '*', redirect: '/' }
+    ]
+  })
 
-    return router
+  return router
 }
