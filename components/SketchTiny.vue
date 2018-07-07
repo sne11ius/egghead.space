@@ -63,7 +63,7 @@ export default {
   a:not(.btn) {
     color: black;
   }
-  &.card {
+  &.v-card {
     padding: 7px;
     padding-bottom: 0;
     margin-bottom: 3px;
