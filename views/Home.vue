@@ -72,11 +72,8 @@ export default {
     TopSketches
   },
   asyncData ({ store, route }) {
-    console.log('Home: asyncData')
     return Promise.all([
-      store.dispatch('fetchFeatureText'),
-      //FIXME: This should really not be here
-      store.dispatch('fetchTopSketches')
+      store.dispatch('fetchFeatureText')
     ])
   },
   computed: {

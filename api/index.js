@@ -114,6 +114,22 @@ apiImpl.fetchFeatured = onUpdate => {
   })
 }
 
+function toData (docs) {
+  const data = []
+  docs.forEach(doc => data.push(doc.data()))
+  return data
+}
+
+function mkPromise (collection, onUpdate) {
+  return new Promise((resolve, reject) => {
+    collection.onSnapshot(data => onUpdate(toData(data).map(toSketch)))
+    return newest.get().then(resolve).catch(error => {
+      console.error(error)
+      reject(error)
+    })
+  })
+}
+
 apiImpl.fetchTopSketches = (
   onNewest,
   onBestRatedLastWeek,
@@ -123,37 +139,14 @@ apiImpl.fetchTopSketches = (
   onMostCommentedLastMonth,
   onMostCommentedAllTime
 ) => {
-  console.log('fetchTopSketches')
   return Promise.all([
-    new Promise((resolve, reject) => {
-      console.log('hehe')
-      newest.onSnapshot(snapshot => onNewest(snapshot))
-      return newest.get().then(resolve)
-    }),
-    () => {
-      bestRatedLastWeek.onSnapshot(snapshot => onBestRatedLastWeek(snapshot))
-      return bestRatedLastWeek.get()
-    },
-    () => {
-      bestRatedLastMonth.onSnapshot(snapshot => onBestRatedLastMonth(snapshot))
-      return bestRatedLastMonth.get()
-    },
-    () => {
-      bestRatedAllTime.onSnapshot(snapshot => onBestRatedAllTime(snapshot))
-      return bestRatedAllTime.get()
-    },
-    () => {
-      mostCommentedLastWeek.onSnapshot(snapshot => onMostCommentedLastWeek(snapshot))
-      return mostCommentedLastWeek.get()
-    },
-    () => {
-      mostCommentedLastMonth.onSnapshot(snapshot => onMostCommentedLastMonth(snapshot))
-      return mostCommentedLastMonth.get()
-    },
-    () => {
-      mostCommentedAllTime.onSnapshot(snapshot => onMostCommentedAllTime(snapshot))
-      return mostCommentedAllTime.get()
-    }
+    mkPromise(newest, onNewest),
+    mkPromise(bestRatedLastWeek, onBestRatedLastWeek),
+    mkPromise(bestRatedLastMonth, onBestRatedLastMonth),
+    mkPromise(bestRatedAllTime, onBestRatedAllTime),
+    mkPromise(mostCommentedLastWeek, onMostCommentedLastWeek),
+    mkPromise(mostCommentedLastMonth, onMostCommentedLastMonth),
+    mkPromise(mostCommentedAllTime, onMostCommentedAllTime)
   ])
 }
 
@@ -174,8 +167,6 @@ apiImpl.setPrivateUserData = userData =>
     .set(mkPrivateInfo(userData))
 
 apiImpl.fetchPublicUserData = (userId, onSnapshot) => {
-  console.log('fetchPublicUserData', arguments)
-  console.log('fetchPublicUserData', userId, onSnapshot)
   var ref = apiImpl.db
     .collection('users')
     .doc(userId)

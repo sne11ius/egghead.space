@@ -72,7 +72,6 @@ export default {
     }
   },
   asyncData ({ store, route }) {
-    console.log('asyncData')
     return store.dispatch('fetchTopSketches')
   },
   computed: {

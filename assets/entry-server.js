@@ -22,26 +22,46 @@ export default context => {
       if (!matchedComponents.length) {
         reject({ code: 404 })
       }
-      // Call fetchData hooks on components matched by the route.
-      // A preFetch hook dispatches a store action and returns a Promise,
-      // which is resolved when the action is complete and store state has been
-      // updated.
-      Promise.all(matchedComponents.map(component => {
-        return component.asyncData && component.asyncData({
-          store,
-          route: router.currentRoute
-        })
-      })).then(() => {
+      // in order to load all promises
+      let targetPromises = []
+      // this cache is used to record operated components' keys, avoid infinite recursion
+      let keyCache = []
+      const doAsyncData = (component) => {
+        if (component.asyncData) {
+          targetPromises.push(component.asyncData({
+            route: router.currentRoute,
+            store
+          }))
+        }
+      }
+      const recursive = (component, key) => {
+        // if has key, recursived
+        if (keyCache.indexOf(key) !== -1) return
+        // cache key
+        keyCache.push(key)
+        // do async data
+        doAsyncData(component)
+        // query sub components
+        if (component.components) {
+          Object.keys(component.components).forEach(key => {
+            recursive(component.components[key], key)
+          })
+        }
+      }
+      matchedComponents.map(component => {
+        recursive(component, component.name)
+      })
+      Promise.all(targetPromises).then(data => {
         isDev && console.log(`data pre-fetch: ${Date.now() - s}ms`)
-        // After all preFetch hooks are resolved, our store is now
-        // filled with the state needed to render the app.
-        // Expose the state on the render context, and let the request handler
-        // inline the state in the HTML response. This allows the client-side
-        // store to pick-up the server-side state without having to duplicate
-        // the initial data fetching on the client.
+        targetPromises = []
+        keyCache = []
         context.state = store.state
         resolve(app)
-      }).catch(reject)
+      }).catch(() => {
+        targetPromises = []
+        keyCache = []
+        reject(app)
+      })
     }, reject)
   })
 }

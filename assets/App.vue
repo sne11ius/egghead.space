@@ -61,26 +61,21 @@ export default {
         api.fetchPrivateUserData(user.uid)
           .then(snapshot => {
             if (!snapshot.exists) {
-              console.log('no snapshot')
               return api.setPrivateUserData(user)
             }
           })
           .then(() => {
             return api.fetchPublicUserData(user.uid).then(snapshot => {
-              console.log('snapshot', snapshot)
               if (!snapshot.exists) {
                 return api.setPublicUserData(user)
               }
             });
           })
           .then(() => {
-            console.log('store', this.$store)
-            console.log('id', user.uid)
             this.$store.dispatch('updateCurrentUser', user.uid)
           })
           .catch(error => {
             // eslint-disable-next-line
-            console.error('Login failed: ', error)
             api
               .auth
               .signOut()
@@ -93,7 +88,6 @@ export default {
               })
           })
       } else {
-        console.log('no user')
         this.$store.dispatch('removeCurrentUser')
       }
     })

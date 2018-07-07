@@ -76,7 +76,6 @@ export default new Vuex.Store({
       state.currentUser = currentUser
     },
     setNewest (state, newest) {
-      console.log('setNewest', newest)
       state.newest = newest
     },
     setBestRatedLastWeek (state, bestRatedLastWeek) {
