@@ -76,7 +76,6 @@ export default {
   },
   computed: {
     newest: function () {
-      console.log('newest')
       return this.$store.state.newest
     },
     sketchesByRating: function () {
