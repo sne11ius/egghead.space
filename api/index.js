@@ -98,6 +98,8 @@ const mostCommentedAllTime = apiImpl.db
   .orderBy('commentCount', 'desc')
   .limit(10)
 
+const sketches = apiImpl.db.collection('sketches')
+
 apiImpl.fetchFeatured = onUpdate => {
   return new Promise((resolve, reject) => {
     featured.onSnapshot(featuredSnapshot => {

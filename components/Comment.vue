@@ -15,7 +15,6 @@
 </template>
 
 <script>
-import { db } from "@/firebase"
 import { format } from "date-fns/"
 
 export default {

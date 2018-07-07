@@ -11,7 +11,7 @@
         <span class="counter" :title="commentsTitle"><v-icon>fas fa-comment</v-icon> {{sketch.commentCount || 0}}</span>
       </div>
     </div>
-    <v-btn class="details-link" :to="{name: 'sketch', params: {id: this.sketch.id, title: this.sketch.title.replace(/\s/g, '+')}}" flat small color="primary">
+    <v-btn class="details-link" :to="{name: 'SketchDetails', params: {id: this.sketch.id, title: this.sketch.title.replace(/\s/g, '+')}}" flat small color="primary">
       Show more
     </v-btn>
   </v-card>
@@ -52,7 +52,7 @@ export default {
   },
   methods: {
     cardClicked () {
-      this.$router.push({ id: this.sketch.id, title: this.sketch.title.replace(/\s/g, '+') })
+      this.$router.push({name: 'SketchDetails', params: {id: this.sketch.id, title: this.sketch.title.replace(/\s/g, '+')}})
     }
   }
 }

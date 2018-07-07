@@ -76,18 +76,16 @@
 </template>
 
 <script>
-import Firebase from "firebase";
-import EventBus from "service/EventBus.js";
-import Sketch from "components/Sketch.vue";
-import Comment from "components/Comment.vue";
-import { distanceInWordsToNow, format } from "date-fns/";
-import { db } from "@/firebase";
+import api from 'api'
+import { distanceInWordsToNow, format } from 'date-fns/'
 
-const sketches = db.collection("sketches");
+import EventBus from 'service/EventBus.js'
+import Sketch from 'components/Sketch.vue'
+import Comment from 'components/Comment.vue'
 
 export default {
-  name: "SketchDetails",
-  props: ["id", "commentId"],
+  name: 'SketchDetails',
+  props: ['id', 'commentId'],
   components: {
     Sketch,
     Comment

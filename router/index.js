@@ -9,6 +9,7 @@ const meta = require('./meta.json')
 function route(path, view) {
   return {
     path: path,
+    name: view,
     props: true,
     meta: meta[path],
     component: resolve => import(`views/${view}.vue`).then(resolve)
