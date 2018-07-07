@@ -1,21 +1,19 @@
 <template>
-  <v-card class="sketch tiny">
-    <router-link :to="{name: 'sketch', params: {id: this.sketch.id, title: this.sketch.title.replace(/\s/g, '+')}}">
-      <div class="image">
-        <img v-if="this.sketch.previewImage" :src="this.sketch.previewImage">
-        <div v-else class="preview-placeholder"></div>
+  <v-card class="sketch tiny" @click.native="cardClicked">
+    <div class="image">
+      <img v-if="this.sketch.previewImage" :src="this.sketch.previewImage">
+      <div v-else class="preview-placeholder"></div>
+    </div>
+    <div class="summary">
+      <h3 class="text-title">{{title}}</h3>
+      <div class="counter-wrap">
+        <span class="counter" :title="likesTitle"><v-icon>fas fa-heart</v-icon> {{sketch.totalLikes || 0 }}</span><br>
+        <span class="counter" :title="commentsTitle"><v-icon>fas fa-comment</v-icon> {{sketch.commentCount || 0}}</span>
       </div>
-      <div class="summary">
-        <h3 class="text-title">{{title}}</h3>
-        <div class="counter-wrap">
-          <span class="counter" :title="likesTitle"><v-icon>fas fa-heart</v-icon> {{sketch.totalLikes || 0 }}</span><br>
-          <span class="counter" :title="commentsTitle"><v-icon>fas fa-comment</v-icon> {{sketch.commentCount || 0}}</span>
-        </div>
-      </div>
-      <v-btn class="details-link" :to="{name: 'sketch', params: {id: this.sketch.id, title: this.sketch.title.replace(/\s/g, '+')}}" flat small color="primary">
-        Show more
-      </v-btn>
-    </router-link>
+    </div>
+    <v-btn class="details-link" :to="{name: 'sketch', params: {id: this.sketch.id, title: this.sketch.title.replace(/\s/g, '+')}}" flat small color="primary">
+      Show more
+    </v-btn>
   </v-card>
 </template>
 
@@ -25,34 +23,39 @@ export default {
   props: {
     sketch: {
       default: () => {
-        return {};
+        return {}
       },
       type: Object
     }
   },
   computed: {
-    title() {
-      const maxLength = 50;
-      let truncatedTitle = this.sketch.title.substr(0, maxLength);
+    title () {
+      const maxLength = 50
+      let truncatedTitle = this.sketch.title.substr(0, maxLength)
       if (truncatedTitle.length < this.sketch.title.length) {
-        truncatedTitle += "...";
+        truncatedTitle += "..."
       }
-      return truncatedTitle;
+      return truncatedTitle
     },
-    likesTitle() {
+    likesTitle () {
       if (!this.sketch.totalLikes || this.sketch.totalLikes === 0) {
-        return "No likes yet.";
+        return "No likes yet."
       }
       return this.sketch.totalLikes + " people like this sketch";
     },
-    commentsTitle() {
+    commentsTitle () {
       if (!this.sketch.commentCount || this.sketch.commentCount === 0) {
-        return "No comments yet.";
+        return "No comments yet."
       }
-      return this.sketch.commentCount + " people commented on this sketch";
+      return this.sketch.commentCount + " people commented on this sketch"
+    }
+  },
+  methods: {
+    cardClicked () {
+      this.$router.push({ id: this.sketch.id, title: this.sketch.title.replace(/\s/g, '+') })
     }
   }
-};
+}
 </script>
 
 <style lang="scss" scoped>
