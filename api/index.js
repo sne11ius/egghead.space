@@ -46,6 +46,16 @@ const toSketch = ({
   updatedByUid
 })
 
+const toComment = ({
+  body,
+  created,
+  createdByUid
+}) => ({
+  body,
+  created,
+  createdByUid
+})
+
 const mkPrivateInfo = ({ email, uid }) => ({
   email,
   uid
@@ -127,10 +137,10 @@ function toData (docs) {
   return data
 }
 
-function mkPromise (collection, onUpdate) {
+function mkSketchCollectionPromise (collection, onUpdate) {
   return new Promise((resolve, reject) => {
     collection.onSnapshot(data => onUpdate(toData(data).map(toSketch)))
-    return newest.get().then(resolve).catch(error => {
+    return collection.get().then(resolve).catch(error => {
       console.error(error)
       reject(error)
     })
@@ -147,14 +157,37 @@ apiImpl.fetchTopSketches = (
   onMostCommentedAllTime
 ) => {
   return Promise.all([
-    mkPromise(newest, onNewest),
-    mkPromise(bestRatedLastWeek, onBestRatedLastWeek),
-    mkPromise(bestRatedLastMonth, onBestRatedLastMonth),
-    mkPromise(bestRatedAllTime, onBestRatedAllTime),
-    mkPromise(mostCommentedLastWeek, onMostCommentedLastWeek),
-    mkPromise(mostCommentedLastMonth, onMostCommentedLastMonth),
-    mkPromise(mostCommentedAllTime, onMostCommentedAllTime)
+    mkSketchCollectionPromise(newest, onNewest),
+    mkSketchCollectionPromise(bestRatedLastWeek, onBestRatedLastWeek),
+    mkSketchCollectionPromise(bestRatedLastMonth, onBestRatedLastMonth),
+    mkSketchCollectionPromise(bestRatedAllTime, onBestRatedAllTime),
+    mkSketchCollectionPromise(mostCommentedLastWeek, onMostCommentedLastWeek),
+    mkSketchCollectionPromise(mostCommentedLastMonth, onMostCommentedLastMonth),
+    mkSketchCollectionPromise(mostCommentedAllTime, onMostCommentedAllTime)
   ])
+}
+
+apiImpl.fetchDetailSketch = (id, onUpdate) => {
+  const ref = sketches.doc(id)
+  ref.onSnapshot(snapshot => onUpdate({
+    id: snapshot.id,
+    ...snapshot.data()
+  }))
+  return ref.get()
+}
+
+apiImpl.fetchDetailSketchComments = (id, onUpdate) => {
+  const ref = sketches
+    .doc(id)
+    .collection('comments')
+    .orderBy('created', 'asc')
+  return new Promise((resolve, reject) => {
+    ref.onSnapshot(data => onUpdate(toData(data).map(toComment)))
+    return newest.get().then(resolve).catch(error => {
+      console.error(error)
+      reject(error)
+    })
+  })
 }
 
 apiImpl.fetchPrivateUserData = userId =>

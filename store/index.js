@@ -12,6 +12,10 @@ export default new Vuex.Store({
       title: '',
       body: ''
     },
+    sketchDetails: {
+      title: ''
+    },
+    sketchDetailsComments: [],
     currentUser: null,
     newest: [],
     bestRatedLastWeek: [],
@@ -29,7 +33,6 @@ export default new Vuex.Store({
       })
     },
     fetchTopSketches ({ commit }) {
-      console.log('fetchTopSketches')
       return api.fetchTopSketches(
         newest => {
           commit('setNewest', newest)
@@ -54,6 +57,17 @@ export default new Vuex.Store({
         }
       )
     },
+    fetchDetailSketch ({ commit }, sketchId) {
+      return api
+        .fetchDetailSketch(sketchId, sketchDetails => {
+          commit('setSketchDetails', sketchDetails)
+        })
+        .then(() => {
+          api.fetchDetailSketchComments(sketchId, comments => {
+            commit('setSketchDetailsComments', comments)
+          })
+        })
+    },
     updateCurrentUser ({ commit }, userId) {
       return api.fetchPublicUserData(userId, snapshot => {
         commit('setCurrentUser', snapshot.data())
@@ -69,6 +83,12 @@ export default new Vuex.Store({
     },
     setFeaturedSketch (state, featuredSketch) {
       state.featuredSketch = featuredSketch
+    },
+    setSketchDetails (state, sketchDetails) {
+      state.sketchDetails = sketchDetails
+    },
+    setSketchDetailsComments (state, sketchDetailsComments) {
+      state.sketchDetailsComments = sketchDetailsComments
     },
     setCurrentUser (state, currentUser) {
       state.currentUser = currentUser

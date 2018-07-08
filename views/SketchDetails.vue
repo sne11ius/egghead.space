@@ -90,16 +90,6 @@ export default {
     Sketch,
     Comment
   },
-  created: function() {
-    this.$bind("sketch", sketches.doc(this.id));
-    this.$bind(
-      "comments",
-      sketches
-        .doc(this.id)
-        .collection("comments")
-        .orderBy("created", "asc")
-    );
-  },
   mounted: function() {
     if (this.commentId) {
       setTimeout(() => {
@@ -122,28 +112,19 @@ export default {
           moderatorInfo.exists && moderatorInfo.data().isModerator;
       });
   },
-  data() {
-    return {
-      // Weird route/component-binding stuff forces us to add details...
-      sketch: {
-        id: "",
-        body: "",
-        created: "0",
-        createdBy: {
-          displayName: "Loading..."
-        },
-        createdByUid: "lazy"
-      },
-      comments: [],
-      show: true,
-      isLoading: false,
-      newCommentBody: "",
-      showFeatureThisDialog: false,
-      featureThisText: "",
-      isModerator: false
-    };
+
+  asyncData ({ store, route }) {
+    return Promise.all([
+      store.dispatch('fetchDetailSketch', route.params.id)
+    ])
   },
   computed: {
+    sketch () {
+      return this.$store.state.sketchDetails
+    },
+    comments () {
+      return this.$store.state.sketchDetailsComments
+    },
     canEdit: function() {
       return (
         this.$globals.isAuthenticated &&
