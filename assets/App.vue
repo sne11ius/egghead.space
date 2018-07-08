@@ -142,11 +142,11 @@ export default {
 .component-fade-leave-to {
   opacity: 0;
 }
-main.content {
+main.v-content {
   padding-top: 90px !important;
   height: 0;
 }
-main.content.isHome {
+main.v-content.isHome {
   padding-top: 0px !important;
 }
 </style>
