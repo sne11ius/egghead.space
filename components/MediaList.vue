@@ -32,34 +32,34 @@
 
 <script>
 export default {
-  name: "MediaList",
+  name: 'MediaList',
   props: {
     items: {
       default: () => {
-        return [];
+        return []
       },
       type: Array
     }
   },
-  data() {
+  data () {
     return {
       postProcessIndicators: []
-    };
+    }
   },
   methods: {
-    indicatePostProcess(file) {
-      this.postProcessIndicators.push(file);
+    indicatePostProcess (file) {
+      this.postProcessIndicators.push(file)
     },
-    stopIndicatePostProcess(file) {
+    stopIndicatePostProcess (file) {
       for (let i = 0; i < this.postProcessIndicators.length; i++) {
         if (this.postProcessIndicators[i].id === file.id) {
-          this.postProcessIndicators.splice(i, 1);
-          return;
+          this.postProcessIndicators.splice(i, 1)
+          return
         }
       }
     }
   }
-};
+}
 </script>
 
 <style lang="scss" scoped>

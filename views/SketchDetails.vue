@@ -90,27 +90,27 @@ export default {
     Sketch,
     Comment
   },
-  mounted: function() {
+  mounted: function () {
     if (this.commentId) {
       setTimeout(() => {
-        const commentEl = document.getElementById(this.commentId);
+        const commentEl = document.getElementById(this.commentId)
         this.$scrollTo(commentEl, 1000, {
-          onDone() {
-            commentEl.classList.add("highlight");
+          onDone () {
+            commentEl.classList.add('highlight')
           }
-        });
-      }, 500);
+        })
+      }, 500)
     }
     if (!this.$globals.isAuthenticated) {
-      return;
+      return
     }
-    db.collection("moderators")
+    db.collection('moderators')
       .doc(this.$globals.currentUser.uid)
       .get()
       .then(moderatorInfo => {
         this.isModerator =
-          moderatorInfo.exists && moderatorInfo.data().isModerator;
-      });
+          moderatorInfo.exists && moderatorInfo.data().isModerator
+      })
   },
 
   asyncData ({ store, route }) {
@@ -125,58 +125,58 @@ export default {
     comments () {
       return this.$store.state.sketchDetailsComments
     },
-    canEdit: function() {
+    canEdit: function () {
       return (
         this.$globals.isAuthenticated &&
         (this.$globals.currentUser.uid === this.sketch.createdByUid ||
           this.isModerator)
-      );
+      )
     },
-    didLike: function() {
+    didLike: function () {
       if (!this.$globals.currentUser) {
-        return false;
+        return false
       } else {
         return (
           this.sketch.likes &&
           this.sketch.likes[this.$globals.currentUser.uid] &&
           this.sketch.likes[this.$globals.currentUser.uid].didLike
-        );
+        )
       }
     },
-    didLikeTitle: function() {
+    didLikeTitle: function () {
       return `You added your egg ${distanceInWordsToNow(
         this.sketch.likes[[this.$globals.currentUser.uid]].lastChanged.toDate()
-      )} ago`;
+      )} ago`
     },
-    totalLikes: function() {
-      return this.sketch.totalLikes || 0;
+    totalLikes: function () {
+      return this.sketch.totalLikes || 0
     },
-    creationDate: function() {
+    creationDate: function () {
       if (!(this.sketch.created && this.sketch.created.toDate)) {
-        return "Created a long time ago";
+        return 'Created a long time ago'
       }
-      return format(this.sketch.created.toDate(), "MMMM D. YYYY HH:mm");
+      return format(this.sketch.created.toDate(), 'MMMM D. YYYY HH:mm')
     }
   },
   watch: {
-    didLike: function() {
-      this.isLoading = false;
+    didLike: function () {
+      this.isLoading = false
     }
   },
   methods: {
-    submitComment: function() {
+    submitComment: function () {
       if (!this.$globals.isAuthenticated) {
-        EventBus.info("Please sign in to submit your comment.");
-        return;
+        EventBus.info('Please sign in to submit your comment.')
+        return
       }
       const userRef = db
-        .collection("users")
+        .collection('users')
         .doc(this.$globals.currentUser.uid)
-        .collection("public")
-        .doc("userInfo");
+        .collection('public')
+        .doc('userInfo')
       sketches
         .doc(this.id)
-        .collection("comments")
+        .collection('comments')
         .add({
           createdBy: userRef,
           createdByUid: this.$globals.currentUser.uid,
@@ -185,85 +185,85 @@ export default {
         })
         .then(ref => {
           return db
-            .collection("users")
+            .collection('users')
             .doc(this.$globals.currentUser.uid)
-            .collection("comments")
+            .collection('comments')
             .add({
               ref,
               refString: `sketches/${this.id}/comments/${ref.id}`,
               created: Firebase.firestore.FieldValue.serverTimestamp()
-            });
+            })
         })
         .then(() => {
-          this.newCommentBody = "";
+          this.newCommentBody = ''
         })
         .catch(error => {
-          EventBus.error("Comment creation failed: " + error);
-        });
+          EventBus.error('Comment creation failed: ' + error)
+        })
     },
-    invertLike: function() {
+    invertLike: function () {
       if (!this.$globals.isAuthenticated) {
-        EventBus.info("You must be logged in to share the love.");
-        return;
+        EventBus.info('You must be logged in to share the love.')
+        return
       }
-      this.isLoading = true;
-      const currentUserId = this.$globals.currentUser.uid;
-      const sketchRef = this.$firestoreRefs.sketch;
-      const _this = this;
-      db.runTransaction(function(transaction) {
+      this.isLoading = true
+      const currentUserId = this.$globals.currentUser.uid
+      const sketchRef = this.$firestoreRefs.sketch
+      const _this = this
+      db.runTransaction(function (transaction) {
         return transaction
           .get(sketchRef)
-          .then(function(sketch) {
+          .then(function (sketch) {
             if (!sketch.exists) {
-              EventBus.error("Cannot vote on a Sketch that doesn't exist.");
+              EventBus.error("Cannot vote on a Sketch that doesn't exist.")
             }
-            let totalLikes = sketch.data().totalLikes || 0;
-            let likes = sketch.data().likes || {};
+            let totalLikes = sketch.data().totalLikes || 0
+            let likes = sketch.data().likes || {}
             if (likes[currentUserId] && likes[currentUserId].didLike) {
               likes[currentUserId] = {
                 lastChanged: Firebase.firestore.FieldValue.serverTimestamp(),
                 didLike: false
-              };
-              totalLikes--;
+              }
+              totalLikes--
             } else {
               likes[currentUserId] = {
                 lastChanged: Firebase.firestore.FieldValue.serverTimestamp(),
                 didLike: true
-              };
-              totalLikes++;
+              }
+              totalLikes++
             }
             transaction.update(sketchRef, {
               totalLikes: totalLikes,
               likes: likes
-            });
+            })
           })
-          .catch(function(error) {
-            EventBus.error("Could not change vote: " + error);
-            _this.isLoading = false;
-          });
-      });
+          .catch(function (error) {
+            EventBus.error('Could not change vote: ' + error)
+            _this.isLoading = false
+          })
+      })
     },
-    submitFeatureThis: function() {
-      db.collection("featuredSketches")
+    submitFeatureThis: function () {
+      db.collection('featuredSketches')
         .add({
-          sketch: db.collection("sketches").doc(this.sketch.id),
+          sketch: db.collection('sketches').doc(this.sketch.id),
           featureText: this.featureThisText,
           featuredSince: Firebase.firestore.FieldValue.serverTimestamp(),
           featuredBy: this.$globals.currentUser.uid
         })
         .then(() => {
-          this.showFeatureThisDialog = false;
-          this.featureThisText = "";
+          this.showFeatureThisDialog = false
+          this.featureThisText = ''
         })
         .catch(error => {
-          EventBus.error("Could not feature this sketch: " + error);
-        });
+          EventBus.error('Could not feature this sketch: ' + error)
+        })
     },
-    focusCommentTextfield: function() {
-      this.$refs.commentTextfield.focus();
+    focusCommentTextfield: function () {
+      this.$refs.commentTextfield.focus()
     }
   }
-};
+}
 </script>
 
 <style lang="scss" scoped>

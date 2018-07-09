@@ -21,7 +21,7 @@ export default {
   props: {
     sketch: {
       default: () => {
-        return {};
+        return {}
       },
       type: Object
     },
@@ -31,41 +31,41 @@ export default {
     }
   },
   mounted: function () {
-    this.$nextTick(function() {
-      window.addEventListener('resize', this.handleResize);
-    });
+    this.$nextTick(function () {
+      window.addEventListener('resize', this.handleResize)
+    })
   },
   beforeDestroy: function () {
-    window.removeEventListener('resize', this.handleResize);
+    window.removeEventListener('resize', this.handleResize)
   },
   updated () {
-    this.$nextTick (() => {
-      this.handleResize();
-    });
+    this.$nextTick(() => {
+      this.handleResize()
+    })
   },
   computed: {
     title () {
-      const maxLength = 50;
-      return this.sketch.title.substr(0, maxLength);
+      const maxLength = 50
+      return this.sketch.title.substr(0, maxLength)
     },
     strippedBody () {
-      const headingsRegex = /(<h1>.*<\/h1>)|(<h2>.*<\/h2>)|(<h3>.*<\/h3>)|(<h4>.*<\/h4>)|(<h5>.*<\/h5>)|(<h6>.*<\/h6>)/g;
+      const headingsRegex = /(<h1>.*<\/h1>)|(<h2>.*<\/h2>)|(<h3>.*<\/h3>)|(<h4>.*<\/h4>)|(<h5>.*<\/h5>)|(<h6>.*<\/h6>)/g
       return striptags(
-        markdown.render(this.sketch.body).replace(headingsRegex, "")
-      );
+        markdown.render(this.sketch.body).replace(headingsRegex, '')
+      )
     },
     author () {
-      return this.sketch.createdBy.displayName;
+      return this.sketch.createdBy.displayName
     }
   },
   methods: {
     handleResize () {
-      this.$nextTick (() => {
-        shave(".text-preview", 130);
-      });
+      this.$nextTick(() => {
+        shave('.text-preview', 130)
+      })
     }
   }
-};
+}
 </script>
 
 <style lang="scss">

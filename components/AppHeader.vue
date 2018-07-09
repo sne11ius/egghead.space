@@ -46,27 +46,27 @@
 
 <script>
 import NoSSR from 'vue-no-ssr'
-import UserStatus from "components/UserStatus.vue";
-import EventBus from "service/EventBus.js";
+import UserStatus from 'components/UserStatus.vue'
+import EventBus from 'service/EventBus.js'
 
 export default {
-  name: "AppHeader",
+  name: 'AppHeader',
   components: {
     UserStatus,
     NoSSR
   },
-  data() {
+  data () {
     return {
-      searchText: "",
+      searchText: '',
       isHydrated: false
-    };
+    }
   },
   mounted () {
     this.isHydrated = true
   },
   methods: {
-    search: function() {
-      EventBus.info(`Searching for '${this.searchText}'`);
+    search: function () {
+      EventBus.info(`Searching for '${this.searchText}'`)
     }
   },
   computed: {
@@ -75,11 +75,11 @@ export default {
         ? this.$vuetify.breakpoint.xs
         : true
     },
-    isHomeView: function() {
-      return this.$route.path === "/";
+    isHomeView: function () {
+      return this.$route.path === '/'
     }
   }
-};
+}
 </script>
 
 <style lang="scss" scoped>

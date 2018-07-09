@@ -19,7 +19,7 @@
 
 <script>
 export default {
-  name: "SketchTiny",
+  name: 'SketchTiny',
   props: {
     sketch: {
       default: () => {
@@ -33,21 +33,21 @@ export default {
       const maxLength = 50
       let truncatedTitle = this.sketch.title.substr(0, maxLength)
       if (truncatedTitle.length < this.sketch.title.length) {
-        truncatedTitle += "..."
+        truncatedTitle += '...'
       }
       return truncatedTitle
     },
     likesTitle () {
       if (!this.sketch.totalLikes || this.sketch.totalLikes === 0) {
-        return "No likes yet."
+        return 'No likes yet.'
       }
-      return this.sketch.totalLikes + " people like this sketch";
+      return this.sketch.totalLikes + ' people like this sketch'
     },
     commentsTitle () {
       if (!this.sketch.commentCount || this.sketch.commentCount === 0) {
-        return "No comments yet."
+        return 'No comments yet.'
       }
-      return this.sketch.commentCount + " people commented on this sketch"
+      return this.sketch.commentCount + ' people commented on this sketch'
     }
   },
   methods: {

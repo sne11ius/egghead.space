@@ -4,75 +4,75 @@
 </template>
 
 <script>
-import Uppy from "uppy/lib/core";
-import Dashboard from "uppy/lib/plugins/Dashboard";
-import FirebaseCloudStorage from "@/service/FirebaseCloudStorage";
+import Uppy from 'uppy/lib/core'
+import Dashboard from 'uppy/lib/plugins/Dashboard'
+import FirebaseCloudStorage from '@/service/FirebaseCloudStorage'
 
-import "uppy/dist/uppy.min.css";
+import 'uppy/dist/uppy.min.css'
 
 export default {
-  name: "FileUpload",
-  props: ["storageRef"],
-  mounted() {
+  name: 'FileUpload',
+  props: ['storageRef'],
+  mounted () {
     const uppy = Uppy({
       autoProceed: true,
       restrictions: {
         maxFileSize: 10000000,
         allowedFileTypes: [
-          ".jpg",
-          ".jpeg",
-          ".png",
-          ".gif",
-          ".JPG",
-          ".JPEG",
-          ".PNG",
-          ".GIF"
+          '.jpg',
+          '.jpeg',
+          '.png',
+          '.gif',
+          '.JPG',
+          '.JPEG',
+          '.PNG',
+          '.GIF'
         ]
       }
     })
       .use(Dashboard, {
         inline: true,
-        target: "#upload-area",
-        width: "100%",
-        height: "300px",
-        note: "Images only, up to 10 MB per file",
+        target: '#upload-area',
+        width: '100%',
+        height: '300px',
+        note: 'Images only, up to 10 MB per file',
         showProgressDetails: true
       })
       .use(FirebaseCloudStorage, { storageRef: this.storageRef })
-      .run();
+      .run()
 
-    uppy.on("upload-success", (file, snapshot) => {
-      const previewName = `${snapshot.ref.name}_preview`;
-      const previewRef = this.storageRef.child(previewName);
+    uppy.on('upload-success', (file, snapshot) => {
+      const previewName = `${snapshot.ref.name}_preview`
+      const previewRef = this.storageRef.child(previewName)
       fetch(file.preview)
         .then(response => {
           if (response.ok) {
-            uppy.removeFile(file.id);
-            this.$emit("post-process", file);
-            return response.blob();
+            uppy.removeFile(file.id)
+            this.$emit('post-process', file)
+            return response.blob()
           }
-          throw new Error("Could not fetch blob url");
+          throw new Error('Could not fetch blob url')
         })
         .then(blob => {
           return new Promise((resolve, reject) => {
             const uploadTask = previewRef.put(blob, {
-              contentType: "image/png"
-            });
+              contentType: 'image/png'
+            })
             uploadTask.on(
-              "state_changed",
+              'state_changed',
               () => {},
               error => {
-                reject(error);
+                reject(error)
               },
               () => {
-                const previewSnapshot = uploadTask.snapshot;
+                const previewSnapshot = uploadTask.snapshot
                 resolve({
                   file,
                   previewSnapshot
-                });
+                })
               }
-            );
-          });
+            )
+          })
         })
         .then(({ file, previewSnapshot }) => {
           return new Promise((resolve, reject) => {
@@ -83,10 +83,10 @@ export default {
                   file,
                   previewSnapshot,
                   previewDownloadUrl
-                });
+                })
               })
-              .catch(error => reject(error));
-          });
+              .catch(error => reject(error))
+          })
         })
         .then(({ file, previewSnapshot, previewDownloadUrl }) => {
           snapshot.ref
@@ -97,15 +97,15 @@ export default {
             })
             .then(updatedSnapshot => {
               this.$emit(
-                "media-added",
+                'media-added',
                 file,
                 previewDownloadUrl,
                 updatedSnapshot,
                 previewSnapshot
-              );
-            });
-        });
-    });
+              )
+            })
+        })
+    })
   }
-};
+}
 </script>

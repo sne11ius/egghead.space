@@ -15,10 +15,10 @@
 </template>
 
 <script>
-import { format } from "date-fns/"
+import { format } from 'date-fns/'
 
 export default {
-  name: "Comment",
+  name: 'Comment',
   props: {
     comment: {
       default: null
@@ -29,47 +29,47 @@ export default {
       type: Boolean
     },
     sketchLink: {
-      default: "",
+      default: '',
       type: String
     }
   },
-  data() {
+  data () {
     return {
-      sketchId: "_",
-      sketchTitle: "_",
-      commentId: "_"
+      sketchId: '_',
+      sketchTitle: '_',
+      commentId: '_'
     }
   },
   computed: {
-    author() {
+    author () {
       return this.comment.createdBy.displayName
     },
-    linkUsername() {
+    linkUsername () {
       return (
         this.comment &&
         this.comment.createdBy &&
         this.comment.createdBy.displayName &&
-        this.comment.createdBy.displayName.replace(/\s/g, "+")
+        this.comment.createdBy.displayName.replace(/\s/g, '+')
       )
     },
-    creationDate() {
+    creationDate () {
       if (!(this.comment && this.comment.created)) {
-        return ""
+        return ''
       }
-      return format(this.comment.created.toDate(), "MMMM D. YYYY HH:mm")
+      return format(this.comment.created.toDate(), 'MMMM D. YYYY HH:mm')
     },
-    deepLink() {
+    deepLink () {
       return this.sketchLink
     }
   },
-  mounted() {
+  mounted () {
     if (this.sketchLink) {
       db.doc(this.sketchLink)
         .parent.parent.get()
         .then(snapshot => {
-          this.sketchId = snapshot.id;
-          this.sketchTitle = snapshot.data().title;
-          this.commentId = this.comment.id;
+          this.sketchId = snapshot.id
+          this.sketchTitle = snapshot.data().title
+          this.commentId = this.comment.id
         })
     }
   }

@@ -24,49 +24,48 @@
 </template>
 
 <script>
-import EventBus from "service/EventBus.js"
+import EventBus from 'service/EventBus.js'
 import { api } from 'api'
-import "firebaseui/dist/firebaseui.css"
+import 'firebaseui/dist/firebaseui.css'
 
 const auth = api.auth
-let firebaseui
 
 export default {
-  name: "UserStatus",
+  name: 'UserStatus',
   components: {},
-  data() {
+  data () {
     return {
       showSignInDialog: false
-    };
+    }
   },
   computed: {
     linkUsername () {
-      return this.$store.state.currentUser.displayName.replace(/\s/g, "+");
+      return this.$store.state.currentUser.displayName.replace(/\s/g, '+')
     },
     currentUser () {
       return this.$store.state.currentUser
     }
   },
   methods: {
-    logoutClicked() {
+    logoutClicked () {
       auth
         .signOut()
         .catch(() => {
-          EventBus.error("Could not logout.");
+          EventBus.error('Could not logout.')
         })
     },
-    openLoginDialog() {
-      this.showSignInDialog = true;
+    openLoginDialog () {
+      this.showSignInDialog = true
       const ui =
         api.firebaseui.auth.AuthUI.getInstance() ||
-        new api.firebaseui.auth.AuthUI(auth);
-      ui.start("#firebaseui-auth-container", {
-        signInFlow: "popup",
+        new api.firebaseui.auth.AuthUI(auth)
+      ui.start('#firebaseui-auth-container', {
+        signInFlow: 'popup',
         callbacks: {
           signInSuccessWithAuthResult: () => {
             // no redirect
-            this.showSignInDialog = false;
-            return false;
+            this.showSignInDialog = false
+            return false
           }
         },
         signInOptions: [
@@ -75,10 +74,10 @@ export default {
           api.firebase.auth.GithubAuthProvider.PROVIDER_ID,
           api.firebase.auth.EmailAuthProvider.PROVIDER_ID
         ]
-      });
+      })
     }
   }
-};
+}
 </script>
 
 <style lang="scss" scoped>

@@ -21,7 +21,7 @@ export default {
   props: {
     sketch: {
       default: () => {
-        return {};
+        return {}
       },
       type: Object
     },
@@ -35,13 +35,13 @@ export default {
     }
   },
   computed: {
-    title() {
+    title () {
       return this.sketch.title
     },
-    body() {
+    body () {
       return this.marked(this.sketch.body)
     },
-    author() {
+    author () {
       return this.sketch.createdBy.displayName
     }
   }

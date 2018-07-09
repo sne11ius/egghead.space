@@ -51,7 +51,7 @@ export default {
   components: {
     SketchTiny
   },
-  data() {
+  data () {
     return {
       timePeriod: 'week',
       activeTab: '0',
@@ -80,21 +80,21 @@ export default {
     },
     sketchesByRating: function () {
       switch (this.timePeriod) {
-        case "week":
+        case 'week':
           return this.$store.state.bestRatedLastWeek
-        case "month":
+        case 'month':
           return this.$store.state.bestRatedLastMonth
-        case "allTime":
+        case 'allTime':
           return this.$store.state.bestRatedAllTime
       }
     },
     sketchesByComments: function () {
       switch (this.timePeriod) {
-        case "week":
+        case 'week':
           return this.$store.state.mostCommentedLastWeek
-        case "month":
+        case 'month':
           return this.$store.state.mostCommentedLastMonth
-        case "allTime":
+        case 'allTime':
           return this.$store.state.mostCommentedAllTime
       }
     }

@@ -5,25 +5,25 @@
 </template>
 
 <script>
-import EventBus from "service/EventBus";
+import EventBus from 'service/EventBus'
 
 export default {
-  name: "GlobalSnackbar",
-  data() {
+  name: 'GlobalSnackbar',
+  data () {
     return {
-      text: "",
-      icon: "info",
+      text: '',
+      icon: 'info',
       showSnackbar: false
-    };
+    }
   },
-  mounted() {
-    EventBus.$on("global-snack", (text, type) => {
-      this.icon = type;
-      this.text = text;
-      this.showSnackbar = true;
-    });
+  mounted () {
+    EventBus.$on('global-snack', (text, type) => {
+      this.icon = type
+      this.text = text
+      this.showSnackbar = true
+    })
   }
-};
+}
 </script>
 
 <style lang="scss" scoped>
