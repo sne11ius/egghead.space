@@ -35,7 +35,7 @@
             item-text="label"
             item-value="value"
             v-model="timePeriod"
-            class="tabs__item"
+            class="v-tabs__item"
             append-icon=""
           ></v-select>
       </v-tabs>
