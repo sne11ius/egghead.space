@@ -12,49 +12,46 @@ const apiImpl = createAPI({
   }
 })
 
-const toSketch = ({
-  id,
-  title,
-  body,
-  commentsLastMonth,
-  commentsLastWeek,
-  created,
-  createdByUid,
-  likes,
-  totalLikes,
-  likesLastMonth,
-  likesLastWeek,
-  medias,
-  previewImage,
-  updated,
-  updatedByUid
-}) => ({
-  id,
-  title,
-  body,
-  commentsLastMonth,
-  commentsLastWeek,
-  created,
-  createdByUid,
-  likes,
-  totalLikes,
-  likesLastMonth,
-  likesLastWeek,
-  medias,
-  previewImage,
-  updated,
-  updatedByUid
-})
+const toStaticData = snapshot => {
+  const data = {
+    ...snapshot.data(),
+    id: snapshot.id
+  }
+  const promises = []
+  for (let i in data) {
+    const value = data[i]
+    if (value && value.firestore) {
+      promises.push(
+        new Promise((resolve, reject) => {
+          value.get().then(childSnap => {
+            toStaticData(childSnap).then(val => {
+              data[i] = val
+              resolve(val)
+            })
+          })
+        })
+      )
+    }
+  }
+  return new Promise((resolve, reject) => {
+    return Promise.all(promises)
+      .then(() => {
+        resolve(data)
+      })
+      .catch(reject)
+  })
+}
 
-const toComment = ({
-  body,
-  created,
-  createdByUid
-}) => ({
-  body,
-  created,
-  createdByUid
-})
+function arrayToStaticData (querySnapshot) {
+  return Promise.all(querySnapshot.docs.map(toStaticData))
+}
+
+function fetchCollection (collection, onUpdate) {
+  collection.onSnapshot(querySnapshot => {
+    arrayToStaticData(querySnapshot).then(onUpdate)
+  })
+  return collection.get()
+}
 
 const mkPrivateInfo = ({ email, uid }) => ({
   email,
@@ -111,40 +108,11 @@ const mostCommentedAllTime = apiImpl.db
 const sketches = apiImpl.db.collection('sketches')
 
 apiImpl.fetchFeatured = onUpdate => {
-  return new Promise((resolve, reject) => {
-    featured.onSnapshot(featuredSnapshot => {
-      let featured
-      featuredSnapshot.forEach(doc => {
-        featured = doc.data()
-      })
-      featured.sketch.get().then(snapshot => {
-        onUpdate({
-          text: featured.featureText,
-          sketch: toSketch(snapshot.data())
-        })
-        resolve()
-      })
-    })
+  featured.onSnapshot(featuredSnapshot => {
+    console.log(featuredSnapshot)
+    arrayToStaticData(featuredSnapshot).then(data => onUpdate(data[0]))
   })
-}
-
-function toData (docs) {
-  const data = []
-  docs.forEach(doc => data.push({
-    id: doc.id,
-    ...doc.data()
-  }))
-  return data
-}
-
-function mkSketchCollectionPromise (collection, onUpdate) {
-  return new Promise((resolve, reject) => {
-    collection.onSnapshot(data => onUpdate(toData(data).map(toSketch)))
-    return collection.get().then(resolve).catch(error => {
-      console.error(error)
-      reject(error)
-    })
-  })
+  return featured.get()
 }
 
 apiImpl.fetchTopSketches = (
@@ -157,22 +125,19 @@ apiImpl.fetchTopSketches = (
   onMostCommentedAllTime
 ) => {
   return Promise.all([
-    mkSketchCollectionPromise(newest, onNewest),
-    mkSketchCollectionPromise(bestRatedLastWeek, onBestRatedLastWeek),
-    mkSketchCollectionPromise(bestRatedLastMonth, onBestRatedLastMonth),
-    mkSketchCollectionPromise(bestRatedAllTime, onBestRatedAllTime),
-    mkSketchCollectionPromise(mostCommentedLastWeek, onMostCommentedLastWeek),
-    mkSketchCollectionPromise(mostCommentedLastMonth, onMostCommentedLastMonth),
-    mkSketchCollectionPromise(mostCommentedAllTime, onMostCommentedAllTime)
+    fetchCollection(newest, onNewest),
+    fetchCollection(bestRatedLastWeek, onBestRatedLastWeek),
+    fetchCollection(bestRatedLastMonth, onBestRatedLastMonth),
+    fetchCollection(bestRatedAllTime, onBestRatedAllTime),
+    fetchCollection(mostCommentedLastWeek, onMostCommentedLastWeek),
+    fetchCollection(mostCommentedLastMonth, onMostCommentedLastMonth),
+    fetchCollection(mostCommentedAllTime, onMostCommentedAllTime)
   ])
 }
 
 apiImpl.fetchDetailSketch = (id, onUpdate) => {
   const ref = sketches.doc(id)
-  ref.onSnapshot(snapshot => onUpdate({
-    id: snapshot.id,
-    ...snapshot.data()
-  }))
+  ref.onSnapshot(snapshot => toStaticData(snapshot).then(onUpdate))
   return ref.get()
 }
 
@@ -182,11 +147,16 @@ apiImpl.fetchDetailSketchComments = (id, onUpdate) => {
     .collection('comments')
     .orderBy('created', 'asc')
   return new Promise((resolve, reject) => {
-    ref.onSnapshot(data => onUpdate(toData(data).map(toComment)))
-    return newest.get().then(resolve).catch(error => {
-      console.error(error)
-      reject(error)
+    ref.onSnapshot(data => {
+      return arrayToStaticData(data).then(onUpdate)
     })
+    return newest
+      .get()
+      .then(resolve)
+      .catch(error => {
+        console.error(error)
+        reject(error)
+      })
   })
 }
 
