@@ -76,6 +76,7 @@ export default {
             this.$store.dispatch('updateCurrentUser', user.uid)
           })
           .catch(error => {
+            console.error('Could not update user info', error)
             // eslint-disable-next-line
             api
               .auth

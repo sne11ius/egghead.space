@@ -93,7 +93,6 @@ export default {
     return {
       showFeatureThisDialog: false,
       featureThisText: '',
-      isModerator: false,
       isLoading: false,
       newCommentBody: ''
     }
@@ -132,15 +131,17 @@ export default {
     comments () {
       return this.$store.state.sketchDetailsComments
     },
-    canEdit: function () {
-      /*
-      return (
-        this.$globals.isAuthenticated &&
-        (this.$globals.currentUser.uid === this.sketch.createdByUid ||
-          this.isModerator)
-      )
-      */
-      return false
+    isModerator () {
+      return this.$store.state.isModerator
+    },
+    currentUser () {
+      return this.$store.state.currentUser
+    },
+    isAuthor () {
+      return this.currentUser !== null && this.currentUser.uid === this.sketch.createdByUid
+    },
+    canEdit () {
+      return this.isAuthor || this.isModerator
     },
     didLike: function () {
       /*

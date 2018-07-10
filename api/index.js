@@ -178,7 +178,9 @@ apiImpl.fetchPublicUserData = (userId, onSnapshot) => {
     .collection('public')
     .doc('userInfo')
   if (onSnapshot) {
-    ref.onSnapshot(onSnapshot)
+    ref.onSnapshot(snapshot => {
+      toStaticData(snapshot).then(onSnapshot)
+    })
   }
   return ref.get()
 }
@@ -195,5 +197,12 @@ apiImpl.setPublicUserData = userData =>
         ...userData
       })
     )
+
+apiImpl.checkIsModerator = userId =>
+  apiImpl.db
+    .collection('moderators')
+    .doc(userId)
+    .get()
+    .then(moderatorInfo => moderatorInfo.exists && moderatorInfo.data().isModerator)
 
 export const api = apiImpl

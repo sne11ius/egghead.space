@@ -17,6 +17,7 @@ export default new Vuex.Store({
     },
     sketchDetailsComments: [],
     currentUser: null,
+    isModerator: false,
     newest: [],
     bestRatedLastWeek: [],
     bestRatedLastMonth: [],
@@ -104,8 +105,9 @@ export default new Vuex.Store({
         })
     },
     updateCurrentUser ({ commit }, userId) {
-      return api.fetchPublicUserData(userId, snapshot => {
-        commit('setCurrentUser', snapshot.data())
+      return api.fetchPublicUserData(userId, userData => {
+        commit('setCurrentUser', userData)
+        api.checkIsModerator(userId).then(isModerator => commit('setIsModerator', isModerator))
       })
     },
     removeCurrentUser ({ commit }) {
@@ -127,6 +129,9 @@ export default new Vuex.Store({
     },
     setCurrentUser (state, currentUser) {
       state.currentUser = currentUser
+    },
+    setIsModerator (state, isModerator) {
+      state.isModerator = isModerator
     },
     setNewest (state, newest) {
       state.newest = newest
