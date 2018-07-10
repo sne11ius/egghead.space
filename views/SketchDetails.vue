@@ -100,7 +100,6 @@ export default {
   asyncData ({ store, route }) {
     return store.dispatch('fetchDetailSketch', route.params.id)
   },
-  /*
   mounted: function () {
     if (this.commentId) {
       setTimeout(() => {
@@ -112,18 +111,7 @@ export default {
         })
       }, 500)
     }
-    if (!this.$globals.isAuthenticated) {
-      return
-    }
-    db.collection('moderators')
-      .doc(this.$globals.currentUser.uid)
-      .get()
-      .then(moderatorInfo => {
-        this.isModerator =
-          moderatorInfo.exists && moderatorInfo.data().isModerator
-      })
   },
-  */
   computed: {
     sketch () {
       return this.$store.state.sketchDetails
