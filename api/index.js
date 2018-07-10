@@ -127,13 +127,14 @@ apiImpl.fetchTopSketches = (
   ])
 }
 
-apiImpl.fetchDetailSketch = (id, onUpdate) => {
-  console.log(id)
+apiImpl.fetchDetailSketch = (id, onUpdate) => new Promise((resolve, reject) => {
   const ref = sketches.doc(id)
-  console.log('fetchDetailSketch')
-  ref.onSnapshot(snapshot => toStaticData(snapshot).then(onUpdate))
-  return ref.get()
-}
+  ref.onSnapshot(snapshot => toStaticData(snapshot).then(details => {
+    onUpdate(details)
+    resolve(details)
+  }))
+  ref.get()
+})
 
 apiImpl.fetchDetailSketchComments = (id, onUpdate) => {
   const ref = sketches

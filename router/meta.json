@@ -3,5 +3,10 @@
     "title": "egghead.space | Home",
     "description": "A place to share project ideas",
     "keywords": "egghead.space, egghead, space, sketch, project idea"
+  },
+  "/sketch": {
+    "title": "egghead.space | Sketch details",
+    "description": "A place to share project ideas",
+    "keywords": "egghead.space, egghead, space, sketch, project idea"
   }
 }

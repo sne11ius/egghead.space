@@ -15,7 +15,7 @@
     </v-dialog>
     <v-layout row wrap>
       <v-flex xs12 md6>
-        <Sketch :sketch="sketch" :showDetailsLink=false :showAuthor=false></Sketch>
+        <Sketch :sketch="sketch"></Sketch>
       </v-flex>
       <v-flex xs12 md6 class="details">
         <v-card>
@@ -94,7 +94,8 @@ export default {
       showFeatureThisDialog: false,
       featureThisText: '',
       isModerator: false,
-      isLoading: false
+      isLoading: false,
+      newCommentBody: ''
     }
   },
   asyncData ({ store, route }) {

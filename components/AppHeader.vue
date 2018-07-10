@@ -4,7 +4,7 @@
       <v-toolbar-title class="title small" v-if="breakpoint">
         <h1>
           <router-link to="/" class="home-link">
-            <img src="mr_egg_60.png">
+            <img src="/mr_egg_60.png">
             .space
           </router-link>
         </h1>
@@ -13,7 +13,7 @@
         <h1>
           <router-link to="/" class="home-link">
             egghead.space
-            <img src="mr_egg_60.png">
+            <img src="/mr_egg_60.png">
           </router-link>
         </h1>
       </v-toolbar-title>

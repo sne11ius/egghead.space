@@ -12,7 +12,7 @@
             Made with
           </router-link>
           <router-link :to="{name: 'about', params: { show: 'about' }}">
-            <img src="egg.svg" class="egg">
+            <img src="/egg.svg" class="egg">
           </router-link>
           <v-spacer></v-spacer>
           <router-link :to="{name: 'about', params: { show: 'licenses' }}">
@@ -34,7 +34,6 @@
 
 <script>
 import Meta from 'mixins/meta'
-import Globals from 'mixins/globals'
 import GlobalSnackbar from 'components/GlobalSnackbar.vue'
 import AppHeader from 'components/AppHeader.vue'
 
@@ -49,9 +48,11 @@ export default {
   },
   data () {
     return {
+      // eslint-disable-next-line no-undef
       gitHash: __COMMIT_HASH__,
-      commitUrl:
-        'https://github.com/sne11ius/egghead.space/commits/' + __COMMIT_HASH__,
+      // eslint-disable-next-line no-undef
+      commitUrl: 'https://github.com/sne11ius/egghead.space/commits/' + __COMMIT_HASH__,
+      // eslint-disable-next-line no-undef
       gitBranch: __BRANCH_NAME__
     }
   },
@@ -69,7 +70,7 @@ export default {
               if (!snapshot.exists) {
                 return api.setPublicUserData(user)
               }
-            });
+            })
           })
           .then(() => {
             this.$store.dispatch('updateCurrentUser', user.uid)
@@ -93,7 +94,7 @@ export default {
     })
   },
   computed: {
-    isHomeView: function() {
+    isHomeView: function () {
       return this.$route.path === '/'
     }
   }

@@ -5,6 +5,7 @@ import Globals from 'mixins/globals'
 import App from './App.vue'
 import Components from 'components/_index'
 import Filters from 'filters/_index'
+import VueScrollTo from 'vue-scrollto'
 
 import store from 'store/index'
 import { createRouter } from 'router/index'
@@ -21,6 +22,7 @@ Vue.use(Vuetify, {
 })
 
 Vue.use(Globals)
+Vue.use(VueScrollTo)
 
 Object.keys(Components).forEach(key => {
   Vue.component(key, Components[key])
