@@ -32,9 +32,7 @@ const toStaticData = snapshot => {
       )
     }
   }
-  return Promise
-    .all(promises)
-    .then(() => data)
+  return Promise.all(promises).then(() => data)
 }
 
 function arrayToStaticData (querySnapshot) {
@@ -104,7 +102,6 @@ const sketches = apiImpl.db.collection('sketches')
 
 apiImpl.fetchFeatured = onUpdate => {
   featured.onSnapshot(featuredSnapshot => {
-    console.log(featuredSnapshot)
     arrayToStaticData(featuredSnapshot).then(data => onUpdate(data[0]))
   })
   return featured.get()
