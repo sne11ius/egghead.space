@@ -72,9 +72,7 @@ export default {
     TopSketches
   },
   asyncData ({ store, route }) {
-    return Promise.all([
-      store.dispatch('fetchFeatureText')
-    ])
+    return store.dispatch('fetchFeatureText')
   },
   computed: {
     featureText () {

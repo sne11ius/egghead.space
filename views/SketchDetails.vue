@@ -4,7 +4,7 @@
       <v-card>
         <v-card-title class="headline">Please enter a little teaser text</v-card-title>
         <v-card-text>
-          <v-text-field multi-line v-model="featureThisText"></v-text-field>
+          <v-textarea v-model="featureThisText"></v-textarea>
         </v-card-text>
         <v-card-actions>
           <v-spacer></v-spacer>
@@ -58,14 +58,13 @@
               </div>
               <h2>{{comments.length}} Comments</h2>
               <Comment v-for="comment in comments" :comment="comment" :key="comment.id"></Comment>
-              <v-text-field
+              <v-textarea
                 id="comment-textfield"
                 v-model="newCommentBody"
                 label="Add a comment"
                 hint="Please be polite ;)"
                 ref="commentTextfield"
-                multi-line
-              ></v-text-field>
+              ></v-textarea>
               <v-btn class="submitComment" :disabled="this.newCommentBody.length === 0" small color="primary" @click="submitComment">Submit comment</v-btn>
             </div>
           </v-card-text>
@@ -90,6 +89,18 @@ export default {
     Sketch,
     Comment
   },
+  data () {
+    return {
+      showFeatureThisDialog: false,
+      featureThisText: '',
+      isModerator: false,
+      isLoading: false
+    }
+  },
+  asyncData ({ store, route }) {
+    return store.dispatch('fetchDetailSketch', route.params.id)
+  },
+  /*
   mounted: function () {
     if (this.commentId) {
       setTimeout(() => {
@@ -112,12 +123,7 @@ export default {
           moderatorInfo.exists && moderatorInfo.data().isModerator
       })
   },
-
-  asyncData ({ store, route }) {
-    return Promise.all([
-      store.dispatch('fetchDetailSketch', route.params.id)
-    ])
-  },
+  */
   computed: {
     sketch () {
       return this.$store.state.sketchDetails
@@ -126,13 +132,17 @@ export default {
       return this.$store.state.sketchDetailsComments
     },
     canEdit: function () {
+      /*
       return (
         this.$globals.isAuthenticated &&
         (this.$globals.currentUser.uid === this.sketch.createdByUid ||
           this.isModerator)
       )
+      */
+      return false
     },
     didLike: function () {
+      /*
       if (!this.$globals.currentUser) {
         return false
       } else {
@@ -142,6 +152,8 @@ export default {
           this.sketch.likes[this.$globals.currentUser.uid].didLike
         )
       }
+      */
+      return false
     },
     didLikeTitle: function () {
       return `You added your egg ${distanceInWordsToNow(

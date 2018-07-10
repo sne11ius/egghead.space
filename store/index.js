@@ -60,12 +60,14 @@ export default new Vuex.Store({
     fetchDetailSketch ({ commit }, sketchId) {
       return api
         .fetchDetailSketch(sketchId, sketchDetails => {
+          console.log('store fetchDetailSketch', sketchDetails)
           commit('setSketchDetails', sketchDetails)
         })
         .then(() => {
-          api.fetchDetailSketchComments(sketchId, comments => {
-            commit('setSketchDetailsComments', comments)
-          })
+          api
+            .fetchDetailSketchComments(sketchId, comments => {
+              commit('setSketchDetailsComments', comments)
+            })
         })
     },
     updateCurrentUser ({ commit }, userId) {

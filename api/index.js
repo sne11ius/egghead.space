@@ -136,7 +136,9 @@ apiImpl.fetchTopSketches = (
 }
 
 apiImpl.fetchDetailSketch = (id, onUpdate) => {
+  console.log(id)
   const ref = sketches.doc(id)
+  console.log('fetchDetailSketch')
   ref.onSnapshot(snapshot => toStaticData(snapshot).then(onUpdate))
   return ref.get()
 }
