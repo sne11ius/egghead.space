@@ -27,35 +27,69 @@ export default new Vuex.Store({
   },
   actions: {
     fetchFeatureText ({ commit }) {
-      return api.fetchFeatured(({ text, sketch }) => {
-        commit('setFeatureText', text)
-        commit('setFeaturedSketch', sketch)
+      return new Promise(resolve => {
+        return api.fetchFeatured(({ text, sketch }) => {
+          commit('setFeatureText', text)
+          commit('setFeaturedSketch', sketch)
+          resolve()
+        })
       })
     },
     fetchTopSketches ({ commit }) {
-      return api.fetchTopSketches(
-        newest => {
-          commit('setNewest', newest)
-        },
-        bestRatedLastWeek => {
-          commit('setBestRatedLastWeek', bestRatedLastWeek)
-        },
-        bestRatedLastMonth => {
-          commit('setBestRatedLastMonth', bestRatedLastMonth)
-        },
-        bestRatedAllTime => {
-          commit('setBestRatedAllTime', bestRatedAllTime)
-        },
-        mostCommentedLastWeek => {
-          commit('setMostCommentedLastWeek', mostCommentedLastWeek)
-        },
-        mostCommentedLastMonth => {
-          commit('setMostCommentedLastMonth', mostCommentedLastMonth)
-        },
-        mostCommentedAllTime => {
-          commit('setMostCommentedAllTime', mostCommentedAllTime)
+      return new Promise(resolve => {
+        const done = []
+        const all = [
+          'setNewest',
+          'setBestRatedLastWeek',
+          'setBestRatedLastMonth',
+          'setBestRatedAllTime',
+          'setMostCommentedLastWeek',
+          'setMostCommentedLastMonth',
+          'setMostCommentedAllTime'
+        ]
+        function checkDone () {
+          if (all.every(x => done.includes(x))) {
+            resolve()
+          }
         }
-      )
+        return api.fetchTopSketches(
+          newest => {
+            commit('setNewest', newest)
+            done.push('setNewest')
+            checkDone()
+          },
+          bestRatedLastWeek => {
+            commit('setBestRatedLastWeek', bestRatedLastWeek)
+            done.push('setBestRatedLastWeek')
+            checkDone()
+          },
+          bestRatedLastMonth => {
+            commit('setBestRatedLastMonth', bestRatedLastMonth)
+            done.push('setBestRatedLastMonth')
+            checkDone()
+          },
+          bestRatedAllTime => {
+            commit('setBestRatedAllTime', bestRatedAllTime)
+            done.push('setBestRatedAllTime')
+            checkDone()
+          },
+          mostCommentedLastWeek => {
+            commit('setMostCommentedLastWeek', mostCommentedLastWeek)
+            done.push('setMostCommentedLastWeek')
+            checkDone()
+          },
+          mostCommentedLastMonth => {
+            commit('setMostCommentedLastMonth', mostCommentedLastMonth)
+            done.push('setMostCommentedLastMonth')
+            checkDone()
+          },
+          mostCommentedAllTime => {
+            commit('setMostCommentedAllTime', mostCommentedAllTime)
+            done.push('setMostCommentedAllTime')
+            checkDone()
+          }
+        )
+      })
     },
     fetchDetailSketch ({ commit }, sketchId) {
       return api
@@ -64,10 +98,9 @@ export default new Vuex.Store({
           commit('setSketchDetails', sketchDetails)
         })
         .then(() => {
-          api
-            .fetchDetailSketchComments(sketchId, comments => {
-              commit('setSketchDetailsComments', comments)
-            })
+          api.fetchDetailSketchComments(sketchId, comments => {
+            commit('setSketchDetailsComments', comments)
+          })
         })
     },
     updateCurrentUser ({ commit }, userId) {
