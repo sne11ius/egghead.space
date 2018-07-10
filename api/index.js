@@ -23,12 +23,13 @@ const toStaticData = snapshot => {
     if (value && value.firestore) {
       promises.push(
         new Promise((resolve, reject) => {
-          value.get().then(childSnap => {
-            toStaticData(childSnap).then(val => {
+          value
+            .get()
+            .then(toStaticData)
+            .then(val => {
               data[i] = val
               resolve(val)
             })
-          })
         })
       )
     }
