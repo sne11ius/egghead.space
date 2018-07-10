@@ -23,8 +23,8 @@
             <v-btn v-if="canEdit" :to="{name: 'edit', params: {id: this.sketch.id, title: this.sketch.title.replace(/\s/g, '+')}}" title="Edit this sketch">Edit</v-btn>
             <v-btn v-if="isModerator" @click="showFeatureThisDialog = true" title="Feature this sketch on the home page">Feature this</v-btn>
             <div class="likes">
-              <v-icon v-if="didLike" large color="pink" :title="didLikeTitle">favorite</v-icon>
-              <v-icon v-else large color="grey">favorite</v-icon>
+              <v-icon v-if="didLike" large color="pink" class="heart" :title="didLikeTitle">favorite</v-icon>
+              <v-icon v-else large color="grey" class="heart">favorite</v-icon>
               <v-progress-circular v-if="isLoading" class="wait-icon" indeterminate color="primary"></v-progress-circular>
               <div v-else class="like-interaction">
                 <v-btn v-if="didLike" icon @click="invertLike" title="I want my egg back!">
@@ -75,10 +75,11 @@
 </template>
 
 <script>
-import api from 'api'
+import { api } from 'api'
 import { distanceInWordsToNow, format } from 'date-fns/'
 
-import EventBus from 'service/EventBus.js'
+import EventBus from 'service/EventBus'
+import FirebaseUtil from 'service/FirebaseUtil'
 import Sketch from 'components/Sketch.vue'
 import Comment from 'components/Comment.vue'
 
@@ -132,32 +133,29 @@ export default {
       return this.isAuthor || this.isModerator
     },
     didLike: function () {
-      /*
-      if (!this.$globals.currentUser) {
+      if (this.currentUser === null) {
         return false
       } else {
         return (
           this.sketch.likes &&
-          this.sketch.likes[this.$globals.currentUser.uid] &&
-          this.sketch.likes[this.$globals.currentUser.uid].didLike
+          this.sketch.likes[this.currentUser.uid] &&
+          this.sketch.likes[this.currentUser.uid].didLike
         )
       }
-      */
-      return false
     },
     didLikeTitle: function () {
-      return `You added your egg ${distanceInWordsToNow(
-        this.sketch.likes[[this.$globals.currentUser.uid]].lastChanged.toDate()
-      )} ago`
+      const lastChanged = this.sketch.likes[[this.currentUser.uid]].lastChanged
+      const date = FirebaseUtil.toDate(lastChanged)
+      return `You added your egg ${distanceInWordsToNow(date)} ago`
     },
     totalLikes: function () {
       return this.sketch.totalLikes || 0
     },
     creationDate: function () {
-      if (!(this.sketch.created && this.sketch.created.toDate)) {
+      if (!this.sketch.created) {
         return 'Created a long time ago'
       }
-      return format(this.sketch.created.toDate(), 'MMMM D. YYYY HH:mm')
+      return format(FirebaseUtil.toDate(this.sketch.created), 'MMMM D. YYYY HH:mm')
     }
   },
   watch: {
@@ -167,35 +165,11 @@ export default {
   },
   methods: {
     submitComment: function () {
-      if (!this.$globals.isAuthenticated) {
+      if (this.currentUser === null) {
         EventBus.info('Please sign in to submit your comment.')
         return
       }
-      const userRef = db
-        .collection('users')
-        .doc(this.$globals.currentUser.uid)
-        .collection('public')
-        .doc('userInfo')
-      sketches
-        .doc(this.id)
-        .collection('comments')
-        .add({
-          createdBy: userRef,
-          createdByUid: this.$globals.currentUser.uid,
-          body: this.newCommentBody,
-          created: Firebase.firestore.FieldValue.serverTimestamp()
-        })
-        .then(ref => {
-          return db
-            .collection('users')
-            .doc(this.$globals.currentUser.uid)
-            .collection('comments')
-            .add({
-              ref,
-              refString: `sketches/${this.id}/comments/${ref.id}`,
-              created: Firebase.firestore.FieldValue.serverTimestamp()
-            })
-        })
+      api.submitComment(this.currentUser.uid, this.sketch.id, this.newCommentBody)
         .then(() => {
           this.newCommentBody = ''
         })
@@ -277,6 +251,10 @@ export default {
     min-height: 60px;
     button {
       margin-left: 0px;
+    }
+    i.v-icon.heart {
+      position: relative;
+      top: 10px;
     }
     .wait-icon {
       height: 28px !important;

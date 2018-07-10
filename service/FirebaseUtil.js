@@ -1,6 +1,10 @@
+import { api } from 'api'
 class FirebaseUtil {
-  toSimpleObject (data) {
-    return JSON.parse(JSON.stringify(data))
+  toDate (timestampData) {
+    return new api.firebase.firestore.Timestamp(
+      timestampData.seconds,
+      timestampData.nanoseconds
+    ).toDate()
   }
 }
 

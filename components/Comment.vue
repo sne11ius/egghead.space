@@ -15,6 +15,7 @@
 </template>
 
 <script>
+import FirebaseUtil from 'service/FirebaseUtil'
 import { format } from 'date-fns/'
 
 export default {
@@ -56,7 +57,7 @@ export default {
       if (!(this.comment && this.comment.created)) {
         return ''
       }
-      return format(this.comment.created.toDate(), 'MMMM D. YYYY HH:mm')
+      return format(FirebaseUtil.toDate(this.comment.created), 'MMMM D. YYYY HH:mm')
     },
     deepLink () {
       return this.sketchLink
