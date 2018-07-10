@@ -6,7 +6,11 @@
     </v-card-title>
     <v-card-text v-text="strippedBody" class="text-preview fade-out"></v-card-text>
     <v-card-actions>
+      <span class="author-link">by <router-link :to="{name: 'user', params: {uid: this.sketch.createdByUid, username: this.sketch.createdBy.displayName.replace(/\s/g, '+')}}">{{author}}</router-link></span>
       <v-spacer></v-spacer>
+      <v-btn v-if="showDetailsLink" :to="{name: 'SketchDetails', params: {id: this.sketch.id, title: this.sketch.title.replace(/\s/g, '+')}}" flat small color="primary">
+        Show more
+      </v-btn>
     </v-card-actions>
   </v-card>
 </template>
@@ -81,7 +85,7 @@ export default {
   }
   .author-link {
     position: relative;
-    top: 12px;
+    top: 6px;
     left: -4px;
     a {
       text-decoration: none;
