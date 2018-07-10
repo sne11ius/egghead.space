@@ -183,6 +183,46 @@ apiImpl.submitComment = (userId, sketchId, commentBody) => {
     })
 }
 
+apiImpl.invertLike = (userId, sketchId) => {
+  return new Promise((resolve, reject) => {
+    const sketchRef = sketches.doc(sketchId)
+    apiImpl.db.runTransaction(transaction => {
+      return transaction
+        .get(sketchRef)
+        .then(function (sketch) {
+          if (!sketch.exists) {
+            // eslint-disable-next-line prefer-promise-reject-errors
+            return reject("Cannot vote on a Sketch that doesn't exist.")
+          }
+          let totalLikes = sketch.data().totalLikes || 0
+          let likes = sketch.data().likes || {}
+          if (likes[userId] && likes[userId].didLike) {
+            likes[userId] = {
+              lastChanged: apiImpl.firebase.firestore.FieldValue.serverTimestamp(),
+              didLike: false
+            }
+            totalLikes--
+          } else {
+            likes[userId] = {
+              lastChanged: apiImpl.firebase.firestore.FieldValue.serverTimestamp(),
+              didLike: true
+            }
+            totalLikes++
+          }
+          transaction.update(sketchRef, {
+            totalLikes: totalLikes,
+            likes: likes
+          })
+        })
+        .then(resolve)
+        .catch(error => {
+          // eslint-disable-next-line prefer-promise-reject-errors
+          reject('Could not change vote: ' + error)
+        })
+    })
+  })
+}
+
 apiImpl.fetchPrivateUserData = userId =>
   apiImpl.db
     .collection('users')

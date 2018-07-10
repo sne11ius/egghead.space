@@ -15,6 +15,7 @@
 </template>
 
 <script>
+import { api } from 'api'
 import FirebaseUtil from 'service/FirebaseUtil'
 import { format } from 'date-fns/'
 
@@ -65,7 +66,7 @@ export default {
   },
   mounted () {
     if (this.sketchLink) {
-      db.doc(this.sketchLink)
+      api.db.doc(this.sketchLink)
         .parent.parent.get()
         .then(snapshot => {
           this.sketchId = snapshot.id

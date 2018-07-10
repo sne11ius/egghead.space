@@ -178,46 +178,20 @@ export default {
         })
     },
     invertLike: function () {
-      if (!this.$globals.isAuthenticated) {
+      if (this.currentUser === null) {
         EventBus.info('You must be logged in to share the love.')
         return
       }
       this.isLoading = true
-      const currentUserId = this.$globals.currentUser.uid
-      const sketchRef = this.$firestoreRefs.sketch
-      const _this = this
-      db.runTransaction(function (transaction) {
-        return transaction
-          .get(sketchRef)
-          .then(function (sketch) {
-            if (!sketch.exists) {
-              EventBus.error("Cannot vote on a Sketch that doesn't exist.")
-            }
-            let totalLikes = sketch.data().totalLikes || 0
-            let likes = sketch.data().likes || {}
-            if (likes[currentUserId] && likes[currentUserId].didLike) {
-              likes[currentUserId] = {
-                lastChanged: Firebase.firestore.FieldValue.serverTimestamp(),
-                didLike: false
-              }
-              totalLikes--
-            } else {
-              likes[currentUserId] = {
-                lastChanged: Firebase.firestore.FieldValue.serverTimestamp(),
-                didLike: true
-              }
-              totalLikes++
-            }
-            transaction.update(sketchRef, {
-              totalLikes: totalLikes,
-              likes: likes
-            })
-          })
-          .catch(function (error) {
-            EventBus.error('Could not change vote: ' + error)
-            _this.isLoading = false
-          })
-      })
+      api
+        .invertLike(this.currentUser.uid, this.sketch.id)
+        .then(() => {
+          this.isLoading = false
+        })
+        .catch(error => {
+          EventBus.error(error)
+          this.isLoading = false
+        })
     },
     submitFeatureThis: function () {
       db.collection('featuredSketches')
