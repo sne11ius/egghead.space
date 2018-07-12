@@ -21,6 +21,11 @@ const createMeta = route => {
         ...defaults
       }
     }
+    case 'Create':
+      return {
+        title: prefix + 'Create',
+        ...defaults
+      }
   }
 }
 

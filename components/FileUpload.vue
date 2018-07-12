@@ -4,9 +4,9 @@
 </template>
 
 <script>
-import Uppy from 'uppy/lib/core'
-import Dashboard from 'uppy/lib/plugins/Dashboard'
-import FirebaseCloudStorage from '@/service/FirebaseCloudStorage'
+import Uppy from '@uppy/core'
+import Dashboard from '@uppy/dashboard'
+import FirebaseCloudStorage from 'service/FirebaseCloudStorage'
 
 import 'uppy/dist/uppy.min.css'
 

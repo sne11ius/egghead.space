@@ -5,6 +5,7 @@ import Globals from 'mixins/globals'
 import App from './App.vue'
 import Components from 'components/_index'
 import Filters from 'filters/_index'
+import VuetifyConfirm from 'vuetify-confirm'
 import VueScrollTo from 'vue-scrollto'
 
 import store from 'store/index'
@@ -22,6 +23,13 @@ Vue.use(Vuetify, {
 })
 
 Vue.use(Globals)
+Vue.use(VuetifyConfirm, {
+  buttonTrueText: 'Yes',
+  buttonFalseText: 'No',
+  color: 'warning',
+  icon: 'warning',
+  title: 'Warning'
+})
 Vue.use(VueScrollTo)
 
 Object.keys(Components).forEach(key => {

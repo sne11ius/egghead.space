@@ -155,6 +155,30 @@ apiImpl.fetchDetailSketchComments = (id, onUpdate) => {
   })
 }
 
+apiImpl.fetchSketch = id => {
+  return sketches
+    .doc(this.id)
+    .get()
+    .then(toStaticData)
+}
+
+apiImpl.submitSketch = (userId, title, body, medias) => {
+  const userRef = apiImpl.db
+    .collection('users')
+    .doc(userId)
+    .collection('public')
+    .doc('userInfo')
+  const sketch = {
+    createdBy: userRef,
+    createdByUid: userId,
+    title,
+    body,
+    created: apiImpl.firebase.firestore.FieldValue.serverTimestamp(),
+    medias
+  }
+  return sketches.add(sketch)
+}
+
 apiImpl.submitComment = (userId, sketchId, commentBody) => {
   const userRef = apiImpl.db
     .collection('users')
