@@ -1,9 +1,6 @@
 import Vue from 'vue'
 import Router from 'vue-router'
 
-// The meta data for your routes
-const meta = require('./meta.json')
-
 // Function to create routes
 // Is default lazy but can be changed
 function route(path, view) {
@@ -11,7 +8,6 @@ function route(path, view) {
     path: path,
     name: view,
     props: true,
-    meta: meta[path],
     component: resolve => import(`views/${view}.vue`).then(resolve)
   }
 }

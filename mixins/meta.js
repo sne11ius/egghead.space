@@ -1,8 +1,33 @@
-const meta = require('../router/meta.json')
+const description = 'A place to share project ideas'
+const keywords = 'egghead.space, egghead, space, sketch, project idea'
+
+const createMeta = route => {
+  console.log(route)
+  const defaults = {
+    description,
+    keywords
+  }
+  const prefix = 'egghead.space | '
+  switch (route.name) {
+    case 'Home':
+      return {
+        title: prefix + 'Home',
+        ...defaults
+      }
+    case 'SketchDetails': {
+      const titleSuffix =
+        route.params.title && route.params.title !== '' ? ': ' + route.params.title : ''
+      return {
+        title: prefix + 'Sketch' + titleSuffix.replace(/\+/g, ' '),
+        ...defaults
+      }
+    }
+  }
+}
 
 export default {
   watch: {
-    '$route' () {
+    $route () {
       this.setMeta()
     }
   },
@@ -10,7 +35,7 @@ export default {
   created () {
     if (process.env.VUE_ENV === 'client') return
 
-    const metaData = meta[this.$route.path] || {}
+    const metaData = createMeta(this.$route)
 
     this.$ssrContext.title = metaData.title
     this.$ssrContext.description = metaData.description
@@ -25,10 +50,12 @@ export default {
     setMeta () {
       if (typeof document === 'undefined') return
 
-      const metaData = meta[this.$route.path] || {}
+      const metaData = createMeta(this.$route)
 
       document.title = metaData.title
-      document.querySelector('meta[name="description"]').setAttribute('content', metaData.description)
+      document
+        .querySelector('meta[name="description"]')
+        .setAttribute('content', metaData.description)
       document.querySelector('meta[name="keywords"]').setAttribute('content', metaData.keywords)
     }
   }
