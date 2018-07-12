@@ -26,16 +26,37 @@ router.onReady(() => {
     if (!activated.length) {
       return next()
     }
-    Promise.all(
-      activated.map(c => {
-        if (c.asyncData) {
-          return c.asyncData({ store, route: to })
-        }
-      })
-    )
-      .then(() => {
-        next()
-      })
+    // in order to load all promises
+    let targetPromises = []
+    // this cache is used to record operated components' keys, avoid infinite recursion
+    let keyCache = []
+    const doAsyncData = (component) => {
+      if (component.asyncData) {
+        targetPromises.push(component.asyncData({
+          route: to,
+          store
+        }))
+      }
+    }
+    const recursive = (component, key) => {
+      // if has key, recursived
+      if (keyCache.indexOf(key) !== -1) return
+      // cache key
+      keyCache.push(key)
+      // do async data
+      doAsyncData(component)
+      // query sub components
+      if (component.components) {
+        Object.keys(component.components).forEach(key => {
+          recursive(component.components[key], key)
+        })
+      }
+    }
+    activated.map(component => {
+      recursive(component, component.name)
+    })
+    Promise.all(targetPromises)
+      .then(next)
       .catch(next)
   })
 
