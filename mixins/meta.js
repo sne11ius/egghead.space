@@ -2,7 +2,6 @@ const description = 'A place to share project ideas'
 const keywords = 'egghead.space, egghead, space, sketch, project idea'
 
 const createMeta = route => {
-  console.log(route)
   const defaults = {
     description,
     keywords
