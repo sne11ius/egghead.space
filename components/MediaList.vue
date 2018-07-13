@@ -65,6 +65,11 @@ export default {
 <style lang="scss" scoped>
 #media-list {
   margin-bottom: 10px;
+  padding: 7px;
+  .v-card__actions {
+    padding-left: 0px;
+    padding-right: 0px;
+  }
   .media-container {
     display: inline;
     img {
