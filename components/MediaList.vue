@@ -20,7 +20,7 @@
         <v-flex v-for="(file, index) in postProcessIndicators" :key="index" class="media-container process-placeholder" xs12 lg6>
           <v-card tile height="256px">
             <v-card-text>
-              <v-progress-circular :size="50" indeterminate color="primary"></v-progress-circular>
+              <img src="/loading_icon.gif">
               <span class="text">Processing&hellip;</span>
             </v-card-text>
           </v-card>
@@ -67,8 +67,8 @@ export default {
   margin-bottom: 10px;
   padding: 7px;
   .v-card__actions {
-    padding-left: 0px;
-    padding-right: 0px;
+    padding-left: 3px;
+    padding-right: 3px;
   }
   .media-container {
     display: inline;
@@ -86,7 +86,7 @@ export default {
       text-align: center;
     }
   }
-  .progress-circular {
+  img {
     position: absolute;
     top: 50%;
     left: 50%;
