@@ -106,6 +106,13 @@ export default new Vuex.Store({
           })
       })
     },
+    fetchEditSketch ({ commit }, sketchId) {
+      return api
+        .fetchSketch(sketchId)
+        .then(sketch => {
+          commit('setEditSketch', sketch)
+        })
+    },
     updateCurrentUser ({ commit }, userId) {
       return api.fetchPublicUserData(userId, userData => {
         commit('setCurrentUser', userData)
@@ -125,6 +132,9 @@ export default new Vuex.Store({
     },
     setSketchDetails (state, sketchDetails) {
       state.sketchDetails = sketchDetails
+    },
+    setEditSketch (state, editSketch) {
+      state.editSketch = editSketch
     },
     setSketchDetailsComments (state, sketchDetailsComments) {
       state.sketchDetailsComments = sketchDetailsComments

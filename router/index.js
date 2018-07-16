@@ -3,10 +3,10 @@ import Router from 'vue-router'
 
 // Function to create routes
 // Is default lazy but can be changed
-function route(path, view) {
+function route(path, view, name) {
   return {
     path: path,
-    name: view,
+    name: name || view,
     props: true,
     component: resolve => import(`views/${view}.vue`).then(resolve)
   }
@@ -18,9 +18,10 @@ export function createRouter() {
   const router = new Router({
     base: __dirname,
     mode: 'history',
-    scrollBehavior: () => ({ y: 0 }),
+    scrollBehavior: () => ({ x: 0, y: 0 }),
     routes: [
       route('/', 'Home'),
+      route('/sketch/:id/:title?/edit', 'Create', 'edit'),
       route('/sketch/:id/:title?/:commentId?', 'SketchDetails'),
       route('/create', 'Create'),
       // Global redirect for 404

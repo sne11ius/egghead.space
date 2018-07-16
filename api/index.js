@@ -157,7 +157,7 @@ apiImpl.fetchDetailSketchComments = (id, onUpdate) => {
 
 apiImpl.fetchSketch = id => {
   return sketches
-    .doc(this.id)
+    .doc(id)
     .get()
     .then(toStaticData)
 }
@@ -177,6 +177,18 @@ apiImpl.submitSketch = (userId, title, body, medias) => {
     medias
   }
   return sketches.add(sketch)
+}
+
+apiImpl.updateSketch = (sketchId, title, body, medias, updatedByUid) => {
+  return sketches
+    .doc(sketchId)
+    .update({
+      title,
+      body,
+      updated: apiImpl.firebase.firestore.FieldValue.serverTimestamp(),
+      updatedByUid,
+      medias
+    })
 }
 
 apiImpl.submitComment = (userId, sketchId, commentBody) => {

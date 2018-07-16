@@ -46,7 +46,7 @@
           <v-card-text>
             <v-text-field v-model="title" required label="Add a good title"></v-text-field>
             <div id="editor">
-              <textarea id="sketch-body" placeholder="Write something interesting"></textarea>
+              <textarea id="sketch-body" placeholder="Write something interesting" v-model="body"></textarea>
             </div>
           </v-card-text>
           <v-card-actions>
@@ -94,14 +94,6 @@ export default {
     MediaList,
     FileUpload
   },
-  props: {
-    id: {
-      default: () => {
-        return null
-      },
-      type: String
-    }
-  },
   data () {
     return {
       title: '',
@@ -112,8 +104,11 @@ export default {
     }
   },
   computed: {
+    editSketch () {
+      return this.$store.state.editSketch
+    },
     isEditMode () {
-      return this.id !== null
+      return this.editSketch !== null
     },
     isCreateMode () {
       return !this.isEditMode
@@ -143,34 +138,39 @@ export default {
         return storage
           .ref()
           .child('medias')
-          .child(this.id)
+          .child(this.editSketch.id)
       } else {
         return storage.ref().child('temp')
       }
     }
   },
-  asyncData () {
-    if (this.id) {
-      api.fetchSketch
-        .then(sketch => {
-          this.medias.push(...sketch.medias)
-          this.title = sketch.title
-          this.body = sketch.body
-          if (easyMde) {
-            easyMde.value(this.body)
-          }
-        })
+  asyncData ({ store, route }) {
+    if (route.params.id) {
+      return store.dispatch('fetchEditSketch', route.params.id)
+    }
+  },
+  created () {
+    this.medias = []
+    if (this.editSketch) {
+      this.title = this.editSketch.title
+      this.body = this.editSketch.body
+      this.medias.push(...this.editSketch.medias)
     }
   },
   mounted () {
+    this.medias = []
+    if (this.editSketch) {
+      this.title = this.editSketch.title
+      this.body = this.editSketch.body
+      this.medias.push(...this.editSketch.medias)
+    }
     easymde = require('easymde')
-    this.title = ''
     easyMde = new easymde({
       element: document.querySelectorAll('#sketch-body')[0],
       autoDownloadFontAwesome: false,
       hideIcons: ['side-by-side', 'fullscreen']
     })
-    easyMde.value('')
+    easyMde.value(this.body)
   },
   beforeRouteLeave: function (to, from, next) {
     if (
@@ -202,24 +202,17 @@ export default {
           url,
           preview
         }))
-        sketches
-          .doc(this.id)
-          .update({
-            title: this.title,
-            body,
-            updated: Firebase.firestore.FieldValue.serverTimestamp(),
-            updatedByUid: this.$globals.currentUser.uid,
-            medias
-          })
+        api
+          .updateSketch(this.editSketch.id, this.title, body, medias, this.currentUser.uid)
           .then(() => {
             EventBus.info(`Sketch '${this.title}' updated.`)
             const title = this.title
             this.title = ''
             easyMde.value('')
             this.$router.push({
-              name: 'sketch',
+              name: 'SketchDetails',
               params: {
-                id: this.id,
+                id: this.editSketch.id,
                 title: title.replace(/\s/g, '+')
               }
             })

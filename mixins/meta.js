@@ -21,6 +21,14 @@ const createMeta = route => {
         ...defaults
       }
     }
+    case 'edit': {
+      const titleSuffix =
+        route.params.title && route.params.title !== '' ? ': ' + route.params.title : ''
+      return {
+        title: prefix + 'Sketch' + titleSuffix.replace(/\+/g, ' ') + ' (Edit)',
+        ...defaults
+      }
+    }
     case 'Create':
       return {
         title: prefix + 'Create',
