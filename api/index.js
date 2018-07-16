@@ -207,6 +207,16 @@ apiImpl.submitComment = (userId, sketchId, commentBody) => {
     })
 }
 
+apiImpl.submitFeatureThis = (sketchId, featureText, featuredBy) =>
+  apiImpl.db
+    .collection('featuredSketches')
+    .add({
+      sketch: sketches.doc(sketchId),
+      featureText,
+      featuredSince: apiImpl.firebase.firestore.FieldValue.serverTimestamp(),
+      featuredBy
+    })
+
 apiImpl.invertLike = (userId, sketchId) => {
   return new Promise((resolve, reject) => {
     const sketchRef = sketches.doc(sketchId)

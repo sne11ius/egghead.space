@@ -29,8 +29,8 @@ export default new Vuex.Store({
   actions: {
     fetchFeatureText ({ commit }) {
       return new Promise(resolve => {
-        return api.fetchFeatured(({ text, sketch }) => {
-          commit('setFeatureText', text)
+        return api.fetchFeatured(({ featureText, sketch }) => {
+          commit('setFeatureText', featureText)
           commit('setFeaturedSketch', sketch)
           resolve()
         })

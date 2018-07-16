@@ -250,7 +250,6 @@ export default {
       }
     },
     mediaAdded (file, previewDownloadUrl, snapshot, previewSnapshot) {
-      console.log('mediaAdded')
       this.$refs.mediaList.stopIndicatePostProcess(file)
       this.medias.push({
         file,

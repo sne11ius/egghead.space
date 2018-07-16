@@ -194,13 +194,8 @@ export default {
         })
     },
     submitFeatureThis: function () {
-      db.collection('featuredSketches')
-        .add({
-          sketch: db.collection('sketches').doc(this.sketch.id),
-          featureText: this.featureThisText,
-          featuredSince: Firebase.firestore.FieldValue.serverTimestamp(),
-          featuredBy: this.$globals.currentUser.uid
-        })
+      api
+        .submitFeatureThis(this.sketch.id, this.featureThisText, this.currentUser.uid)
         .then(() => {
           this.showFeatureThisDialog = false
           this.featureThisText = ''
