@@ -26,12 +26,14 @@ export default context => {
       let targetPromises = []
       // this cache is used to record operated components' keys, avoid infinite recursion
       let keyCache = []
-      const doAsyncData = (component) => {
+      const doAsyncData = component => {
         if (component.asyncData) {
-          targetPromises.push(component.asyncData({
-            route: router.currentRoute,
-            store
-          }))
+          targetPromises.push(
+            component.asyncData({
+              route: router.currentRoute,
+              store
+            })
+          )
         }
       }
       const recursive = (component, key) => {
@@ -51,17 +53,19 @@ export default context => {
       matchedComponents.map(component => {
         recursive(component, component.name)
       })
-      Promise.all(targetPromises).then(data => {
-        isDev && console.log(`data pre-fetch: ${Date.now() - s}ms`)
-        targetPromises = []
-        keyCache = []
-        context.state = store.state
-        resolve(app)
-      }).catch(() => {
-        targetPromises = []
-        keyCache = []
-        reject(app)
-      })
+      Promise.all(targetPromises)
+        .then(data => {
+          isDev && console.log(`data pre-fetch: ${Date.now() - s}ms`)
+          targetPromises = []
+          keyCache = []
+          context.state = store.state
+          resolve(app)
+        })
+        .catch(() => {
+          targetPromises = []
+          keyCache = []
+          reject(app)
+        })
     }, reject)
   })
 }
