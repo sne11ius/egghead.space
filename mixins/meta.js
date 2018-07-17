@@ -34,6 +34,15 @@ const createMeta = route => {
         title: prefix + 'Create',
         ...defaults
       }
+    case 'About' : {
+      const suffix = route.params.show
+        ? ' ' + route.params.show[0].toUpperCase() + route.params.show.substring(1)
+        : ''
+      return {
+        title: prefix + 'About' + suffix,
+        ...defaults
+      }
+    }
   }
 }
 
