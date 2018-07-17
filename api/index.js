@@ -1,5 +1,6 @@
 // this is aliased in webpack config based on server/client build
 import { createAPI } from 'create-api'
+import { user } from '../node_modules/firebase-functions/lib/providers/auth';
 
 const apiImpl = createAPI({
   config: {
@@ -142,9 +143,7 @@ apiImpl.fetchDetailSketchComments = (id, onUpdate) => {
     .collection('comments')
     .orderBy('created', 'asc')
   return new Promise((resolve, reject) => {
-    ref.onSnapshot(data => {
-      return arrayToStaticData(data).then(onUpdate)
-    })
+    ref.onSnapshot(data => arrayToStaticData(data).then(onUpdate))
     return newest
       .get()
       .then(resolve)
@@ -152,6 +151,29 @@ apiImpl.fetchDetailSketchComments = (id, onUpdate) => {
         console.error(error)
         reject(error)
       })
+  })
+}
+apiImpl.fetchUserSketches = (userId, onUpdate) => {
+  const ref = sketches.where('createdByUid', '==', userId).orderBy('created', 'desc')
+  return new Promise((resolve, reject) => {
+    ref.onSnapshot(data => arrayToStaticData(data).then(onUpdate))
+    ref
+      .get()
+      .then(resolve)
+  })
+}
+
+apiImpl.fetchUserComments = (userId, onUpdate) => {
+  const ref = apiImpl.db
+    .collection('users')
+    .doc(userId)
+    .collection('comments')
+    .orderBy('created', 'desc')
+  return new Promise((resolve, reject) => {
+    ref.onSnapshot(data => arrayToStaticData(data).then(onUpdate))
+    ref
+      .get()
+      .then(resolve)
   })
 }
 

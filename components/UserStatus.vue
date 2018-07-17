@@ -13,7 +13,7 @@
         </v-avatar>
         <v-icon v-else>fas fa-user-circle</v-icon>
       </v-btn>
-      <v-btn fab small title="Open profile" :to="{name: 'user', params: {uid: currentUser.uid, username: linkUsername}}">
+      <v-btn fab small title="Open profile" :to="{name: 'User', params: {uid: currentUser.uid, username: linkUsername}}">
         <v-icon>fa fa-id-card</v-icon>
       </v-btn>
       <v-btn fab small title="Sign out" @click="logoutClicked" >

@@ -5,9 +5,9 @@
       {{comment.body}}
     </div>
     <div class="comment-footer">
-      <span v-if="showUserLink" class="author-link"><router-link :to="{name: 'user', params: {uid: this.comment.createdByUid, username: linkUsername}}">{{author}}</router-link></span>
+      <span v-if="showUserLink" class="author-link"><router-link :to="{name: 'User', params: {uid: this.comment.createdByUid, username: linkUsername}}">{{author}}</router-link></span>
       <span v-bind:class="{ created: true, fixPos: sketchLink !== ''}">{{creationDate}}</span>
-      <v-btn v-if="sketchLink !== ''" class="details-link" :to="{name: 'sketch', params: {id: this.sketchId, commentId: this.commentId, title: this.sketchTitle.replace(/\s/g, '+')}}" flat small color="primary">
+      <v-btn v-if="sketchLink !== ''" class="details-link" :to="{name: 'SketchDetails', params: {id: this.sketchId, commentId: this.commentId, title: this.sketchTitle.replace(/\s/g, '+')}}" flat small color="primary">
         Go to sketch
       </v-btn>
     </div>

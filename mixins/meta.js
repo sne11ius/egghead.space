@@ -34,12 +34,19 @@ const createMeta = route => {
         title: prefix + 'Create',
         ...defaults
       }
-    case 'About' : {
+    case 'About': {
       const suffix = route.params.show
         ? ' ' + route.params.show[0].toUpperCase() + route.params.show.substring(1)
         : ''
       return {
         title: prefix + 'About' + suffix,
+        ...defaults
+      }
+    }
+    case 'User': {
+      const suffix = route.params.username ? ' ' + route.params.username.replace(/\+/g, ' ') : ''
+      return {
+        title: prefix + 'User' + suffix,
         ...defaults
       }
     }

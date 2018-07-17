@@ -25,6 +25,7 @@ export function createRouter() {
       route('/sketch/:id/:title?/:commentId?', 'SketchDetails'),
       route('/create', 'Create'),
       route('/about/:show?', 'About'),
+      route('/user/:uid/:username?', 'User'),
       // Global redirect for 404
       { path: '*', redirect: '/' }
     ]

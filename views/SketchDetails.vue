@@ -47,7 +47,7 @@
               </h5>
             </div>
             <div class="author-link">
-              Author: <router-link :to="{name: 'user', params: {uid: this.sketch.createdByUid, username: this.sketch.createdBy.displayName.replace(/\s/g, '+')}}">{{this.sketch.createdBy.displayName}}</router-link>
+              Author: <router-link :to="{name: 'User', params: {uid: this.sketch.createdByUid, username: this.sketch.createdBy.displayName.replace(/\s/g, '+')}}">{{this.sketch.createdBy.displayName}}</router-link>
             </div>
             <div class="created">Date: {{creationDate}}</div>
             <div class="comments">

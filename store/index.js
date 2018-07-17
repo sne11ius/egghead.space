@@ -107,11 +107,28 @@ export default new Vuex.Store({
       })
     },
     fetchEditSketch ({ commit }, sketchId) {
-      return api
-        .fetchSketch(sketchId)
-        .then(sketch => {
-          commit('setEditSketch', sketch)
-        })
+      return api.fetchSketch(sketchId).then(sketch => {
+        commit('setEditSketch', sketch)
+      })
+    },
+    fetchUserDetails ({ commit }, userId) {
+      return new Promise((resolve, reject) => {
+        api
+          .fetchUserSketches(userId, userSketches => {
+            commit('setUserSketches', userSketches)
+          })
+          .then(() => {
+            return api.fetchPublicUserData(userId, userDetails => {
+              commit('setUserDetails', userDetails)
+            })
+          })
+          .then(() => {
+            return api.fetchUserComments(userId, userComments => {
+              commit('setUserComments', userComments)
+              resolve()
+            })
+          })
+      })
     },
     updateCurrentUser ({ commit }, userId) {
       return api.fetchPublicUserData(userId, userData => {
@@ -141,6 +158,15 @@ export default new Vuex.Store({
     },
     setCurrentUser (state, currentUser) {
       state.currentUser = currentUser
+    },
+    setUserSketches (state, userSketches) {
+      state.userSketches = userSketches
+    },
+    setUserDetails (state, userDetails) {
+      state.userDetails = userDetails
+    },
+    setUserComments (state, userComments) {
+      state.userComments = userComments
     },
     setIsModerator (state, isModerator) {
       state.isModerator = isModerator
