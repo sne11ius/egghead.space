@@ -144,6 +144,7 @@ export default {
       return this.$store.state.currentUser
     },
     isAuthenticated () {
+      console.log(this.currentUser)
       return this.currentUser !== null
     },
     isCurrentUser () {
@@ -156,9 +157,9 @@ export default {
   mounted () {
     if (this.isCurrentUser) {
       api
-        .fetchPrivateUserData(this.currentUser.uid, data => {
-          console.log('Private data: ', data)
-          this.privateData = data
+        .fetchPrivateUserData(this.currentUser.uid)
+        .then(snapshot => {
+          this.privateInfo = snapshot.data()
         })
     }
   },
@@ -332,12 +333,12 @@ export default {
 <style lang="scss" scoped>
 .user-details {
   margin-bottom: 15px;
-  & .input-group {
+  & .v-input-group {
     padding-top: 0px;
     position: relative;
     top: 10px;
   }
-  .card__title {
+  .v-card__title {
     height: 92px !important;
   }
   .avatar {
@@ -364,7 +365,7 @@ export default {
       position: relative;
       top: -25px;
     }
-    .input-group {
+    .v-input__control {
       max-width: 300px;
       display: inline-block;
     }
