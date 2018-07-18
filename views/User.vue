@@ -4,7 +4,7 @@
       <v-flex xs12 md6>
         <v-card class="user-details">
           <v-card-title primary-title>
-            <h3 v-if="!displayNameEditor" class="headline mb-0">{{userDetails.displayName}}</h3>
+            <h3 v-if="!displayNameEditor" class="headline mb-0">User: {{userDetails.displayName}}</h3>
             <span v-if="displayNameEditor">
               <v-text-field v-model="userDetails.displayName"></v-text-field>
             </span>
@@ -71,7 +71,7 @@
             </div>
             <div class="comments">
               <h4 class="headline">Recent comments</h4>
-              <div v-if="comments && userComments.length > 0" >
+              <div v-if="userComments.length > 0" >
                 <Comment v-for="comment in userComments" :comment="comment.ref" :key="comment.ref.id" :showUserLink=false :sketchLink="comment.refString"></Comment>
               </div>
               <span v-else>[No comments yet]</span>
@@ -104,14 +104,9 @@ export default {
   },
   data () {
     return {
-      user: {
-        displayName: '',
-        createdAt: null
-      },
       privateInfo: {
         email: ''
       },
-      comments: [],
       oldDisplayName: '',
       displayNameEditor: false,
       avatarEditor: false,
@@ -154,47 +149,32 @@ export default {
     isCurrentUser () {
       return (
         this.isAuthenticated &&
-        this.currentUser.uid === this.uid
+        this.userDetails.uid === this.currentUser.uid
       )
     }
   },
-  created: function () {
-    // This timeout is ... bad. I just couldn't make it work with any combination of $watch or
-    // $computed
-    /*
-    setTimeout(() => {
-      if (this.isCurrentUser) {
-        this.$bind(
-          'privateInfo',
-          users
-            .doc(this.uid)
-            .collection('private')
-            .doc('loginData')
-        )
-      }
-    }, 2000)
-    */
+  mounted () {
+    if (this.isCurrentUser) {
+      api
+        .fetchPrivateUserData(this.currentUser.uid, data => {
+          console.log('Private data: ', data)
+          this.privateData = data
+        })
+    }
   },
   methods: {
     updateDisplayName () {
-      /*
-      if (this.user.displayName.trim() === '') {
+      if (this.userDetails.displayName.trim() === '') {
         EventBus.error(
           "Nothing is not a good user name. We're cool with `_` or `anon` or ... though."
         )
         return
       }
-      users
-        .doc(this.uid)
-        .collection('public')
-        .doc('userInfo')
-        .update({
-          displayName: this.user.displayName
-        })
+      api
+        .updateDisplayName(this.userDetails.uid, this.userDetails.displayName)
         .then(() => {
           this.displayNameEditor = false
         })
-        */
     },
     showDisplayNameEditor () {
       this.displayNameEditor = !this.displayNameEditor

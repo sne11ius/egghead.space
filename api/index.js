@@ -334,6 +334,16 @@ apiImpl.setPublicUserData = userData =>
       })
     )
 
+apiImpl.updateDisplayName = (userId, displayName) =>
+  apiImpl.db
+    .collection('users')
+    .doc(userId)
+    .collection('public')
+    .doc('userInfo')
+    .update({
+      displayName
+    })
+
 apiImpl.checkIsModerator = userId =>
   apiImpl.db
     .collection('moderators')
