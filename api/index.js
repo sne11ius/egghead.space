@@ -235,7 +235,7 @@ apiImpl.submitComment = (userId, sketchId, commentBody) => {
         .collection('comments')
         .add({
           ref,
-          refString: `sketches/${this.id}/comments/${ref.id}`,
+          refString: `sketches/${sketchId}/comments/${ref.id}`,
           created: apiImpl.firebase.firestore.FieldValue.serverTimestamp()
         })
     })
