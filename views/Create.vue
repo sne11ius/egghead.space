@@ -147,6 +147,8 @@ export default {
   asyncData ({ store, route }) {
     if (route.params.id) {
       return store.dispatch('fetchEditSketch', route.params.id)
+    } else {
+      return store.dispatch('removeEditSketch')
     }
   },
   created () {

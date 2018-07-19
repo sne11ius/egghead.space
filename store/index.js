@@ -39,7 +39,7 @@ export default new Vuex.Store({
     fetchTopSketches ({ commit }) {
       return new Promise(resolve => {
         const done = []
-        const all = [
+        const allSetters = [
           'setNewest',
           'setBestRatedLastWeek',
           'setBestRatedLastMonth',
@@ -49,7 +49,7 @@ export default new Vuex.Store({
           'setMostCommentedAllTime'
         ]
         function checkDone () {
-          if (all.every(x => done.includes(x))) {
+          if (allSetters.every(x => done.includes(x))) {
             resolve()
           }
         }
@@ -110,6 +110,9 @@ export default new Vuex.Store({
       return api.fetchSketch(sketchId).then(sketch => {
         commit('setEditSketch', sketch)
       })
+    },
+    removeEditSketch ({ commit }) {
+      commit('setEditSketch', null)
     },
     fetchUserDetails ({ commit }, userId) {
       return new Promise((resolve, reject) => {
