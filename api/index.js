@@ -1,6 +1,5 @@
 // this is aliased in webpack config based on server/client build
 import { createAPI } from 'create-api'
-import { user } from '../node_modules/firebase-functions/lib/providers/auth';
 
 const apiImpl = createAPI({
   config: {
@@ -306,6 +305,28 @@ apiImpl.setPrivateUserData = userData =>
     .collection('private')
     .doc('loginData')
     .set(mkPrivateInfo(userData))
+
+apiImpl.updateEmail = (userId, email) =>
+  apiImpl.db
+    .collection('users')
+    .doc(userId)
+    .collection('private')
+    .doc('loginData')
+    .update({
+      email
+    })
+
+apiImpl.updatePhoto = (userId, photoURL, photoPath) =>
+  apiImpl.db
+    .collection('users')
+    .doc(userId)
+    .collection('public')
+    .doc('userInfo')
+    .update({
+      photoURL,
+      photoPath,
+      photoURLDidChange: true
+    })
 
 apiImpl.fetchPublicUserData = (userId, onSnapshot) => {
   var ref = apiImpl.db

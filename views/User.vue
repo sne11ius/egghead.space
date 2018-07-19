@@ -4,7 +4,7 @@
       <v-flex xs12 md6>
         <v-card class="user-details">
           <v-card-title primary-title>
-            <h3 v-if="!displayNameEditor" class="headline mb-0">User: {{userDetails.displayName}}</h3>
+            <h3 v-if="!displayNameEditor" class="headline mb-0">{{userDetails.displayName}}</h3>
             <span v-if="displayNameEditor">
               <v-text-field v-model="userDetails.displayName"></v-text-field>
             </span>
@@ -40,8 +40,8 @@
             </div>
             <div class="photo">
               <div class="avatar-container">
-                <img v-if="userDetails.photoURL" class="avatar" :src="userDetails.photoURL" alt="avatar">
-                <v-icon class="avatar" v-else title="No avatar yet">fas fa-user-circle</v-icon>
+                <img v-if="userDetails.photoURL" class="v-avatar" :src="userDetails.photoURL" alt="avatar">
+                <v-icon class="v-avatar" v-else title="No avatar yet">fas fa-user-circle</v-icon>
               </div>
               <v-btn v-if="isCurrentUser && !avatarEditor" fab small flat color="primary" title="Change avatar" @click="showAvatarEditor">
                 <v-icon>edit</v-icon>
@@ -95,9 +95,10 @@ import { api } from 'api'
 import { format } from 'date-fns/'
 import 'uppy/dist/uppy.min.css'
 
+const tempStorage = api.storage.ref().child('temp')
+
 export default {
   name: 'User',
-  props: ['uid'],
   components: {
     SketchTiny,
     Comment
@@ -144,7 +145,6 @@ export default {
       return this.$store.state.currentUser
     },
     isAuthenticated () {
-      console.log(this.currentUser)
       return this.currentUser !== null
     },
     isCurrentUser () {
@@ -152,6 +152,17 @@ export default {
         this.isAuthenticated &&
         this.userDetails.uid === this.currentUser.uid
       )
+    }
+  },
+  watch: {
+    isCurrentUser (isCurrentUser) {
+      if (isCurrentUser) {
+        api
+          .fetchPrivateUserData(this.currentUser.uid)
+          .then(snapshot => {
+            this.privateInfo = snapshot.data()
+          })
+      }
     }
   },
   mounted () {
@@ -192,18 +203,11 @@ export default {
       ) {
         EventBus.error('This does not seem to be a valid email.')
       }
-      /*
-      users
-        .doc(this.uid)
-        .collection('private')
-        .doc('loginData')
-        .update({
-          email: this.privateInfo.email
-        })
+      api
+        .updateEmail(this.currentUser.uid, this.privateInfo.email)
         .then(() => {
           this.displayEmailEditor = false
         })
-        */
     },
     showEmailEditor () {
       this.displayEmailEditor = !this.displayEmailEditor
@@ -250,7 +254,6 @@ export default {
             }
           })
           .use(FirebaseCloudStorage, { storageRef: tempStorage })
-          .run()
         const _this = this
         this.uppy.on('upload-success', (file, snapshot) => {
           const newUrl = file.downloadUrl
@@ -264,22 +267,15 @@ export default {
       if (this.userDetails.photoURL === this.oldPhotoURL) {
         this.cancelAvatarEditor()
       }
-      // const _this = this
-      /*
-      users
-        .doc(this.uid)
-        .collection('public')
-        .doc('userInfo')
-        .update({
-          photoURL: this.userDetails.photoURL,
-          photoPath: this.userDetails.photoPath,
-          photoURLDidChange: true
-        })
+      api.updatePhoto(
+        this.currentUser.uid,
+        this.userDetails.photoURL,
+        this.userDetails.photoPath
+      )
         .then(() => {
-          _this.uppy.close()
-          _this.avatarEditor = false
+          this.uppy.close()
+          this.avatarEditor = false
         })
-        */
     },
     cancelAvatarEditor () {
       this.uppy.close()
@@ -302,6 +298,7 @@ export default {
     }
     .uppy-Dashboard-inner {
       height: 100%;
+      min-height: 100px !important;
     }
     .uppy-DashboardTabs {
       display: none;
@@ -330,7 +327,7 @@ export default {
 }
 </style>
 
-<style lang="scss" scoped>
+<style lang="scss">
 .user-details {
   margin-bottom: 15px;
   & .v-input-group {
@@ -340,8 +337,12 @@ export default {
   }
   .v-card__title {
     height: 92px !important;
+    .v-input {
+      display: inline-block;
+      min-width: 235px;
+    }
   }
-  .avatar {
+  .v-avatar {
     width: 150px;
     height: 150px;
     vertical-align: top;
@@ -363,11 +364,17 @@ export default {
     top: -20px;
     .button-container {
       position: relative;
-      top: -25px;
+      top: -40px;
     }
-    .v-input__control {
-      max-width: 300px;
+    .v-input {
       display: inline-block;
+      min-width: 235px;
+      max-width: 300px;
+      position: relative;
+      top: -10px;
+      .v-input__control {
+        display: inline-block;
+      }
     }
     h4 {
       display: inline-block;
