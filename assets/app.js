@@ -5,7 +5,7 @@ import Globals from 'mixins/globals'
 import App from './App.vue'
 import Components from 'components/_index'
 import Filters from 'filters/_index'
-import VuetifyConfirm from 'mixins/confirm'
+import VuetifyConfirm from 'vuetify-confirm'
 import VueScrollTo from 'vue-scrollto'
 
 import store from 'store/index'
