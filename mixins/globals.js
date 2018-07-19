@@ -2,13 +2,7 @@ import Vue from 'vue'
 
 const globals = new Vue({
   data: {
-    currentUser: null,
     mouseActive: false
-  },
-  computed: {
-    isAuthenticated () {
-      return this.currentUser != null
-    }
   },
   created () {
     const _this = this
