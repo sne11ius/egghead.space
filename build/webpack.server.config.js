@@ -6,7 +6,8 @@ const VueSSRServerPlugin = require('vue-server-renderer/server-plugin')
 
 module.exports = merge(base, {
   target: 'node',
-  devtool: '#source-map',
+  // https://github.com/webpack-contrib/babel-minify-webpack-plugin/issues/68
+  devtool: '#cheap-source-map',
   entry: './assets/entry-server.js',
   output: {
     filename: 'server-bundle.js',

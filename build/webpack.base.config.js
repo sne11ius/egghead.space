@@ -3,6 +3,7 @@ const webpack = require('webpack')
 const vueConfig = require('./vue-loader.config')
 const ExtractTextPlugin = require('extract-text-webpack-plugin')
 const FriendlyErrorsPlugin = require('friendly-errors-webpack-plugin')
+const MinifyPlugin = require('babel-minify-webpack-plugin')
 
 const isProd = process.env.NODE_ENV === 'production'
 const resolve = file => path.resolve(__dirname, file)
@@ -11,9 +12,7 @@ const commitHash = require('child_process')
   .execSync('git rev-parse --short HEAD')
   .toString()
 const branchName = require('child_process')
-  .execSync(
-    'git rev-parse --abbrev-ref HEAD | grep -v ^HEAD$ || git rev-parse HEAD'
-  )
+  .execSync('git rev-parse --abbrev-ref HEAD | grep -v ^HEAD$ || git rev-parse HEAD')
   .toString()
 
 module.exports = {
@@ -52,7 +51,11 @@ module.exports = {
       {
         test: /\.js$/,
         loader: 'babel-loader',
-        exclude: /node_modules/
+        exclude: /node_modules/,
+        options: {
+          // https://github.com/webpack/webpack/issues/2972#issuecomment-341953893
+          presets: [['env', { modules: false }]]
+        }
       },
       {
         test: /\.css$/,
@@ -78,9 +81,7 @@ module.exports = {
   },
   plugins: isProd
     ? [
-      new webpack.optimize.UglifyJsPlugin({
-        compress: { warnings: false }
-      }),
+      new MinifyPlugin(),
       new ExtractTextPlugin({
         filename: 'common.[chunkhash].css'
       }),

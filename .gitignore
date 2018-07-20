@@ -1,7 +1,7 @@
 .DS_Store
 node_modules
 
-functions/server/assets
+functions/apis/server/assets
 public/assets
 
 # local env files
