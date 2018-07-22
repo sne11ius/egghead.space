@@ -77,7 +77,7 @@ module.exports = {
   },
   plugins: isProd
     ? [
-      // new MinifyPlugin(),
+      new MinifyPlugin(),
       new ExtractTextPlugin({
         filename: 'common.[chunkhash].css'
       }),
