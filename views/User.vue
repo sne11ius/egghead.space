@@ -93,7 +93,7 @@ import EventBus from 'service/EventBus.js'
 import FirebaseUtil from 'service/FirebaseUtil'
 import { api } from 'api'
 import { format } from 'date-fns/'
-import 'uppy/dist/uppy.min.css'
+import '@uppy/dashboard/dist/style.min.css'
 
 const tempStorage = api.storage.ref().child('temp')
 
@@ -257,6 +257,7 @@ export default {
         const _this = this
         this.uppy.on('upload-success', (file, snapshot) => {
           const newUrl = file.downloadUrl
+          _this.currentUser.photoURL = newUrl
           _this.userDetails.photoURL = newUrl
           _this.userDetails.photoPath = snapshot.ref.fullPath
           _this.uppy.removeFile(file.id)
@@ -269,7 +270,7 @@ export default {
       }
       api.updatePhoto(
         this.currentUser.uid,
-        this.userDetails.photoURL,
+        this.currentUser.photoURL,
         this.userDetails.photoPath
       )
         .then(() => {
@@ -280,6 +281,7 @@ export default {
     cancelAvatarEditor () {
       this.uppy.close()
       this.avatarEditor = false
+      this.currentUser.photoURL = this.oldPhotoURL
       this.userDetails.photoURL = this.oldPhotoURL
     }
   }

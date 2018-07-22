@@ -19,6 +19,8 @@
     "npm": ">=4.0"
   },
   "dependencies": {
+    "@uppy/core": "^0.26.0",
+    "@uppy/dashboard": "^0.26.0",
     "babel-polyfill": "^6.26.0",
     "babel-runtime": "^6.26.0",
     "compression": "^1.6.2",
@@ -40,7 +42,6 @@
     "serve-favicon": "^2.3.2",
     "shave": "^2.2.1",
     "striptags": "^3.1.1",
-    "uppy": "^0.26.0",
     "uuid": "^3.3.2",
     "vue": "^2.4.2",
     "vue-no-ssr": "^0.2.2",
