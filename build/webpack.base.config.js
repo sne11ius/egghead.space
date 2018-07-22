@@ -29,9 +29,6 @@ module.exports = {
       assets: resolve('../assets'),
       components: resolve('../components'),
       service: resolve('../service'),
-      filters: resolve('../filters'),
-      examples: resolve('../pages/examples'),
-      layouts: resolve('../layouts'),
       mixins: resolve('../mixins'),
       views: resolve('../views'),
       public: resolve('../public'),
@@ -53,7 +50,6 @@ module.exports = {
         loader: 'babel-loader',
         exclude: /node_modules/,
         options: {
-          // https://github.com/webpack/webpack/issues/2972#issuecomment-341953893
           presets: [['env', { modules: false }]]
         }
       },
@@ -81,7 +77,7 @@ module.exports = {
   },
   plugins: isProd
     ? [
-      new MinifyPlugin(),
+      // new MinifyPlugin(),
       new ExtractTextPlugin({
         filename: 'common.[chunkhash].css'
       }),

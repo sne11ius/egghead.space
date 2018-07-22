@@ -4,7 +4,6 @@ import 'vuetify/dist/vuetify.min.css'
 import Globals from 'mixins/globals'
 import App from './App.vue'
 import Components from 'components/_index'
-import Filters from 'filters/_index'
 import VuetifyConfirm from 'vuetify-confirm'
 import VueScrollTo from 'vue-scrollto'
 
@@ -34,10 +33,6 @@ Vue.use(VueScrollTo)
 
 Object.keys(Components).forEach(key => {
   Vue.component(key, Components[key])
-})
-
-Object.keys(Filters).forEach(key => {
-  Vue.component(key, Filters[key])
 })
 
 // Expose a factory function that creates a fresh set of store, router,
