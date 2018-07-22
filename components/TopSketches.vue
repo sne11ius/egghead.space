@@ -29,7 +29,7 @@
         </v-tab-item>
         <v-spacer></v-spacer>
         <v-select
-            v-if="activeTab !== '0'"
+            v-if="activeTab !== 0"
             id="time-period"
             :items="items"
             item-text="label"
@@ -113,6 +113,13 @@ export default {
 
 #top-sketches .v-toolbar__content {
   height: auto !important;
+  padding-left: 0;
+  padding-right: 0;
+}
+#top-sketches .v-select {
+  padding-left: 0;
+  position: relative;
+  top: 10px
 }
 </style>
 
