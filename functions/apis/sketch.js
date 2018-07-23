@@ -29,12 +29,7 @@ function findImages(markdown) {
   return images;
 }
 
-function findBy(
-  images,
-  attributeName,
-  search = "preview image",
-  mustEndWith = false
-) {
+function findBy(images, attributeName, search = "preview image", mustEndWith = false) {
   const img = images.find(img => {
     const attributeValue = img[attributeName].toLowerCase();
     if (mustEndWith) {
@@ -44,9 +39,7 @@ function findBy(
     }
   });
   if (img) {
-    console.log(
-      `Found user marked image by ${attributeName}: ${JSON.stringify(img)}`
-    );
+    console.log(`Found user marked image by ${attributeName}: ${JSON.stringify(img)}`);
   }
   return img && img.href;
 }
@@ -68,13 +61,9 @@ function selectImage(body) {
   if (markedByTitleHref) {
     return markedByTitleHref;
   }
-  console.log(
-    "No user marked image. Selecting best image by advanced ImagaMagic magic :D"
-  );
+  console.log("No user marked image. Selecting best image by advanced ImagaMagic magic :D");
   const firstImage = images[0];
-  console.log(
-    `Just kidding, we use the first image: ${JSON.stringify(firstImage)}`
-  );
+  console.log(`Just kidding, we use the first image: ${JSON.stringify(firstImage)}`);
   return firstImage.href;
 }
 
@@ -124,13 +113,7 @@ exports.onSketchCreated = functions.firestore
         return Promise.all(
           movedFiles.map(
             (
-              {
-                sourcePath,
-                targetPath,
-                mediaDownloadUrl,
-                previewPath,
-                previewDownloadUrl
-              },
+              { sourcePath, targetPath, mediaDownloadUrl, previewPath, previewDownloadUrl },
               index
             ) => {
               return new Promise((resolve, reject) => {
@@ -180,9 +163,7 @@ exports.onSketchCreated = functions.firestore
                   const token = metadata.metadata.firebaseStorageDownloadTokens;
                   const updatedMediaDownloadUrl = `https://firebasestorage.googleapis.com/v0/b/${
                     bucket.name
-                  }/o/${encodeURIComponent(
-                    targetPath
-                  )}?alt=media&token=${token}`;
+                  }/o/${encodeURIComponent(targetPath)}?alt=media&token=${token}`;
                   return resolve({
                     sourcePath,
                     targetPath,
@@ -212,31 +193,26 @@ exports.onSketchCreated = functions.firestore
               previewDownloadUrl
             }) => {
               return new Promise((resolve, reject) => {
-                bucket
-                  .file(previewTargetPath)
-                  .getMetadata((error, metadata) => {
-                    if (error) {
-                      console.error(error);
-                      return reject(error);
-                    }
-                    const token =
-                      metadata.metadata.firebaseStorageDownloadTokens;
-                    const updatedPreviewDownloadUrl = `https://firebasestorage.googleapis.com/v0/b/${
-                      bucket.name
-                    }/o/${encodeURIComponent(
-                      previewTargetPath
-                    )}?alt=media&token=${token}`;
-                    return resolve({
-                      sourcePath,
-                      targetPath,
-                      previewSourcePath,
-                      previewTargetPath,
-                      mediaDownloadUrl,
-                      updatedMediaDownloadUrl,
-                      previewDownloadUrl,
-                      updatedPreviewDownloadUrl
-                    });
+                bucket.file(previewTargetPath).getMetadata((error, metadata) => {
+                  if (error) {
+                    console.error(error);
+                    return reject(error);
+                  }
+                  const token = metadata.metadata.firebaseStorageDownloadTokens;
+                  const updatedPreviewDownloadUrl = `https://firebasestorage.googleapis.com/v0/b/${
+                    bucket.name
+                  }/o/${encodeURIComponent(previewTargetPath)}?alt=media&token=${token}`;
+                  return resolve({
+                    sourcePath,
+                    targetPath,
+                    previewSourcePath,
+                    previewTargetPath,
+                    mediaDownloadUrl,
+                    updatedMediaDownloadUrl,
+                    previewDownloadUrl,
+                    updatedPreviewDownloadUrl
                   });
+                });
               });
             }
           )
@@ -246,14 +222,8 @@ exports.onSketchCreated = functions.firestore
         // Step 5a: update sketch body
         movedFilesAndPreviews.forEach(
           ({
-            sourcePath,
-            targetPath,
-            previewSourcePath,
-            previewTargetPath,
             mediaDownloadUrl,
             updatedMediaDownloadUrl,
-            previewDownloadUrl,
-            updatedPreviewDownloadUrl
           }) => {
             const regex = new RegExp(escapeStringRegexp(mediaDownloadUrl), "g");
             body = body.replace(regex, updatedMediaDownloadUrl);
@@ -262,13 +232,9 @@ exports.onSketchCreated = functions.firestore
         // Step 5b: update sketch media list
         const updatedMedias = movedFilesAndPreviews.map(
           ({
-            sourcePath,
             targetPath,
-            previewSourcePath,
             previewTargetPath,
-            mediaDownloadUrl,
             updatedMediaDownloadUrl,
-            previewDownloadUrl,
             updatedPreviewDownloadUrl
           }) => {
             return {
@@ -286,16 +252,6 @@ exports.onSketchCreated = functions.firestore
           medias: updatedMedias
         });
       })
-      .then(() => {
-        const imageLink = selectImage(body);
-        if (imageLink !== null && imageLink !== data.previewImage) {
-          console.log("Image has changed. Setting new property");
-          return snap.ref.update({
-            previewImage: imageLink
-          });
-        }
-        return null;
-      })
       .catch(error => {
         console.error(error);
         return false;
@@ -311,9 +267,7 @@ exports.onSketchModified = functions.firestore
     return bucket
       .getFiles({ prefix: `medias/${change.after.id}` })
       .then(results => {
-        const files = results[0].filter(
-          file => !file.name.endsWith("_preview")
-        );
+        const files = results[0].filter(file => !file.name.endsWith("_preview"));
         return Promise.all(
           files.map(file => {
             return new Promise((resolve, reject) => {
@@ -346,17 +300,22 @@ exports.onSketchModified = functions.firestore
           console.log("Body didn't change, nothing to do.");
           return null;
         }
-        const imageLink = selectImage(body);
-        if (imageLink === null || imageLink !== data.previewImage) {
-          console.log("Image has changed. Setting new property");
-          return change.after.ref.set(
-            {
-              previewImage: imageLink
-            },
-            {
-              merge: true
+        let imageLink = selectImage(body);
+        if (imageLink !== null) {
+          const medias = change.after.data().medias;
+          for (let { url, preview } of medias) {
+            if (url === imageLink.replace(/&amp;/g, '&') && preview && preview.url) {
+              imageLink = preview.url;
+              console.log("Found preview image: ", url, preview);
+              break;
             }
-          );
+          }
+          if (imageLink !== data.previewImage) {
+            console.log("Image has changed. Setting new property: " + imageLink);
+            return change.after.ref.update({
+              previewImage: imageLink
+            });
+          }
         }
         return null;
       })
@@ -376,9 +335,7 @@ exports.removeUnusedMediaFiles = functions.https.onRequest((req, res) => {
     let deletedCount = 0;
     /* eslint-disable promise/no-nesting */
     return Promise.all(
-      files.map(file =>
-        file.getMetadata().then(data => ({ file, metadata: data[0] }))
-      )
+      files.map(file => file.getMetadata().then(data => ({ file, metadata: data[0] })))
     )
       .then(filesWithMetadata => {
         return Promise.all(
