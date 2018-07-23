@@ -52,7 +52,7 @@
           <v-card-actions>
             <v-spacer></v-spacer>
             <v-btn flat to="/">Cancel</v-btn>
-            <v-btn color="primary" flat @click.stop="createSketch" :disabled="!isAuthenticated">{{submitButtonTitle}}</v-btn>
+            <v-btn color="primary" flat @click.stop="saveSketch" :disabled="!isAuthenticated">{{submitButtonTitle}}</v-btn>
           </v-card-actions>
         </v-card>
       </v-flex>
@@ -79,6 +79,7 @@
 </template>
 
 <script>
+import marked from 'marked'
 import MediaList from 'components/MediaList.vue'
 import FileUpload from 'components/FileUpload.vue'
 import EventBus from 'service/EventBus.js'
@@ -87,7 +88,7 @@ import { api } from 'api'
 
 const storage = api.storage
 
-let easymde, easyMde
+let Easymde, easyMde
 export default {
   name: 'Create',
   components: {
@@ -166,8 +167,8 @@ export default {
       this.body = this.editSketch.body
       this.medias.push(...this.editSketch.medias)
     }
-    easymde = require('easymde')
-    easyMde = new easymde({
+    Easymde = require('easymde')
+    easyMde = new Easymde({
       element: document.querySelectorAll('#sketch-body')[0],
       autoDownloadFontAwesome: false,
       hideIcons: ['side-by-side', 'fullscreen']
@@ -189,16 +190,48 @@ export default {
     }
   },
   methods: {
-    createSketch () {
+    findImages () {
+      const renderer = new marked.Renderer()
+      const images = []
+      renderer.image = function (href, title, alt) {
+        images.push({
+          href: href || '',
+          title: title || '',
+          alt: alt || ''
+        })
+        return marked.Renderer.prototype.image.apply(this, arguments)
+      }
+      marked(easyMde.value(), { renderer: renderer })
+      return images
+    },
+    validateSketch () {
       const body = easyMde.value()
       if (this.title.length === 0) {
         EventBus.error('Please add a title.')
-        return
+        return false
       }
       if (body.length === 0) {
         EventBus.error('Please add a body.')
+        return false
+      }
+      const images = this.findImages()
+      for (let { href } of images) {
+        if (href && href.length && href.length > 0 && !href.includes(api.projectId)) {
+          const editor = easyMde.codemirror
+          const cursor = editor.getSearchCursor(href)
+          cursor.findNext()
+          editor.setSelection(cursor.pos.from, cursor.pos.to)
+          EventBus.error(`Please don't link external images. Upload images here instead.`)
+          return false
+        }
+      }
+      return true
+    },
+    saveSketch () {
+      if (!this.validateSketch()) {
         return
       }
+      const body = easyMde.value()
       if (this.isEditMode) {
         const medias = this.medias.map(({ url, preview }) => ({
           url,

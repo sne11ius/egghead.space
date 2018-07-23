@@ -25,7 +25,8 @@ export function createAPI ({ config }) {
       cachedItems: LRU({
         max: 1000,
         maxAge: 1000 * 60 * 15 // 15 min cache
-      })
+      }),
+      projectId: config.projectId
     }
   }
   return api

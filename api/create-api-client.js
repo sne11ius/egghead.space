@@ -16,6 +16,7 @@ export function createAPI ({ config }) {
     db: firebaseApp.firestore(),
     storage: firebaseApp.storage(),
     auth: firebaseApp.auth(),
-    onServer: false
+    onServer: false,
+    projectId: config.projectId
   }
 }
