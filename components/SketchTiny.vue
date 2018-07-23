@@ -1,8 +1,9 @@
 <template>
   <v-card class="sketch tiny" @click.native="cardClicked">
-    <div class="image">
-      <img v-if="this.sketch.previewImage" :src="this.sketch.previewImage">
-      <div v-else class="preview-placeholder"></div>
+    <div class="image" v-if="this.sketch.previewImage" :style="{ 'background-image': `url(${this.sketch.previewImage})`}">
+    </div>
+    <div class="image" v-else>
+      <div class="preview-placeholder"></div>
     </div>
     <div class="summary">
       <h3 class="text-title">{{title}}</h3>
@@ -85,11 +86,9 @@ export default {
   }
   .image {
     display: inline-block;
-    img {
-      max-width: 100px;
-      height: 100px;
-      display: block;
-    }
+    width: 100px;
+    height: 100px;
+    background-size: cover;
     .preview-placeholder {
       background-color: #cacaca;
       width: 100px;
