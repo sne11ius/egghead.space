@@ -1,6 +1,31 @@
 import Vue from 'vue'
-import Vuetify from 'vuetify'
-import 'vuetify/dist/vuetify.min.css'
+import {
+  Vuetify,
+  VApp,
+  VAvatar,
+  VBtn,
+  VCard,
+  VCombobox,
+  VDialog,
+  VExpansionPanel,
+  VFooter,
+  VGrid,
+  VIcon,
+  VInput,
+  VLabel,
+  VParallax,
+  VProgressCircular,
+  VSelect,
+  VSnackbar,
+  VSpeedDial,
+  VTabs,
+  VTextField,
+  VTextarea,
+  VToolbar
+} from 'vuetify'
+
+import transitions from 'vuetify/es5/components/transitions'
+import directives from 'vuetify/es5/directives'
 import Globals from 'mixins/globals'
 import App from './App.vue'
 import Components from 'components/_index'
@@ -13,7 +38,34 @@ import { sync } from 'vuex-router-sync'
 
 import 'assets/main.scss'
 
+import '../node_modules/vuetify/src/stylus/app.styl'
+
 Vue.use(Vuetify, {
+  components: {
+    VApp,
+    VAvatar,
+    VBtn,
+    VCard,
+    VCombobox,
+    VDialog,
+    VExpansionPanel,
+    VFooter,
+    VGrid,
+    VIcon,
+    VInput,
+    VLabel,
+    VParallax,
+    VProgressCircular,
+    VSelect,
+    VSnackbar,
+    VSpeedDial,
+    VTabs,
+    VTextField,
+    VTextarea,
+    VToolbar
+  },
+  directives,
+  transitions,
   theme: {
     primary: '#0a6aa6',
     secondary: '#023859',
