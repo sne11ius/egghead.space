@@ -155,6 +155,9 @@ export default {
     }
   },
   watch: {
+    '$route.params.uid': function (uid) {
+      this.$store.dispatch('fetchUserDetails', uid)
+    },
     isCurrentUser (isCurrentUser) {
       if (isCurrentUser) {
         api
