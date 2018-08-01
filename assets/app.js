@@ -31,6 +31,7 @@ import App from './App.vue'
 import Components from 'components/_index'
 import VuetifyConfirm from 'vuetify-confirm'
 import VueScrollTo from 'vue-scrollto'
+import InstantSearch from 'vue-instantsearch'
 
 import store from 'store/index'
 import { createRouter } from 'router/index'
@@ -82,6 +83,7 @@ Vue.use(VuetifyConfirm, {
   title: 'Warning'
 })
 Vue.use(VueScrollTo)
+Vue.use(InstantSearch)
 
 Object.keys(Components).forEach(key => {
   Vue.component(key, Components[key])

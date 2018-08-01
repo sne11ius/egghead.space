@@ -23,24 +23,53 @@
       </NoSSR>
     </v-toolbar>
     <v-parallax src="header_image_2.jpeg" height="450" v-if="isHomeView" id="parallax">
-      <v-container fluid>
-        <v-layout row>
-          <v-spacer></v-spacer>
-          <v-flex xs12>
-            <v-text-field
-              id="search"
-              v-model="searchText"
-              label="Search a sketch"
-              color="primary"
-              solo
-              append-icon="search"
-              @click:append="search"
-            ></v-text-field>
-          </v-flex>
-          <v-spacer></v-spacer>
-        </v-layout>
-      </v-container>
     </v-parallax>
+    <v-container fluid v-if="isHomeView" id="search-container">
+      <v-layout row>
+        <v-spacer></v-spacer>
+        <v-flex xs12>
+          <v-text-field
+            id="search-textfield"
+            v-model="searchText"
+            label="Search a sketch"
+            color="primary"
+            solo
+            append-icon="search"
+            @click:append="search"
+          ></v-text-field>
+          <div id="search-results" v-if="showResults">
+            <ais-index
+              app-id="QSRFL6Q5CD"
+              api-key="a26b09dda38122c796ef7440027e29b7"
+              index-name="sketches"
+              :query="searchText"
+              >
+              <ais-results>
+                <template slot-scope="{ result }">
+                  <div class="search-result">
+                    <router-link :to="{name: 'SketchDetails', params: {id: result.objectID, title: result.title.replace(/\s/g, '+')}}">
+                      <h3>
+                        <ais-highlight :result="result" attribute-name="title"></ais-highlight>
+                      </h3>
+                      <h5><ais-highlight :result="result" attribute-name="body"></ais-highlight></h5>
+                    </router-link>
+                  </div>
+                </template>
+              </ais-results>
+              <ais-no-results>
+                <template slot-scope="props">
+                  No sketches found for <i>{{ props.query }}</i>.
+                </template>
+              </ais-no-results>
+              <NoSSR>
+                <ais-powered-by></ais-powered-by>
+              </NoSSR>
+              </ais-index>
+            </div>
+        </v-flex>
+        <v-spacer></v-spacer>
+      </v-layout>
+    </v-container>
   </div>
 </template>
 
@@ -67,6 +96,9 @@ export default {
   methods: {
     search: function () {
       EventBus.info(`Searching for '${this.searchText}'`)
+    },
+    openSketch (sketchId) {
+      console.log(sketchId)
     }
   },
   computed: {
@@ -77,14 +109,68 @@ export default {
     },
     isHomeView: function () {
       return this.$route.path === '/'
+    },
+    showResults () {
+      return this.searchText.length > 0
     }
   }
 }
 </script>
 
+<style lang="scss">
+#search-textfield {
+  .ais-input {
+    border: 1px solid #333;
+    border-radius: 3px;
+    background-color: white;
+  }
+}
+#search-results {
+  position: relative;
+  top: -27px;
+  background-color: white;
+  border-radius: 3px;
+  border-top-left-radius: 0;
+  border-top-right-radius: 0;
+  border-bottom-right-radius: 0;
+  border: 1px solid #333;
+  padding: 3px;
+  color: black;
+  .search-result {
+    padding: 5px;
+    a {
+      text-decoration: none;
+      color: black;
+      :hover {
+        background-color: #ddd;
+      }
+    }
+    .ais-highlight em {
+      background-color: #ddd;
+    }
+  }
+  .ais-powered-by {
+    float: right;
+    background-color: #eee;
+    border: 1px solid #333;
+    border-top: 0;
+    border-radius: 3px;
+    border-top-left-radius: 0px;
+    border-top-right-radius: 0px;
+    padding-top: 6px;
+    padding-left: 10px;
+    padding-right: 10px;
+    position: relative;
+    top: 3px;
+    right: -4px
+  }
+}
+</style>
+
 <style lang="scss" scoped>
 .main-toolbar {
   height: 90px;
+  z-index: 1000;
   .title {
     overflow: visible;
     position: absolute;
@@ -108,11 +194,13 @@ export default {
     color: white;
   }
 }
-#parallax {
-  margin-top: 90px;
+#search-container {
   .row {
-    transform: translate(0%, 50%);
-    height: 80%;
+    transform: translate(0, 50%);
+    height: 0;
+    position: relative;
+    top: -215px;
+    z-index: 999;
     .xs12 {
       max-width: 500px;
     }
