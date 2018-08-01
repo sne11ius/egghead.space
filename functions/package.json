@@ -17,6 +17,7 @@
   "dependencies": {
     "@uppy/core": "^0.26.0",
     "@uppy/dashboard": "^0.26.0",
+    "algoliasearch": "^3.29.0",
     "babel-polyfill": "^6.23.0",
     "babel-runtime": "^6.26.0",
     "compression": "^1.6.2",
