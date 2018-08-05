@@ -1,5 +1,6 @@
 <template>
   <div id="app-header">
+    <AjaxIndicator></AjaxIndicator>
     <v-toolbar app class="main-toolbar" color="primary">
       <v-toolbar-title class="title small" v-if="breakpoint">
         <h1>
@@ -38,12 +39,14 @@
 
 <script>
 import NoSSR from 'vue-no-ssr'
+import AjaxIndicator from 'components/AjaxIndicator.vue'
 import UserStatus from 'components/UserStatus.vue'
 import SearchBox from 'components/SearchBox.vue'
 
 export default {
   name: 'AppHeader',
   components: {
+    AjaxIndicator,
     UserStatus,
     SearchBox,
     NoSSR
