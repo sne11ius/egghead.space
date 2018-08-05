@@ -61,6 +61,7 @@ export default {
 
 <style lang="scss" scoped>
 .sketch.tiny {
+  cursor: pointer;
   a:not(.btn) {
     color: black;
   }
