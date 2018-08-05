@@ -1,5 +1,6 @@
 import 'es6-promise/auto'
 import { createApp } from './app'
+import EventBus from 'service/EventBus'
 
 const { app, router, store } = createApp()
 
@@ -55,9 +56,14 @@ router.onReady(() => {
     activated.map(component => {
       recursive(component, component.name)
     })
+    EventBus.$emit('ajax-start')
     Promise.all(targetPromises)
       .then(next)
-      .catch(next)
+      .then(() => EventBus.$emit('ajax-stop'))
+      .catch(() => {
+        EventBus.$emit('ajax-stop')
+        return next()
+      })
   })
 
   // actually mount to DOM
