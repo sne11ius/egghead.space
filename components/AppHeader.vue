@@ -29,43 +29,39 @@
         <v-spacer></v-spacer>
         <v-flex xs12>
           <v-text-field
+            solo
             id="search-textfield"
             v-model="searchText"
             label="Search a sketch"
             color="primary"
-            solo
-            append-icon="search"
-            @click:append="search"
+            :append-icon="appendIcon"
+            @click:append="appendClicked"
+            autocomplete="off"
+            @focus="searchFocused = true"
+            @blur="onBlur"
           ></v-text-field>
-          <div id="search-results" v-if="showResults">
-            <ais-index
-              app-id="QSRFL6Q5CD"
-              api-key="a26b09dda38122c796ef7440027e29b7"
-              index-name="sketches"
-              :query="searchText"
-              >
-              <ais-results>
-                <template slot-scope="{ result }">
-                  <div class="search-result">
-                    <router-link :to="{name: 'SketchDetails', params: {id: result.objectID, title: result.title.replace(/\s/g, '+')}}">
-                      <h3>
-                        <ais-highlight :result="result" attribute-name="title"></ais-highlight>
-                      </h3>
-                      <h5><ais-highlight :result="result" attribute-name="body"></ais-highlight></h5>
-                    </router-link>
+          <div id="search-results" v-if="searchFocused && showResults">
+            <NoSSR>
+              <ais-index
+                app-id="QSRFL6Q5CD"
+                api-key="a26b09dda38122c796ef7440027e29b7"
+                index-name="sketches"
+                :query="searchText"
+                >
+                <ais-results inline-template :results-per-page=5>
+                  <div class="result-list">
+                    <SketchTiny v-for="result in results" :key="result.objectID" :sketch="result"></SketchTiny>
                   </div>
-                </template>
-              </ais-results>
-              <ais-no-results>
-                <template slot-scope="props">
-                  No sketches found for <i>{{ props.query }}</i>.
-                </template>
-              </ais-no-results>
-              <NoSSR>
+                </ais-results>
+                <ais-no-results>
+                  <template slot-scope="props">
+                    No sketches found for <i>{{ props.query }}</i>.
+                  </template>
+                </ais-no-results>
                 <ais-powered-by></ais-powered-by>
-              </NoSSR>
               </ais-index>
-            </div>
+            </NoSSR>
+          </div>
         </v-flex>
         <v-spacer></v-spacer>
       </v-layout>
@@ -76,29 +72,36 @@
 <script>
 import NoSSR from 'vue-no-ssr'
 import UserStatus from 'components/UserStatus.vue'
-import EventBus from 'service/EventBus.js'
+import SketchTiny from 'components/SketchTiny.vue'
 
 export default {
   name: 'AppHeader',
   components: {
     UserStatus,
+    SketchTiny,
     NoSSR
   },
   data () {
     return {
       searchText: '',
-      isHydrated: false
+      isHydrated: false,
+      searchFocused: false
     }
   },
   mounted () {
     this.isHydrated = true
   },
   methods: {
-    search: function () {
-      EventBus.info(`Searching for '${this.searchText}'`)
-    },
     openSketch (sketchId) {
       console.log(sketchId)
+    },
+    appendClicked () {
+      if (this.showResults) {
+        this.searchText = ''
+      }
+    },
+    onBlur () {
+      window.setTimeout(() => { this.searchFocused = false }, 500)
     }
   },
   computed: {
@@ -112,6 +115,11 @@ export default {
     },
     showResults () {
       return this.searchText.length > 0
+    },
+    appendIcon: function () {
+      return this.showResults
+        ? 'clear'
+        : 'search'
     }
   }
 }
