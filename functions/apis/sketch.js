@@ -271,17 +271,18 @@ exports.onSketchModified = functions.firestore
     const data = change.after.data();
     const body = data.body;
     const algoliaData = {
-      objectID: change.after.id,
+      id: change.after.id,
+      objectID: change.after.id, // Used by algolia
+      previewImage: data.previewImage,
       title: data.title,
-      body
+      body,
+      totalLikes: data.totalLikes,
+      commentCount: data.commentCount
     }
     console.log('Submitting to algolia: ', algoliaData)
-    algoliaSketchesIndex.saveObjects([algoliaData], (error, content) => {
+    algoliaSketchesIndex.saveObjects([algoliaData], (error) => {
       if (error) {
-        console.error(error)
-      }
-      else {
-        console.log('Algolia submit success: ', content)
+        console.error('Could not submit to algolia: ', error)
       }
     })
     return bucket
