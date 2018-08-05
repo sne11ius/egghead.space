@@ -35,9 +35,6 @@ export default {
 </script>
 
 <style lang="scss">
-.sketch.v-card + .sketch.v-card {
-  margin-top: 15px;
-}
 .sketch .v-card__text {
   img {
     max-width: 100%;

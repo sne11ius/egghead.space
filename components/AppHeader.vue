@@ -23,41 +23,33 @@
       </NoSSR>
     </v-toolbar>
     <v-parallax src="header_image_2.jpeg" height="450" v-if="isHomeView" id="parallax">
-      <v-container fluid>
-        <v-layout row>
-          <v-spacer></v-spacer>
-          <v-flex xs12>
-            <v-text-field
-              id="search"
-              v-model="searchText"
-              label="Search a sketch"
-              color="primary"
-              solo
-              append-icon="search"
-              @click:append="search"
-            ></v-text-field>
-          </v-flex>
-          <v-spacer></v-spacer>
-        </v-layout>
-      </v-container>
     </v-parallax>
+    <v-container fluid v-if="isHomeView" id="search-container">
+      <v-layout row>
+        <v-spacer></v-spacer>
+        <v-flex xs12>
+          <SearchBox></SearchBox>
+        </v-flex>
+        <v-spacer></v-spacer>
+      </v-layout>
+    </v-container>
   </div>
 </template>
 
 <script>
 import NoSSR from 'vue-no-ssr'
 import UserStatus from 'components/UserStatus.vue'
-import EventBus from 'service/EventBus.js'
+import SearchBox from 'components/SearchBox.vue'
 
 export default {
   name: 'AppHeader',
   components: {
     UserStatus,
+    SearchBox,
     NoSSR
   },
   data () {
     return {
-      searchText: '',
       isHydrated: false
     }
   },
@@ -65,9 +57,9 @@ export default {
     this.isHydrated = true
   },
   methods: {
-    search: function () {
-      EventBus.info(`Searching for '${this.searchText}'`)
-    }
+    openSketch (sketchId) {
+      console.log(sketchId)
+    },
   },
   computed: {
     breakpoint () {
@@ -85,6 +77,7 @@ export default {
 <style lang="scss" scoped>
 .main-toolbar {
   height: 90px;
+  z-index: 1000;
   .title {
     overflow: visible;
     position: absolute;
@@ -108,11 +101,13 @@ export default {
     color: white;
   }
 }
-#parallax {
-  margin-top: 90px;
+#search-container {
   .row {
-    transform: translate(0%, 50%);
-    height: 80%;
+    transform: translate(0, 50%);
+    height: 0;
+    position: relative;
+    top: -215px;
+    z-index: 999;
     .xs12 {
       max-width: 500px;
     }

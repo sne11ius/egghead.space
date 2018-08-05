@@ -17,6 +17,7 @@
   "dependencies": {
     "@uppy/core": "^0.26.0",
     "@uppy/dashboard": "^0.26.0",
+    "algoliasearch": "^3.29.0",
     "babel-polyfill": "^6.23.0",
     "babel-runtime": "^6.26.0",
     "compression": "^1.6.2",
@@ -42,6 +43,7 @@
     "striptags": "^3.1.1",
     "uuid": "^3.3.2",
     "vue": "^2.4.2",
+    "vue-instantsearch": "^1.7.0",
     "vue-no-ssr": "^0.2.2",
     "vue-router": "^3.0.1",
     "vue-scrollto": "^2.11.0",

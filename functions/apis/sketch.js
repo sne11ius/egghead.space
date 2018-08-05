@@ -5,6 +5,8 @@ const storage = firebase.storage;
 const bucket = storage.bucket();
 const marked = require("marked");
 
+const algoliasearch = require('algoliasearch')
+
 const subDays = require("date-fns/sub_days");
 const subWeeks = require("date-fns/sub_weeks");
 const subMonths = require("date-fns/sub_months");
@@ -258,14 +260,33 @@ exports.onSketchCreated = functions.firestore
       });
   });
 
+// https://firebase.google.com/docs/functions/config-env
+const algoliaClient = algoliasearch(functions.config().algolia.id, functions.config().algolia.key);
+const algoliaSketchesIndex = algoliaClient.initIndex('sketches')
+
 exports.onSketchModified = functions.firestore
   .document("sketches/{sketchId}")
   .onUpdate((change, context) => {
-    console.log("Sketch modified. Id: '%s'", change.after.id);
+    const id = change.after.id
+    console.log("Sketch modified. Id: '%s'", id);
     const data = change.after.data();
     const body = data.body;
+    const algoliaData = {
+      id,
+      objectID: id, // Used by algolia
+      previewImage: data.previewImage,
+      title: data.title,
+      totalLikes: data.totalLikes,
+      commentCount: data.commentCount
+    }
+    console.log('Submitting to algolia: ', algoliaData)
+    algoliaSketchesIndex.saveObjects([algoliaData], (error) => {
+      if (error) {
+        console.error('Could not submit to algolia: ', error)
+      }
+    })
     return bucket
-      .getFiles({ prefix: `medias/${change.after.id}` })
+      .getFiles({ prefix: `medias/${id}` })
       .then(results => {
         const files = results[0].filter(file => !file.name.endsWith("_preview"));
         return Promise.all(
