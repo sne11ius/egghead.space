@@ -56,11 +56,6 @@ export default {
   mounted () {
     this.isHydrated = true
   },
-  methods: {
-    openSketch (sketchId) {
-      console.log(sketchId)
-    },
-  },
   computed: {
     breakpoint () {
       return this.isHydrated
