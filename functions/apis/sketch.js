@@ -267,12 +267,13 @@ const algoliaSketchesIndex = algoliaClient.initIndex('sketches')
 exports.onSketchModified = functions.firestore
   .document("sketches/{sketchId}")
   .onUpdate((change, context) => {
-    console.log("Sketch modified. Id: '%s'", change.after.id);
+    const id = change.after.id
+    console.log("Sketch modified. Id: '%s'", id);
     const data = change.after.data();
     const body = data.body;
     const algoliaData = {
-      id: change.after.id,
-      objectID: change.after.id, // Used by algolia
+      id,
+      objectID: id, // Used by algolia
       previewImage: data.previewImage,
       title: data.title,
       totalLikes: data.totalLikes,
@@ -285,7 +286,7 @@ exports.onSketchModified = functions.firestore
       }
     })
     return bucket
-      .getFiles({ prefix: `medias/${change.after.id}` })
+      .getFiles({ prefix: `medias/${id}` })
       .then(results => {
         const files = results[0].filter(file => !file.name.endsWith("_preview"));
         return Promise.all(
