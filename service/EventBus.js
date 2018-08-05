@@ -1,24 +1,20 @@
-import Vue from "vue";
+import Vue from 'vue'
 
 const bus = new Vue({
   methods: {
-    info(text) {
-      this.snack(text);
+    info (text) {
+      this.snack(text)
     },
-    snack(text) {
-      this.$emit("global-snack", text, "info");
+    snack (text) {
+      this.$emit('global-snack', text, 'info')
     },
-    error(text) {
-      this.$emit("global-snack", text, "error");
+    error (text) {
+      this.$emit('global-snack', text, 'error')
     },
-    debug(text, data) {
-      this.$emit(
-        "global-snack",
-        `${text} ${JSON.stringify(data, null, 2)}`,
-        "info"
-      );
+    debug (text, data) {
+      this.$emit('global-snack', `${text} ${JSON.stringify(data, null, 2)}`, 'info')
     }
   }
-});
+})
 
-export default bus;
+export default bus
