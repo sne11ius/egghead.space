@@ -141,26 +141,15 @@ export default {
   border-top-left-radius: 0;
   border-top-right-radius: 0;
   border-bottom-right-radius: 0;
-  border: 1px solid #333;
-  padding: 3px;
-  color: black;
-  .search-result {
-    padding: 5px;
-    a {
-      text-decoration: none;
-      color: black;
-      :hover {
-        background-color: #ddd;
-      }
-    }
-    .ais-highlight em {
-      background-color: #ddd;
-    }
-  }
+  border: 1px solid #cacaca;
+  background-color: #eee;
+  padding-left: 3px;
+  padding-right: 3px;
+  padding-bottom: 0;
   .ais-powered-by {
     float: right;
     background-color: #eee;
-    border: 1px solid #333;
+    border: 1px solid #cacaca;
     border-top: 0;
     border-radius: 3px;
     border-top-left-radius: 0px;
@@ -169,7 +158,7 @@ export default {
     padding-left: 10px;
     padding-right: 10px;
     position: relative;
-    top: 3px;
+    top: 0;
     right: -4px
   }
 }
