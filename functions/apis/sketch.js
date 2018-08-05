@@ -275,7 +275,6 @@ exports.onSketchModified = functions.firestore
       objectID: change.after.id, // Used by algolia
       previewImage: data.previewImage,
       title: data.title,
-      body,
       totalLikes: data.totalLikes,
       commentCount: data.commentCount
     }
