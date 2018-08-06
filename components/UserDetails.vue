@@ -1,5 +1,5 @@
 <template>
-  <v-card class="user-details">
+  <v-card class="user-details" flat>
     <v-card-title primary-title>
       <h3 v-if="!displayNameEditor" class="headline mb-0">{{userDetails.displayName}}</h3>
       <span v-if="displayNameEditor">
@@ -111,6 +111,15 @@ export default {
             this.privateInfo = snapshot.data()
           })
       }
+    }
+  },
+  mounted () {
+    if (this.isCurrentUser) {
+      api
+        .fetchPrivateUserData(this.currentUser.uid)
+        .then(snapshot => {
+          this.privateInfo = snapshot.data()
+        })
     }
   },
   methods: {
@@ -279,10 +288,16 @@ export default {
   }
   .v-card__title {
     height: 92px !important;
+    padding-left: 0;
+    padding-right: 0;
     .v-input {
       display: inline-block;
       min-width: 235px;
     }
+  }
+  .v-card__text {
+    padding-left: 0;
+    padding-right: 0;
   }
   .v-avatar {
     width: 150px;
