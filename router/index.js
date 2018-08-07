@@ -21,6 +21,7 @@ export function createRouter() {
     scrollBehavior: () => ({ x: 0, y: 0 }),
     routes: [
       route('/', 'Home'),
+      route('/all', 'All'),
       route('/sketch/:id/:title?/edit', 'Create', 'edit'),
       route('/sketch/:id/:title?/:commentId?', 'SketchDetails'),
       route('/create', 'Create'),

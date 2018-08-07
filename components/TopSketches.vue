@@ -7,24 +7,18 @@
         <v-tab ripple>Comments</v-tab>
         <v-tab-item>
           <sketch-tiny v-for="sketch in newest" :sketch="sketch" :key="sketch.id"></sketch-tiny>
-          <v-btn flat small color="primary">
-            Show all
-          </v-btn>
+          <v-btn flat small color="primary" router-link to="/all">Show All</v-btn>
         </v-tab-item>
         <v-tab-item>
           <v-card>
             <sketch-tiny v-for="sketch in sketchesByRating" :sketch="sketch" :key="sketch.id"></sketch-tiny>
-            <v-btn flat small color="primary">
-              Show all
-            </v-btn>
+            <v-btn flat small color="primary" router-link to="/all">Show All</v-btn>
           </v-card>
         </v-tab-item>
         <v-tab-item>
           <v-card>
             <sketch-tiny v-for="sketch in sketchesByComments" :sketch="sketch" :key="sketch.id"></sketch-tiny>
-            <v-btn flat small color="primary">
-              Show all
-            </v-btn>
+            <v-btn flat small color="primary" router-link to="/all">Show All</v-btn>
           </v-card>
         </v-tab-item>
         <v-spacer></v-spacer>
