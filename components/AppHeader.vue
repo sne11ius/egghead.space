@@ -2,7 +2,7 @@
   <div id="app-header">
     <AjaxIndicator></AjaxIndicator>
     <v-toolbar app class="main-toolbar" color="primary">
-      <v-toolbar-title class="title small" v-if="breakpoint">
+      <v-toolbar-title class="title small" v-if="breakpointXs">
         <h1>
           <router-link to="/" class="home-link">
             <img src="/mr_egg_60.png">
@@ -23,7 +23,7 @@
         <UserStatus></UserStatus>
       </NoSSR>
     </v-toolbar>
-    <v-parallax src="header_image_2.jpeg" height="450" v-if="isHomeView" id="parallax">
+    <v-parallax src="creativity.jpg" height="550" v-if="isHomeView" id="parallax">
     </v-parallax>
     <v-container fluid v-if="isHomeView" id="search-container">
       <v-layout row>
@@ -42,6 +42,7 @@ import NoSSR from 'vue-no-ssr'
 import AjaxIndicator from 'components/AjaxIndicator.vue'
 import UserStatus from 'components/UserStatus.vue'
 import SearchBox from 'components/SearchBox.vue'
+import ParticlesConfig from 'components/particles.config.json'
 
 export default {
   name: 'AppHeader',
@@ -56,11 +57,24 @@ export default {
       isHydrated: false
     }
   },
+  updated () {
+    if (this.isHomeView) {
+      require('particles.js')
+      // eslint-disable-next-line no-undef
+      particlesJS('parallax', ParticlesConfig)
+      // We could have altered particles.js to create the node
+      // were we need it, but it's easier to just move it to the correct node...
+      const particlesCanvas = document.querySelectorAll('.v-parallax .particles-js-canvas-el')[0]
+      document
+        .querySelectorAll('.v-parallax__image-container')[0]
+        .appendChild(particlesCanvas)
+    }
+  },
   mounted () {
     this.isHydrated = true
   },
   computed: {
-    breakpoint () {
+    breakpointXs () {
       return this.isHydrated
         ? this.$vuetify.breakpoint.xs
         : true
@@ -71,6 +85,16 @@ export default {
   }
 }
 </script>
+
+<style lang="scss">
+.particles-js-canvas-el {
+  position: fixed;
+  top: 0;
+  left: 0;
+  z-index: 1;
+  height: 950px !important;
+}
+</style>
 
 <style lang="scss" scoped>
 .main-toolbar {
@@ -100,11 +124,13 @@ export default {
   }
 }
 #search-container {
+  height: 0;
+  padding: 0;
   .row {
     transform: translate(0, 50%);
     height: 0;
     position: relative;
-    top: -215px;
+    top: -260px;
     z-index: 999;
     .xs12 {
       max-width: 500px;
