@@ -7,7 +7,7 @@
         <transition name="component-fade" mode="out-in">
           <router-view/>
         </transition>
-        <v-footer height="auto" color="accent">
+        <v-footer height="auto" color="primary">
           <router-link :to="{name: 'About', params: { show: 'about' }}">
             Made with
           </router-link>
