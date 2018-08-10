@@ -92,6 +92,9 @@ export default new Vuex.Store({
         )
       })
     },
+    loadMore ({ commit }, offset) {
+      console.log('loading page ', offset)
+    },
     fetchDetailSketch ({ commit }, sketchId) {
       return new Promise(resolve => {
         api

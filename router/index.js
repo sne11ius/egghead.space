@@ -3,7 +3,7 @@ import Router from 'vue-router'
 
 // Function to create routes
 // Is default lazy but can be changed
-function route(path, view, name) {
+function route (path, view, name) {
   return {
     path: path,
     name: name || view,
@@ -14,7 +14,7 @@ function route(path, view, name) {
 
 Vue.use(Router)
 
-export function createRouter() {
+export function createRouter () {
   const router = new Router({
     base: __dirname,
     mode: 'history',

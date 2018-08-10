@@ -8,22 +8,22 @@
           <router-view/>
         </transition>
         <v-footer height="auto" color="primary">
-          <router-link :to="{name: 'About', params: { show: 'about' }}">
+          <router-link :to="{name: 'About', params: { display: 'about' }}">
             Made with
           </router-link>
-          <router-link :to="{name: 'About', params: { show: 'about' }}">
+          <router-link :to="{name: 'About', params: { display: 'about' }}">
             <img src="/egg.svg" class="egg">
           </router-link>
           <v-spacer></v-spacer>
-          <router-link :to="{name: 'About', params: { show: 'licenses' }}">
+          <router-link :to="{name: 'About', params: { display: 'licenses' }}">
             &copy; 2018
           </router-link>
           &emsp;|&emsp;
-          <router-link :to="{name: 'About', params: { show: 'imprint' }}">
+          <router-link :to="{name: 'About', params: { display: 'imprint' }}">
             Imprint
           </router-link>
           &emsp;|&emsp;
-          <router-link :to="{name: 'About', params: { show: 'privacy' }}">
+          <router-link :to="{name: 'About', params: { display: 'privacy' }}">
             Privacy policy
           </router-link>
         </v-footer>

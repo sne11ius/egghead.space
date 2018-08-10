@@ -7,18 +7,21 @@
         <v-tab ripple>Comments</v-tab>
         <v-tab-item>
           <sketch-tiny v-for="sketch in newest" :sketch="sketch" :key="sketch.id"></sketch-tiny>
-          <v-btn flat small color="primary" router-link to="/all">Show All</v-btn>
+          <v-btn v-if="displayMode === 'limited'" flat small color="primary" router-link to="/all">Show All</v-btn>
+          <v-btn v-else class="load-more-button" @click="loadMore">Load more</v-btn>
         </v-tab-item>
         <v-tab-item>
           <v-card>
             <sketch-tiny v-for="sketch in sketchesByRating" :sketch="sketch" :key="sketch.id"></sketch-tiny>
-            <v-btn flat small color="primary" router-link to="/all">Show All</v-btn>
+            <v-btn v-if="displayMode === 'limited'" flat small color="primary" router-link to="/all">Show All</v-btn>
+            <v-btn v-else class="load-more-button" @click="loadMore">Load more</v-btn>
           </v-card>
         </v-tab-item>
         <v-tab-item>
           <v-card>
             <sketch-tiny v-for="sketch in sketchesByComments" :sketch="sketch" :key="sketch.id"></sketch-tiny>
-            <v-btn flat small color="primary" router-link to="/all">Show All</v-btn>
+            <v-btn v-if="displayMode === 'limited'" flat small color="primary" router-link to="/all">Show All</v-btn>
+            <v-btn v-else class="load-more-button" @click="loadMore">Load more</v-btn>
           </v-card>
         </v-tab-item>
         <v-spacer></v-spacer>
@@ -45,6 +48,12 @@ export default {
   components: {
     SketchTiny
   },
+  props: {
+    displayMode: {
+      type: String,
+      default: 'all'
+    }
+  },
   data () {
     return {
       timePeriod: 'week',
@@ -62,7 +71,8 @@ export default {
           label: 'Ever',
           value: 'allTime'
         }
-      ]
+      ],
+      offset: 0
     }
   },
   asyncData ({ store, route }) {
@@ -91,6 +101,17 @@ export default {
         case 'allTime':
           return this.$store.state.mostCommentedAllTime
       }
+    }
+  },
+  mounted () {
+    console.log('displayMode: ', this.displayMode)
+  },
+  methods: {
+    loadMore () {
+      console.log('load more...')
+      console.log('active tab ', this.activeTab)
+      console.log('period: ', this.timePeriod)
+      this.$store.dispatch('loadMore', this.offset++)
     }
   }
 }
