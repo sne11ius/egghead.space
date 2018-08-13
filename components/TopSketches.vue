@@ -7,24 +7,21 @@
         <v-tab ripple>Comments</v-tab>
         <v-tab-item>
           <sketch-tiny v-for="sketch in newest" :sketch="sketch" :key="sketch.id"></sketch-tiny>
-          <v-btn flat small color="primary">
-            Show all
-          </v-btn>
+          <v-btn v-if="displayMode === 'limited'" class="more" flat small color="primary" router-link to="/all">Show All</v-btn>
+          <v-btn v-else @click="loadMore" class="more" flat small color="primary">Load more</v-btn>
         </v-tab-item>
         <v-tab-item>
           <v-card>
             <sketch-tiny v-for="sketch in sketchesByRating" :sketch="sketch" :key="sketch.id"></sketch-tiny>
-            <v-btn flat small color="primary">
-              Show all
-            </v-btn>
+            <v-btn v-if="displayMode === 'limited'" class="more" flat small color="primary" router-link to="/all">Show All</v-btn>
+            <v-btn v-else @click="loadMore" class="more" flat small color="primary">Load more</v-btn>
           </v-card>
         </v-tab-item>
         <v-tab-item>
           <v-card>
             <sketch-tiny v-for="sketch in sketchesByComments" :sketch="sketch" :key="sketch.id"></sketch-tiny>
-            <v-btn flat small color="primary">
-              Show all
-            </v-btn>
+            <v-btn v-if="displayMode === 'limited'" class="more" flat small color="primary" router-link to="/all">Show All</v-btn>
+            <v-btn v-else @click="loadMore" class="more" flat small color="primary">Load more</v-btn>
           </v-card>
         </v-tab-item>
         <v-spacer></v-spacer>
@@ -44,12 +41,19 @@
 </template>
 
 <script>
+import EventBus from 'service/EventBus'
 import SketchTiny from 'components/SketchTiny.vue'
 
 export default {
   name: 'TopSketches',
   components: {
     SketchTiny
+  },
+  props: {
+    displayMode: {
+      type: String,
+      default: 'all'
+    }
   },
   data () {
     return {
@@ -68,7 +72,8 @@ export default {
           label: 'Ever',
           value: 'allTime'
         }
-      ]
+      ],
+      fetchCount: 30
     }
   },
   asyncData ({ store, route }) {
@@ -98,6 +103,23 @@ export default {
           return this.$store.state.mostCommentedAllTime
       }
     }
+  },
+  mounted () {
+    console.log('displayMode: ', this.displayMode)
+    if (this.displayMode === 'all') {
+      this.loadMore()
+    }
+  },
+  methods: {
+    loadMore () {
+      EventBus.$emit('ajax-start')
+      this.$store
+        .dispatch('fetchTopSketches', this.fetchCount)
+        .then(() => {
+          EventBus.$emit('ajax-stop')
+        })
+      this.fetchCount += 30
+    }
   }
 }
 </script>
@@ -116,6 +138,13 @@ export default {
   padding-left: 0;
   padding-right: 0;
 }
+
+#top-sketches .v-tabs__items .v-btn.more {
+  float: right;
+  margin-right: 6px;
+  margin-top: 14px;
+}
+
 #top-sketches .v-select {
   padding-left: 0;
   position: relative;

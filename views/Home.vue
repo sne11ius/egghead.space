@@ -55,7 +55,7 @@
         </v-card>
       </v-flex>
       <v-flex d-flex xs12 md12 lg4>
-        <TopSketches></TopSketches>
+        <TopSketches displayMode="limited"></TopSketches>
       </v-flex>
     </v-layout>
   </v-container>

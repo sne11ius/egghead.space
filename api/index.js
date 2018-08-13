@@ -66,37 +66,30 @@ const featured = apiImpl.db
 const newest = apiImpl.db
   .collection('sketches')
   .orderBy('created', 'desc')
-  .limit(10)
 
 const bestRatedLastWeek = apiImpl.db
   .collection('sketches')
   .orderBy('likesLastWeek', 'desc')
-  .limit(10)
 
 const bestRatedLastMonth = apiImpl.db
   .collection('sketches')
   .orderBy('likesLastMonth', 'desc')
-  .limit(10)
 
 const bestRatedAllTime = apiImpl.db
   .collection('sketches')
   .orderBy('totalLikes', 'desc')
-  .limit(10)
 
 const mostCommentedLastWeek = apiImpl.db
   .collection('sketches')
   .orderBy('commentsLastWeek', 'desc')
-  .limit(10)
 
 const mostCommentedLastMonth = apiImpl.db
   .collection('sketches')
   .orderBy('commentsLastMonth', 'desc')
-  .limit(10)
 
 const mostCommentedAllTime = apiImpl.db
   .collection('sketches')
   .orderBy('commentCount', 'desc')
-  .limit(10)
 
 const sketches = apiImpl.db.collection('sketches')
 
@@ -108,6 +101,7 @@ apiImpl.fetchFeatured = onUpdate => {
 }
 
 apiImpl.fetchTopSketches = (
+  fetchCount,
   onNewest,
   onBestRatedLastWeek,
   onBestRatedLastMonth,
@@ -117,13 +111,13 @@ apiImpl.fetchTopSketches = (
   onMostCommentedAllTime
 ) => {
   return Promise.all([
-    fetchCollection(newest, onNewest),
-    fetchCollection(bestRatedLastWeek, onBestRatedLastWeek),
-    fetchCollection(bestRatedLastMonth, onBestRatedLastMonth),
-    fetchCollection(bestRatedAllTime, onBestRatedAllTime),
-    fetchCollection(mostCommentedLastWeek, onMostCommentedLastWeek),
-    fetchCollection(mostCommentedLastMonth, onMostCommentedLastMonth),
-    fetchCollection(mostCommentedAllTime, onMostCommentedAllTime)
+    fetchCollection(newest.limit(fetchCount), onNewest),
+    fetchCollection(bestRatedLastWeek.limit(fetchCount), onBestRatedLastWeek),
+    fetchCollection(bestRatedLastMonth.limit(fetchCount), onBestRatedLastMonth),
+    fetchCollection(bestRatedAllTime.limit(fetchCount), onBestRatedAllTime),
+    fetchCollection(mostCommentedLastWeek.limit(fetchCount), onMostCommentedLastWeek),
+    fetchCollection(mostCommentedLastMonth.limit(fetchCount), onMostCommentedLastMonth),
+    fetchCollection(mostCommentedAllTime.limit(fetchCount), onMostCommentedAllTime)
   ])
 }
 

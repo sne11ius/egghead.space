@@ -36,7 +36,7 @@ export default new Vuex.Store({
         })
       })
     },
-    fetchTopSketches ({ commit }) {
+    fetchTopSketches ({ commit }, fetchCount = 10) {
       return new Promise(resolve => {
         const done = []
         const allSetters = [
@@ -54,6 +54,7 @@ export default new Vuex.Store({
           }
         }
         return api.fetchTopSketches(
+          fetchCount,
           newest => {
             commit('setNewest', newest)
             done.push('setNewest')

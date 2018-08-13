@@ -13,6 +13,12 @@ const createMeta = route => {
         title: prefix + 'Home',
         ...defaults
       }
+    case 'All': {
+      return {
+        title: prefix + 'All sketches',
+        ...defaults
+      }
+    }
     case 'SketchDetails': {
       const titleSuffix =
         route.params.title && route.params.title !== '' ? ': ' + route.params.title : ''
