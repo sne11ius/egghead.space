@@ -4,7 +4,7 @@
       <v-layout row wrap>
         <v-spacer></v-spacer>
         <v-flex d-flex xs12 md8 lg8>
-          <v-card>
+          <v-card flat>
             <v-card-title>
               <h1 class="headline">All sketches</h1>
             </v-card-title>
