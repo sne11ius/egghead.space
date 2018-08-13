@@ -3,6 +3,7 @@ import Vue from 'vue'
 const bus = new Vue({
   methods: {
     info (text) {
+      console.log(text)
       this.snack(text)
     },
     snack (text) {
