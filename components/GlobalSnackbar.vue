@@ -31,5 +31,6 @@ export default {
   .icon {
     margin-right: 20px;
   }
+  z-index: 1001;
 }
 </style>

@@ -46,6 +46,7 @@
                 </span>
               </h5>
             </div>
+            <ShareUrl></ShareUrl>
             <div class="author-link">
               Author: <router-link :to="{name: 'User', params: {uid: this.sketch.createdByUid, username: this.sketch.createdBy.displayName.replace(/\s/g, '+')}}">{{this.sketch.createdBy.displayName}}</router-link>
             </div>
@@ -81,6 +82,7 @@ import { distanceInWordsToNow, format } from 'date-fns/'
 import EventBus from 'service/EventBus'
 import FirebaseUtil from 'service/FirebaseUtil'
 import Sketch from 'components/Sketch.vue'
+import ShareUrl from 'components/ShareUrl.vue'
 import Comment from 'components/Comment.vue'
 
 export default {
@@ -88,6 +90,7 @@ export default {
   props: ['id', 'commentId'],
   components: {
     Sketch,
+    ShareUrl,
     Comment
   },
   data () {
