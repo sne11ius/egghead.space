@@ -10,13 +10,15 @@
           </router-link>
         </h1>
       </v-toolbar-title>
-      <v-toolbar-title class="title" v-else>
-        <h1>
+      <v-toolbar-title class="title" v-show="!breakpointXs">
+        <h1 v-if="showTextTitle">
           <router-link to="/" class="home-link">
             egghead.space
-            <img src="/mr_egg_60.png">
           </router-link>
         </h1>
+        <router-link to="/" class="home-link" v-show="!showTextTitle">
+          <canvas id="hipster-title" width="600" height="128"></canvas>
+        </router-link>
       </v-toolbar-title>
       <v-spacer></v-spacer>
       <NoSSR>
@@ -54,7 +56,8 @@ export default {
   },
   data () {
     return {
-      isHydrated: false
+      isHydrated: false,
+      showTextTitle: true
     }
   },
   updated () {
@@ -69,9 +72,10 @@ export default {
         .querySelectorAll('.v-parallax__image-container')[0]
         .appendChild(particlesCanvas)
     }
-  },
-  mounted () {
     this.isHydrated = true
+    if (this.showTextTitle && !this.breakpointXs) {
+      this.updateCanvas()
+    }
   },
   computed: {
     breakpointXs () {
@@ -81,6 +85,33 @@ export default {
     },
     isHomeView: function () {
       return this.$route.path === '/'
+    }
+  },
+  methods: {
+    updateCanvas () {
+      const _this = this
+      window.setTimeout(() => {
+        const ParticleText = require('./particle-text.js')
+        const config = {
+          canvas: 'hipster-title', // id of the canvas element
+          canvasWidth: 600,
+          canvasHeight: 128,
+          density: 4, // # of pixels a particle represents
+          size: 4, // size of the particles
+          font: {
+            color: '#fff',
+            size: 18,
+            family: 'Hi Melody',
+            weight: 'normal'
+          },
+          orbit: {
+            speed: 5000
+          }
+        }
+        // eslint-disable-next-line
+        new ParticleText.default('egghead.space', config)
+        _this.showTextTitle = false
+      }, 0)
     }
   }
 }
@@ -103,14 +134,19 @@ export default {
   .title {
     overflow: visible;
     position: absolute;
-    &:not(.small) {
-      left: 50%;
-      transform: translate(-50%, 0%);
-    }
   }
   h1 {
-    font-size: 38px;
+    font-size: 59px;
     display: inline-block;
+    font-family: 'Hi Melody', cursive;
+    padding-top: 22px;
+    padding-left: 5px;
+  }
+  #hipster-title {
+    height: 110px;
+    width: 600px;
+    position: relative;
+    left: -119px;
   }
   img {
     height: 60px;
