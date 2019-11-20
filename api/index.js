@@ -161,7 +161,7 @@ apiImpl.fetchUserComments = (userId, onUpdate) => {
     .collection('users')
     .doc(userId)
     .collection('comments')
-    .orderBy('created', 'desc')
+    .orderBy('created', 'asc')
   return new Promise((resolve, reject) => {
     ref.onSnapshot(data => arrayToStaticData(data).then(onUpdate))
     ref
