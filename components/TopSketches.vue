@@ -105,7 +105,6 @@ export default {
     }
   },
   mounted () {
-    console.log('displayMode: ', this.displayMode)
     if (this.displayMode === 'all') {
       this.loadMore()
     }

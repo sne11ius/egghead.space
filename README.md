@@ -8,9 +8,12 @@
 
 ## Rumblings
 
-http://www.timqian.com/star-history/#facebook/react&angular/angular&vuejs/vue
-
-http://www.npmtrends.com/angular-vs-react-vs-vue-vs-@angular/core
+- http://www.timqian.com/star-history/#facebook/react&angular/angular&vuejs/vue
+- http://www.npmtrends.com/angular-vs-react-vs-vue-vs-@angular/core
+- firebaseui.css contains links to roboto fonts @ google cdn. Not sure how to remove these.
+  Prolly https://github.com/ds300/patch-package
+- We should also fork particles.js to get rid of the error message.
+- Fork michaelharrisonroth/particle-text - needs a major update.
 
 ## Cron jobs
 
