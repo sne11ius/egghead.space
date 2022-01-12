@@ -36,7 +36,7 @@
     "firebase-functions": "^1.1.0",
     "firebaseui": "^3.1.1",
     "lru-cache": "^4.1.1",
-    "markdown-it": "^8.4.1",
+    "markdown-it": "^12.3.2",
     "marked": "^0.4.0",
     "normalize.css": "^8.0.0",
     "particles.js": "^2.0.0",
